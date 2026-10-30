@@ -163,14 +163,14 @@ const doc = {
     { ul: [
       'Home con hero, excursiones destacadas por origen (Desde Salta / Desde Jujuy), pasos de reserva, destinos y CTA a WhatsApp.',
       'Catálogo completo de excursiones con filtros por origen y buscador.',
-      'Ficha de excursión: imagen, ubicación, duración, horario, dificultad, descripción, servicios incluidos, FAQs y relacionadas.',
+      'Ficha de excursión: imagen, galería de fotos, ubicación, duración, horario, dificultad, descripción, servicios incluidos, FAQs y relacionadas.',
       'Formulario de reserva (fecha, personas, datos de contacto) que registra el lead y abre WhatsApp con el mensaje pre-armado al +54 9 387 403 9502.',
       'Páginas Nosotros y Contacto. Diseño 100% responsive (mobile-first).',
     ].map(li) },
     h2('Datos'),
     { ul: [
       'Las 15 excursiones actuales del catálogo ya migradas a la base de datos con precios, duración, dificultad e imágenes.',
-      'Modelo preparado para galerías de fotos, FAQs por excursión y contenidos editables del sitio.',
+      '117 fotos migradas en galerías por excursión, FAQs y contenidos del sitio administrables desde la base.',
     ].map(li) },
 
     // ------------------------------------------------------ 3. STACK
@@ -183,7 +183,7 @@ const doc = {
         ['Base de datos', 'Supabase (PostgreSQL gestionado)', 'DB real con Auth, Storage y seguridad por filas (RLS) incluidas'],
         ['Reservas', 'Deep-link wa.me + registro en DB', 'Conversión directa a WhatsApp sin perder el dato del lead'],
         ['Hosting (sugerido)', 'Vercel/Netlify (front) + Supabase Cloud', 'Deploy continuo, HTTPS y costo inicial mínimo'],
-        ['Pagos (Fase 3)', 'MercadoPago', 'Estándar en Argentina: tarjetas, débito y transferencia'],
+        ['Pagos (Fase 2)', 'MercadoPago', 'Estándar en Argentina: tarjetas, débito y transferencia'],
       ],
       [70, 165, '*'],
     ),
@@ -214,7 +214,7 @@ const doc = {
       [
         ['categories', 'Orígenes de las excursiones: Desde Salta / Desde Jujuy'],
         ['excursions', 'Nombre, ubicación, precio, duración, horario, dificultad, descripción, incluido, imagen'],
-        ['excursion_images', 'Galería de fotos por excursión (preparado para Fase 2)'],
+        ['excursion_images', 'Galería de fotos por excursión (117 imágenes ya migradas)'],
         ['excursion_faqs', 'Preguntas frecuentes por excursión'],
         ['reservations', 'Leads de reserva: excursión, fecha, personas, contacto, total estimado, estado'],
         ['site_content', 'Textos editables del sitio (hero, nosotros, contacto, redes) — base del backoffice'],
@@ -231,10 +231,10 @@ const doc = {
     table(
       ['Fase', 'Alcance', 'Estado'],
       [
-        ['Fase 1', 'Sitio informativo completo + catálogo + fichas + reservas por WhatsApp + DB Supabase', 'Desarrollada (esta entrega)'],
-        ['Fase 2', 'Backoffice: login y panel para administrar excursiones, precios, imágenes, textos y ver reservas', 'Opción 4 — presupuestada'],
-        ['Fase 3', 'Pasarela de pagos online (MercadoPago) con confirmación automática de la reserva', 'Opción 3 — presupuestada'],
-        ['Fase 4', 'Sistema completo: sitio + backoffice + pagos + gestión de reservas y disponibilidad', 'Opción 5 — presupuestada'],
+        ['Fase 1', 'Sitio a medida + catálogo con galerías + fichas + motor de reservas por WhatsApp + DB Supabase', 'Desarrollada (esta entrega)'],
+        ['Fase 2', 'Pasarela de pagos online (MercadoPago) con confirmación automática de la reserva', 'Opción 2 — presupuestada'],
+        ['Fase 3', 'Backoffice: login y panel para administrar excursiones, precios, imágenes, textos y ver reservas', 'Opción 3 — presupuestada'],
+        ['Fase 4', 'Sistema completo: sitio + backoffice + pagos + gestión de reservas y disponibilidad', 'Opción 4 — presupuestada'],
       ],
       [40, '*', 120],
     ),
@@ -245,9 +245,9 @@ const doc = {
       ['Etapa', 'Duración estimada'],
       [
         ['Relevamiento, diseño y setup (hecho)', '—'],
-        ['Fase 1 — Sitio + reservas WhatsApp', '2 – 3 semanas desde aprobación de diseño y contenidos finales'],
-        ['Fase 2 — Backoffice', '+2 – 3 semanas adicionales'],
-        ['Fase 3 — Pagos online', '+1 – 2 semanas adicionales'],
+        ['Fase 1 — Sitio + reservas WhatsApp', 'Desarrollada (esta entrega)'],
+        ['Fase 2 — Pagos online', '+1 – 2 semanas adicionales'],
+        ['Fase 3 — Backoffice', '+2 – 3 semanas adicionales'],
       ],
       ['*', 250],
     ),
@@ -258,22 +258,22 @@ const doc = {
     table(
       ['Opción', 'Incluye', 'Inversión (ARS)'],
       [
-        ['Opción 2', 'Web informativa a medida: catálogo, fichas y reservas por WhatsApp', '$ 300.000'],
+        ['Opción 1', 'Sitio web a medida + motor de reservas: catálogo dinámico, fichas con galería de fotos, reservas por WhatsApp registradas en base de datos (ya desarrollada)', '$ 400.000'],
         [
-          { text: 'Opción 4', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Fase 1 + backoffice privado para administrar excursiones, precios, imágenes y textos sin tocar código', bold: true, fillColor: '#FFEFC2' },
-          { text: '$ 400.000', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 2', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + pasarela de pagos online (MercadoPago) para cobrar reservas desde el sitio', bold: true, fillColor: '#FFEFC2' },
+          { text: '$ 600.000', bold: true, fillColor: '#FFEFC2' },
         ],
         [
           { text: 'Opción 3', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Fase 1 + pasarela de pagos online para cobrar reservas desde el sitio', bold: true, fillColor: '#FFEFC2' },
-          { text: '$ 600.000', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + backoffice privado para administrar excursiones, precios, imágenes, textos y reservas sin tocar código', bold: true, fillColor: '#FFEFC2' },
+          { text: '$ 800.000', bold: true, fillColor: '#FFEFC2' },
         ],
-        ['Opción 5', 'Todo: sitio + backoffice + pagos online', '$ 900.000'],
+        ['Opción 4', 'Sistema completo: sitio + backoffice + pagos online', '$ 1.000.000'],
       ],
       [70, '*', 90],
     ),
-    p('Filas resaltadas = opciones de interés del cliente. Ambas comparten la misma Fase 1 ya desarrollada, por lo que luego pueden ampliarse a la Opción 5 abonando la diferencia.', { fontSize: 8.5 }),
+    p('Filas resaltadas = opciones que mejor se ajustan al interés manifestado por el cliente. Todas comparten la misma Opción 1 ya desarrollada, por lo que luego pueden ampliarse a la Opción 4 abonando la diferencia.', { fontSize: 8.5 }),
 
     // ------------------------------------------------------ 8. CONDICIONES
     h1('8. Condiciones comerciales'),
