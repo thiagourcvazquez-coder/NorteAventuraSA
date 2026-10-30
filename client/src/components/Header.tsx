@@ -6,12 +6,12 @@ import { WhatsAppIcon } from './Icons';
 const LOGO_URL = 'https://norteaventura.com.ar/wp-content/uploads/2026/05/cropped-Logo-NA-transp-270x270.png';
 
 const links = [
-  { to: '/', label: 'Inicio' },
-  { to: '/excursiones', label: 'Excursiones' },
-  { to: '/excursiones?origen=salta', label: 'Desde Salta' },
-  { to: '/excursiones?origen=jujuy', label: 'Desde Jujuy' },
-  { to: '/nosotros', label: 'Nosotros' },
-  { to: '/contacto', label: 'Contacto' },
+  { to: '/', label: 'Inicio', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0017.jpg' },
+  { to: '/excursiones', label: 'Excursiones', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg' },
+  { to: '/excursiones?origen=salta', label: 'Desde Salta', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg' },
+  { to: '/excursiones?origen=jujuy', label: 'Desde Jujuy', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg' },
+  { to: '/nosotros', label: 'Nosotros', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
+  { to: '/contacto', label: 'Contacto', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg' },
 ];
 
 export default function Header() {
@@ -105,9 +105,22 @@ export default function Header() {
             animate={{ clipPath: 'circle(150% at calc(100% - 40px) 40px)' }}
             exit={{ clipPath: 'circle(0% at calc(100% - 40px) 40px)' }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-40 flex flex-col justify-center bg-norte-green px-8 lg:hidden"
+            className="fixed inset-0 z-40 flex flex-col overflow-hidden bg-norte-green lg:hidden"
           >
-            <nav className="space-y-1">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-norte-green via-norte-green to-norte-green-dark" />
+            <div className="grain pointer-events-none absolute inset-0" />
+            <motion.span
+              aria-hidden
+              initial={{ x: '20%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="display text-outline pointer-events-none absolute -bottom-6 left-0 whitespace-nowrap text-[34vw] leading-none"
+              style={{ ['--stroke' as string]: 'rgba(255,200,59,0.18)' }}
+            >
+              AVENTURA
+            </motion.span>
+
+            <nav className="relative z-10 mt-24 flex-1 overflow-y-auto px-7">
               {links.map((l, i) => (
                 <motion.div
                   key={l.label}
@@ -118,22 +131,47 @@ export default function Header() {
                   <Link
                     to={l.to}
                     onClick={() => setOpen(false)}
-                    className="display block text-[clamp(2.2rem,11vw,4rem)] text-norte-cream transition hover:text-norte-yellow"
+                    className="group flex items-center gap-4 border-b border-white/10 py-4"
                   >
-                    {l.label}
+                    <span className="text-[11px] font-extrabold tracking-widest text-norte-yellow">
+                      0{i + 1}
+                    </span>
+                    <span className="display flex-1 text-[clamp(1.75rem,7.5vw,3rem)] text-norte-cream transition group-active:text-norte-yellow">
+                      {l.label}
+                    </span>
+                    <img
+                      src={l.img}
+                      alt=""
+                      loading="lazy"
+                      className="h-14 w-20 shrink-0 rounded-2xl object-cover ring-1 ring-white/15"
+                    />
                   </Link>
                 </motion.div>
               ))}
             </nav>
-            <a
-              href="https://wa.me/5493874039502"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-10 flex w-fit items-center gap-2 rounded-full bg-norte-yellow px-7 py-3.5 text-sm font-extrabold text-norte-green"
+
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.65, duration: 0.6 }}
+              className="relative z-10 px-7 pb-8"
             >
-              <WhatsAppIcon className="h-5 w-5" />
-              Escribinos por WhatsApp
-            </a>
+              <a
+                href="https://wa.me/5493874039502"
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-fit items-center gap-2 rounded-full bg-norte-yellow px-7 py-3.5 text-sm font-extrabold text-norte-green"
+              >
+                <WhatsAppIcon className="h-5 w-5" />
+                Escribinos por WhatsApp
+              </a>
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-norte-cream/45">
+                Salta, Argentina
+              </p>
+              <p className="mt-1 text-xs font-semibold text-norte-cream/45">
+                puraaventuratrekking@gmail.com
+              </p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
