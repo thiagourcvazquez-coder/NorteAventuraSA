@@ -4,9 +4,11 @@ import { motion, useScroll, useSpring, useTransform } from 'motion/react';
 import type { Excursion } from '../types';
 import ExcursionCard from './ExcursionCard';
 import { SplitWords } from './Motion';
+import { useLang } from '../i18n';
 
 /** Sección "pinned": el scroll vertical recorre una galería horizontal. */
 export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
+  const { t } = useLang();
   const section = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [dist, setDist] = useState(0);
@@ -78,17 +80,17 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <div className="mx-auto mb-8 flex w-full max-w-7xl items-end justify-between gap-4 px-5 sm:px-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">Excursiones destacadas</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('show.eyebrow')}</p>
             <h2 className="display mt-2 text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
-              <SplitWords text="Elegí tu aventura" />
+              <SplitWords text={t('show.title')} />
             </h2>
           </div>
           <Link
             to="/excursiones"
-            data-cursor="Ver"
+            data-cursor={t('cur.view')}
             className="hidden shrink-0 rounded-full bg-norte-green px-6 py-3 text-sm font-extrabold text-norte-cream transition hover:bg-norte-yellow hover:text-norte-green sm:block"
           >
-            Ver todas →
+            {t('show.all')}
           </Link>
         </div>
 
@@ -102,10 +104,10 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
               ))}
           <Link
             to="/excursiones"
-            data-cursor="Ir"
+            data-cursor={t('cur.go')}
             className="display flex aspect-[4/5] w-[78vw] shrink-0 items-center justify-center rounded-[28px] bg-norte-yellow p-8 text-center text-4xl text-norte-green transition hover:bg-norte-green hover:text-norte-yellow sm:w-[400px]"
           >
-            Ver todo el catálogo →
+            {t('show.catalog')}
           </Link>
         </motion.div>
 

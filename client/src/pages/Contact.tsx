@@ -2,11 +2,13 @@ import { useState } from 'react';
 import PageBanner from '../components/PageBanner';
 import { MailIcon, MapPinIcon, WhatsAppIcon } from '../components/Icons';
 import { FacebookIcon, InstagramIcon, TikTokIcon } from '../components/Icons';
+import { useLang } from '../i18n';
 
 const inputCls =
   'w-full rounded-lg border border-norte-green/20 bg-white px-3 py-2.5 text-sm text-norte-green outline-none transition focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40';
 
 export default function Contact() {
+  const { t } = useLang();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
@@ -21,13 +23,13 @@ export default function Contact() {
 
   return (
     <>
-    <PageBanner eyebrow="Contacto" title="Hablemos de tu próxima aventura">
-      Escribinos por WhatsApp o dejanos tu consulta y te respondemos a la brevedad.
+    <PageBanner eyebrow={t('ct.eyebrow')} title={t('ct.title')}>
+      {t('ct.sub')}
     </PageBanner>
     <section className="mx-auto max-w-7xl gap-12 px-5 py-16 sm:px-8 lg:grid lg:grid-cols-2">
       <div>
         <p className="max-w-md leading-relaxed text-norte-gray">
-          Estamos en Salta, Argentina, y salimos todos los días hacia Salta, Tilcara y Jujuy.
+          {t('ct.intro')}
         </p>
 
         <ul className="mt-8 space-y-4 text-sm">
@@ -69,19 +71,19 @@ export default function Contact() {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-10 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-norte-green/10 lg:mt-0">
-        <h2 className="text-lg font-extrabold text-norte-green">Envianos tu consulta</h2>
+        <h2 className="text-lg font-extrabold text-norte-green">{t('ct.form')}</h2>
         <div className="mt-5 space-y-4">
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">Nombre</label>
-            <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" required />
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">{t('ct.name')}</label>
+            <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ct.name_ph')} required />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">Teléfono</label>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">{t('ct.phone')}</label>
             <input className={inputCls} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="387 123 4567" required />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">Mensaje</label>
-            <textarea className={inputCls} rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Contanos qué excursión te interesa, fechas, cantidad de personas…" required />
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">{t('ct.msg')}</label>
+            <textarea className={inputCls} rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('ct.msg_ph')} required />
           </div>
         </div>
         <button
@@ -89,10 +91,10 @@ export default function Contact() {
           className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-norte-whatsapp px-6 py-3.5 text-sm font-bold text-white shadow transition hover:brightness-95"
         >
           <WhatsAppIcon className="h-5 w-5" />
-          Enviar por WhatsApp
+          {t('ct.send')}
         </button>
         <p className="mt-3 text-center text-xs text-norte-gray">
-          Tu consulta se envía directo a nuestro WhatsApp.
+          {t('ct.note')}
         </p>
       </form>
     </section>

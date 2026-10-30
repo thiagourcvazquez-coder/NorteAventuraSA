@@ -1,19 +1,21 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useExcursions } from '../hooks';
+import { useLang } from '../i18n';
 import ExcursionCard from '../components/ExcursionCard';
 import PageBanner from '../components/PageBanner';
 import { Reveal } from '../components/Motion';
 import type { CategorySlug } from '../types';
 
-const filters: { value: 'todas' | CategorySlug; label: string }[] = [
-  { value: 'todas', label: 'Todas' },
-  { value: 'salta', label: 'Desde Salta' },
-  { value: 'jujuy', label: 'Desde Jujuy' },
+const filters: { value: 'todas' | CategorySlug; key: 'cat.all' | 'nav.from_salta' | 'nav.from_jujuy' }[] = [
+  { value: 'todas', key: 'cat.all' },
+  { value: 'salta', key: 'nav.from_salta' },
+  { value: 'jujuy', key: 'nav.from_jujuy' },
 ];
 
 export default function Catalog() {
   const { excursions, loading } = useExcursions();
+  const { t } = useLang();
   const [params, setParams] = useSearchParams();
   const origen = (params.get('origen') ?? 'todas') as 'todas' | CategorySlug;
   const query = params.get('q') ?? '';
@@ -39,8 +41,8 @@ export default function Catalog() {
 
   return (
     <>
-      <PageBanner eyebrow="Tours" title="Todas las aventuras">
-        Excursiones diarias, trekking y experiencias por Salta y Jujuy. Elegí la tuya y reservá por WhatsApp.
+      <PageBanner eyebrow="Tours" title={t('cat.title')}>
+        {t('cat.sub')}
       </PageBanner>
 
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
@@ -55,14 +57,14 @@ export default function Catalog() {
                   : 'bg-white text-norte-green ring-1 ring-norte-green/20 hover:ring-norte-green/50'
               }`}
             >
-              {f.label}
+              {t(f.key)}
             </button>
           ))}
           <input
             type="search"
             value={query}
             onChange={(e) => update({ q: e.target.value })}
-            placeholder="Buscar excursión o destino…"
+            placeholder={t('cat.search')}
             className="ml-auto w-full rounded-full border border-norte-green/20 bg-white px-6 py-2.5 text-sm text-norte-green outline-none focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40 sm:w-72"
           />
         </div>
@@ -82,7 +84,7 @@ export default function Catalog() {
             ))}
           </div>
         ) : (
-          <p className="mt-20 text-center text-norte-gray">No encontramos excursiones para tu búsqueda.</p>
+          <p className="mt-20 text-center text-norte-gray">{t('cat.empty')}</p>
         )}
       </section>
     </>

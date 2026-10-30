@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 import type { Excursion } from '../types';
 import { formatPrice } from '../lib/format';
+import { useLang } from '../i18n';
 import { ClockIcon, MapPinIcon } from './Icons';
 
 export default function ExcursionCard({
@@ -14,6 +15,7 @@ export default function ExcursionCard({
   className?: string;
   aspect?: string;
 }) {
+  const { lang, t, tok } = useLang();
   const ref = useRef<HTMLDivElement>(null);
   const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 20 });
   const ry = useSpring(useMotionValue(0), { stiffness: 220, damping: 20 });
@@ -39,7 +41,7 @@ export default function ExcursionCard({
     >
       <Link
         to={`/excursion/${excursion.slug}`}
-        data-cursor="Ver"
+        data-cursor={t('cur.view')}
         className={`group relative block ${aspect} overflow-hidden rounded-[28px] bg-norte-green`}
       >
         {excursion.imageUrl && (
@@ -62,17 +64,17 @@ export default function ExcursionCard({
           <div className="mt-3 flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-norte-cream/70">
             <span className="inline-flex items-center gap-1.5">
               <ClockIcon className="h-3.5 w-3.5 text-norte-yellow" />
-              {excursion.duration}
+              {tok(excursion.duration)}
             </span>
-            <span>{excursion.difficulty}</span>
+            <span>{tok(excursion.difficulty)}</span>
           </div>
           <div className="mt-5 flex items-end justify-between">
             <div>
               {excursion.price !== null && (
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">Por persona</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">{t('card.per_person')}</p>
               )}
-              <p className="text-2xl font-extrabold text-norte-yellow">{formatPrice(excursion.price)}</p>
-              {excursion.priceNote && <p className="text-[10px] text-norte-cream/60">{excursion.priceNote}</p>}
+              <p className="text-2xl font-extrabold text-norte-yellow">{formatPrice(excursion.price, lang)}</p>
+              {excursion.priceNote && <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>}
             </div>
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-norte-yellow text-norte-green transition duration-500 group-hover:rotate-45 group-hover:scale-110">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">

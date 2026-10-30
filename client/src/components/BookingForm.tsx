@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Excursion } from '../types';
 import { formatPrice } from '../lib/format';
 import { createReservation } from '../lib/api';
+import { useLang } from '../i18n';
 import { WhatsAppIcon } from './Icons';
 
 const inputCls =
@@ -10,6 +11,7 @@ const inputCls =
 const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
 export default function BookingForm({ excursion }: { excursion: Excursion }) {
+  const { lang, t, tok } = useLang();
   const [startDate, setStartDate] = useState(tomorrow);
   const [people, setPeople] = useState(2);
   const [customerName, setCustomerName] = useState('');
@@ -25,7 +27,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
     e.preventDefault();
     setError('');
     if (!customerName.trim() || !phone.trim()) {
-      setError('Completá tu nombre y teléfono para reservar.');
+      setError(t('bk.error'));
       return;
     }
     setSending(true);
@@ -51,22 +53,22 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
       <div className="mb-5 border-b border-norte-green/10 pb-4">
         {excursion.price !== null ? (
           <>
-            <p className="text-xs uppercase tracking-wide text-norte-gray">Desde</p>
+            <p className="text-xs uppercase tracking-wide text-norte-gray">{t('bk.from')}</p>
             <p className="text-3xl font-extrabold text-norte-green">
-              {formatPrice(excursion.price)}
-              <span className="ml-1 text-sm font-medium text-norte-gray">por persona</span>
+              {formatPrice(excursion.price, lang)}
+              <span className="ml-1 text-sm font-medium text-norte-gray">{t('bk.per_person')}</span>
             </p>
           </>
         ) : (
-          <p className="text-lg font-bold text-norte-green">Consultá precio y disponibilidad</p>
+          <p className="text-lg font-bold text-norte-green">{t('bk.ask')}</p>
         )}
-        {excursion.priceNote && <p className="mt-1 text-xs text-norte-gray">{excursion.priceNote}</p>}
+        {excursion.priceNote && <p className="mt-1 text-xs text-norte-gray">{tok(excursion.priceNote)}</p>}
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Fecha de inicio
+            {t('bk.date')}
           </label>
           <input
             type="date"
@@ -80,7 +82,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Personas
+            {t('bk.people')}
           </label>
           <select
             value={people}
@@ -89,7 +91,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
           >
             {Array.from({ length: 15 }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
-                {n} {n === 1 ? 'persona' : 'personas'}
+                {n} {n === 1 ? t('bk.person') : t('bk.people_p')}
               </option>
             ))}
           </select>
@@ -97,13 +99,13 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Nombre y apellido
+            {t('bk.name')}
           </label>
           <input
             type="text"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Tu nombre"
+            placeholder={t('bk.name_ph')}
             className={inputCls}
             required
           />
@@ -111,7 +113,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Teléfono
+            {t('bk.phone')}
           </label>
           <input
             type="tel"
@@ -125,7 +127,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Email <span className="font-normal normal-case">(opcional)</span>
+            {t('bk.email')} <span className="font-normal normal-case">{t('bk.optional')}</span>
           </label>
           <input
             type="email"
@@ -138,13 +140,13 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">
-            Notas <span className="font-normal normal-case">(opcional)</span>
+            {t('bk.notes')} <span className="font-normal normal-case">{t('bk.optional')}</span>
           </label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={2}
-            placeholder="¿Alguna consulta?"
+            placeholder={t('bk.notes_ph')}
             className={inputCls}
           />
         </div>
@@ -152,8 +154,8 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
 
       {total !== null && (
         <div className="mt-5 flex items-center justify-between rounded-lg bg-norte-cream px-4 py-3">
-          <span className="text-sm font-semibold text-norte-gray">Total estimado</span>
-          <span className="text-xl font-extrabold text-norte-green">{formatPrice(total)}</span>
+          <span className="text-sm font-semibold text-norte-gray">{t('bk.total')}</span>
+          <span className="text-xl font-extrabold text-norte-green">{formatPrice(total, lang)}</span>
         </div>
       )}
 
@@ -165,10 +167,10 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
         className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-norte-whatsapp px-6 py-3.5 text-sm font-bold text-white shadow transition hover:brightness-95 disabled:opacity-60"
       >
         <WhatsAppIcon className="h-5 w-5" />
-        {sending ? 'Reservando…' : 'Reservar por WhatsApp'}
+        {sending ? t('bk.sending') : t('bk.submit')}
       </button>
       <p className="mt-3 text-center text-xs text-norte-gray">
-        Te llevamos a WhatsApp con tu reserva lista para enviar.
+        {t('bk.foot')}
         {excursion.bookingLead ? ` ${excursion.bookingLead}` : ''}
       </p>
     </form>

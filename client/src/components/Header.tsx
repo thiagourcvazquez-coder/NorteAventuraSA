@@ -2,22 +2,24 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { WhatsAppIcon } from './Icons';
+import { LangSwitch, useLang } from '../i18n';
 
 const LOGO_URL = 'https://norteaventura.com.ar/wp-content/uploads/2026/05/cropped-Logo-NA-transp-270x270.png';
 
 const links = [
-  { to: '/', label: 'Inicio', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0017.jpg' },
-  { to: '/excursiones', label: 'Excursiones', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg' },
-  { to: '/excursiones?origen=salta', label: 'Desde Salta', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg' },
-  { to: '/excursiones?origen=jujuy', label: 'Desde Jujuy', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg' },
-  { to: '/nosotros', label: 'Nosotros', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
-  { to: '/contacto', label: 'Contacto', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg' },
-];
+  { to: '/', key: 'nav.home', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0017.jpg' },
+  { to: '/excursiones', key: 'nav.excursions', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg' },
+  { to: '/excursiones?origen=salta', key: 'nav.from_salta', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg' },
+  { to: '/excursiones?origen=jujuy', key: 'nav.from_jujuy', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg' },
+  { to: '/nosotros', key: 'nav.about', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
+  { to: '/contacto', key: 'nav.contact', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg' },
+] as const;
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname, search } = useLocation();
+  const { t } = useLang();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -47,7 +49,7 @@ export default function Header() {
               : 'bg-transparent'
           }`}
         >
-          <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)} data-cursor="Inicio">
+          <Link to="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)} data-cursor={t('cur.home')}>
             <img src={LOGO_URL} alt="Norte Aventura" className="h-11 w-11 rounded-full bg-norte-cream object-contain p-0.5" />
             <span className="hidden text-sm font-extrabold uppercase leading-none tracking-[0.18em] text-norte-cream sm:block">
               Norte
@@ -59,7 +61,7 @@ export default function Header() {
           <nav className="hidden items-center gap-1 lg:flex">
             {links.map((l) => (
               <NavLink
-                key={l.label}
+                key={l.key}
                 to={l.to}
                 end
                 className={() => {
@@ -71,12 +73,13 @@ export default function Header() {
                   }`;
                 }}
               >
-                {l.label}
+                {t(l.key)}
               </NavLink>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
+            <LangSwitch className="hidden sm:flex" />
             <a
               href="https://wa.me/5493874039502"
               target="_blank"
@@ -84,11 +87,11 @@ export default function Header() {
               className="hidden items-center gap-2 rounded-full bg-norte-yellow px-5 py-2.5 text-[13px] font-extrabold text-norte-green transition hover:bg-white sm:flex"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              Reservar
+              {t('nav.book')}
             </a>
             <button
               onClick={() => setOpen((v) => !v)}
-              aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+              aria-label={open ? t('nav.close') : t('nav.open')}
               className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full bg-norte-cream/10 ring-1 ring-white/20 lg:hidden"
             >
               <span className={`h-0.5 w-5 bg-norte-cream transition ${open ? 'translate-y-1 rotate-45' : ''}`} />
@@ -123,7 +126,7 @@ export default function Header() {
             <nav className="relative z-10 mt-24 flex-1 overflow-y-auto px-7">
               {links.map((l, i) => (
                 <motion.div
-                  key={l.label}
+                  key={l.key}
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.25 + i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -137,7 +140,7 @@ export default function Header() {
                       0{i + 1}
                     </span>
                     <span className="display flex-1 text-[clamp(1.75rem,7.5vw,3rem)] text-norte-cream transition group-active:text-norte-yellow">
-                      {l.label}
+                      {t(l.key)}
                     </span>
                     <img
                       src={l.img}
@@ -156,6 +159,9 @@ export default function Header() {
               transition={{ delay: 0.65, duration: 0.6 }}
               className="relative z-10 px-7 pb-8"
             >
+              <div className="mb-4 flex items-center gap-3">
+                <LangSwitch />
+              </div>
               <a
                 href="https://wa.me/5493874039502"
                 target="_blank"
@@ -163,7 +169,7 @@ export default function Header() {
                 className="flex w-fit items-center gap-2 rounded-full bg-norte-yellow px-7 py-3.5 text-sm font-extrabold text-norte-green"
               >
                 <WhatsAppIcon className="h-5 w-5" />
-                Escribinos por WhatsApp
+                {t('nav.whatsapp')}
               </a>
               <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-norte-cream/45">
                 Salta, Argentina

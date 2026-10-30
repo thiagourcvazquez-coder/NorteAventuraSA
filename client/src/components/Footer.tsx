@@ -1,19 +1,21 @@
 import { Link } from 'react-router-dom';
 import { FacebookIcon, InstagramIcon, MailIcon, MapPinIcon, TikTokIcon, WhatsAppIcon } from './Icons';
+import { useLang } from '../i18n';
 
 const YEAR = new Date().getFullYear();
 
 export default function Footer() {
+  const { t } = useLang();
   return (
     <footer className="relative overflow-hidden bg-norte-green-dark text-norte-cream">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 pb-10 pt-20 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <p className="display text-3xl text-norte-cream sm:text-4xl">
-            Cuando dudes
+            {t('ft.l1')}
             <br />
-            del camino,
+            {t('ft.l2')}
             <br />
-            <span className="text-norte-yellow">seguí al Norte.</span>
+            <span className="text-norte-yellow">{t('ft.l3')}</span>
           </p>
           <div className="mt-8 flex gap-3">
             {[
@@ -36,19 +38,19 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">Menú</h3>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">{t('ft.menu')}</h3>
           <ul className="space-y-2.5 text-sm font-semibold">
             {[
-              ['/', 'Inicio'],
-              ['/excursiones', 'Excursiones'],
-              ['/excursiones?origen=salta', 'Desde Salta'],
-              ['/excursiones?origen=jujuy', 'Desde Jujuy'],
-              ['/nosotros', 'Nosotros'],
-              ['/contacto', 'Contacto'],
-            ].map(([to, label]) => (
-              <li key={label}>
+              ['/', 'nav.home'],
+              ['/excursiones', 'nav.excursions'],
+              ['/excursiones?origen=salta', 'nav.from_salta'],
+              ['/excursiones?origen=jujuy', 'nav.from_jujuy'],
+              ['/nosotros', 'nav.about'],
+              ['/contacto', 'nav.contact'],
+            ].map(([to, key]) => (
+              <li key={key}>
                 <Link to={to} className="text-norte-cream/75 transition hover:text-norte-yellow">
-                  {label}
+                  {t(key as Parameters<typeof t>[0])}
                 </Link>
               </li>
             ))}
@@ -56,7 +58,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">Contacto</h3>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">{t('ft.contact')}</h3>
           <ul className="space-y-3.5 text-sm">
             <li className="flex items-center gap-2.5 text-norte-cream/75">
               <MapPinIcon className="h-4 w-4 shrink-0 text-norte-yellow" />

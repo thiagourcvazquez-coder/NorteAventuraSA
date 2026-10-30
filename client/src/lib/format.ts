@@ -4,6 +4,8 @@ const ars = new Intl.NumberFormat('es-AR', {
   maximumFractionDigits: 0,
 });
 
-export function formatPrice(value: number | null): string {
-  return value === null ? 'Consultar' : ars.format(value);
+import type { Lang } from '../i18n';
+
+export function formatPrice(value: number | null, lang: Lang = 'es'): string {
+  return value === null ? (lang === 'en' ? 'On request' : 'Consultar') : ars.format(value);
 }

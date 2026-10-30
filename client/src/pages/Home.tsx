@@ -2,19 +2,13 @@ import { lazy, Suspense, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useExcursions } from '../hooks';
+import { useLang } from '../i18n';
 import HorizontalShowcase from '../components/HorizontalShowcase';
 import { Marquee, Reveal, ScrollWords, SplitWords, SunMark } from '../components/Motion';
 import { WhatsAppIcon } from '../components/Icons';
 
 const Hero3D = lazy(() => import('../three/Hero3D'));
 const Peak3D = lazy(() => import('../three/Peak3D'));
-
-const steps = [
-  { title: 'Buscá', text: 'Explorá salidas desde Salta o Jujuy y encontrá la actividad que mejor se adapte a vos.' },
-  { title: 'Elegí la fecha', text: 'Verificá disponibilidad y elegí el día que te quede cómodo. ¡Hay salidas diarias!' },
-  { title: 'Reservá', text: 'Confirmá tu lugar directo con nosotros por WhatsApp, sin registros ni vueltas.' },
-  { title: 'Disfrutá', text: 'Te esperamos para que pases un día lleno de nuevas aventuras.' },
-];
 
 const destinations = [
   {
@@ -31,16 +25,20 @@ const destinations = [
   },
   {
     name: 'Cafayate',
-    sub: 'Vinos y quebradas',
+    subKey: 'dest.cafayate',
     to: '/excursiones?q=cafayate',
     img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg',
   },
-];
+] as const;
 
 const marqueeItems = ['Trekking', 'Salinas Grandes', 'Hornocal', 'Quebrada de Humahuaca', 'Cafayate', 'Purmamarca', 'Tilcara', 'Cachi', 'Iruya'];
 
-const STATEMENT =
-  'Somos una agencia de turismo orientada al trekking y al turismo alternativo. Reversionamos cada destino y le damos nuestro toque: ¡a Pura Aventura!';
+const STEP_KEYS = [
+  ['steps.1.t', 'steps.1.d'],
+  ['steps.2.t', 'steps.2.d'],
+  ['steps.3.t', 'steps.3.d'],
+  ['steps.4.t', 'steps.4.d'],
+] as const;
 
 function HeroFallback() {
   return <div className="absolute inset-0 bg-gradient-to-b from-norte-green-dark to-norte-green" />;
@@ -48,6 +46,7 @@ function HeroFallback() {
 
 export default function Home() {
   const { excursions } = useExcursions();
+  const { t } = useLang();
 
   const featured = useMemo(() => {
     const salta = excursions.filter((e) => e.category === 'salta' && e.price !== null).slice(0, 4);
@@ -78,13 +77,13 @@ export default function Home() {
 
           <h1 className="display text-norte-cream">
             <span className="block text-[clamp(1rem,2.4vw,1.6rem)] font-semibold normal-case tracking-normal text-norte-cream/80">
-              <SplitWords text="Cuando dudes del camino," onMount delay={0.6} />
+              <SplitWords text={t('hero.line1')} onMount delay={0.6} />
             </span>
             <span className="mt-2 block text-[clamp(3.4rem,13vw,11.5rem)]">
-              <SplitWords text="Seguí al" onMount delay={0.8} />
+              <SplitWords text={t('hero.line2')} onMount delay={0.8} />
             </span>
             <span className="block text-[clamp(3.4rem,13vw,11.5rem)] text-norte-yellow">
-              <SplitWords text="Norte" onMount delay={1} />
+              <SplitWords text={t('hero.line3')} onMount delay={1} />
             </span>
           </h1>
 
@@ -98,7 +97,7 @@ export default function Home() {
               to="/excursiones"
               className="rounded-full bg-norte-yellow px-8 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
             >
-              Ver excursiones
+              {t('hero.cta1')}
             </Link>
             <a
               href="https://wa.me/5493874039502"
@@ -107,10 +106,10 @@ export default function Home() {
               className="flex items-center gap-2 rounded-full px-8 py-4 text-sm font-extrabold text-norte-cream ring-2 ring-white/50 backdrop-blur transition hover:bg-white/10"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Consultar
+              {t('hero.cta2')}
             </a>
             <div className="ml-auto hidden items-center gap-3 text-[11px] font-bold uppercase tracking-[0.25em] text-norte-cream/70 md:flex">
-              Scrolleá
+              {t('hero.scroll')}
               <span className="relative block h-12 w-px overflow-hidden bg-white/20">
                 <motion.span
                   className="absolute inset-x-0 top-0 h-5 bg-norte-yellow"
@@ -134,9 +133,9 @@ export default function Home() {
 
       {/* MANIFIESTO */}
       <section className="mx-auto max-w-6xl px-5 py-28 sm:px-8 sm:py-40">
-        <p className="mb-8 text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">Quiénes somos</p>
+        <p className="mb-8 text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('home.eyebrow')}</p>
         <ScrollWords
-          text={STATEMENT}
+          text={t('home.statement')}
           className="text-[clamp(1.7rem,4.4vw,3.6rem)] font-extrabold leading-[1.12] tracking-tight text-norte-green"
         />
         <Reveal className="mt-12">
@@ -144,7 +143,7 @@ export default function Home() {
             to="/nosotros"
             className="inline-flex items-center gap-3 text-sm font-extrabold text-norte-green underline decoration-norte-yellow decoration-[3px] underline-offset-8 hover:text-norte-yellow-dark"
           >
-            Conocé más sobre nosotros →
+            {t('home.more')}
           </Link>
         </Reveal>
       </section>
@@ -155,19 +154,19 @@ export default function Home() {
       {/* CÓMO RESERVAR */}
       <section className="relative overflow-hidden bg-norte-green py-28 sm:py-36">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">Cómo reservar</p>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">{t('steps.eyebrow')}</p>
           <h2 className="display mt-3 max-w-3xl text-[clamp(2.2rem,6vw,5rem)] text-norte-cream">
-            <SplitWords text="Cuatro pasos hasta el norte" />
+            <SplitWords text={t('steps.title')} />
           </h2>
           <div className="mt-16 grid gap-px overflow-hidden rounded-[28px] bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <Reveal key={s.title} delay={i * 0.1} y={30}>
+            {STEP_KEYS.map(([tk, dk], i) => (
+              <Reveal key={tk} delay={i * 0.1} y={30}>
                 <div className="group h-full bg-norte-green p-8 transition hover:bg-norte-green-light">
                   <span className="display text-outline block text-7xl transition group-hover:!text-norte-yellow/25">
                     0{i + 1}
                   </span>
-                  <h3 className="mt-8 text-xl font-extrabold text-norte-cream">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-norte-cream/65">{s.text}</p>
+                  <h3 className="mt-8 text-xl font-extrabold text-norte-cream">{t(tk)}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-norte-cream/65">{t(dk)}</p>
                 </div>
               </Reveal>
             ))}
@@ -177,22 +176,24 @@ export default function Home() {
 
       {/* DESTINOS */}
       <section className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">Nuestros destinos</p>
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('home.dest_eyebrow')}</p>
         <h2 className="display mt-3 text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
-          <SplitWords text="Tu próximo destino" />
+          <SplitWords text={t('home.dest_title')} />
         </h2>
         <div className="mt-14 flex flex-col gap-3 md:h-[68vh] md:flex-row">
           {destinations.map((d) => (
             <Link
               key={d.name}
               to={d.to}
-              data-cursor="Explorar"
+              data-cursor={t('cur.explore')}
               className="group relative h-64 overflow-hidden rounded-[28px] transition-[flex] duration-700 ease-[cubic-bezier(.22,1,.36,1)] md:h-auto md:flex-1 md:hover:flex-[2.6]"
             >
               <img src={d.img} alt={d.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-7">
-                <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-norte-yellow">{d.sub}</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-norte-yellow">
+                  {'subKey' in d ? t(d.subKey) : d.sub}
+                </p>
                 <p className="display mt-1 text-4xl text-white md:text-5xl">{d.name}</p>
               </div>
             </Link>
@@ -206,17 +207,17 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-24 sm:px-8 md:grid-cols-2">
           <div className="relative z-10">
             <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">
-              <SunMark className="h-4 w-4" /> 5 estrellas en Google
+              <SunMark className="h-4 w-4" /> {t('home.cta_badge')}
             </p>
             <h2 className="display mt-5 text-[clamp(2.6rem,7vw,6rem)] text-norte-cream">
-              <SplitWords text="Tu aventura" />
+              <SplitWords text={t('home.cta_t1')} />
               <br />
               <span className="text-norte-yellow">
-                <SplitWords text="empieza acá." delay={0.2} />
+                <SplitWords text={t('home.cta_t2')} delay={0.2} />
               </span>
             </h2>
             <p className="mt-6 max-w-md text-norte-cream/70">
-              Guías locales, grupos reducidos y turismo sustentable. Escribinos y armamos la excursión perfecta para vos.
+              {t('home.cta_text')}
             </p>
             <a
               href="https://wa.me/5493874039502?text=Hola%20Norte%20Aventura!%20Quiero%20consultar%20por%20una%20excursi%C3%B3n."
@@ -225,7 +226,7 @@ export default function Home() {
               className="mt-9 inline-flex items-center gap-3 rounded-full bg-norte-yellow px-9 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Reservá tu aventura
+              {t('home.cta_btn')}
             </a>
           </div>
           <div className="relative h-[380px] md:h-[520px]">
