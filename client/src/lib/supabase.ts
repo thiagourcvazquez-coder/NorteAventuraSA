@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Excursion, CategorySlug } from '../types';
 import { FALLBACK_EXCURSIONS } from '../data/excursions';
+import { GALLERIES } from '../data/galleries';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -25,6 +26,7 @@ interface ExcursionRow {
   display_order: number;
   categories: { slug: string } | { slug: string }[] | null;
   excursion_faqs: { question: string; answer: string; sort_order: number }[];
+  excursion_images: { url: string; sort_order: number }[];
 }
 
 function rowToExcursion(r: ExcursionRow): Excursion {
@@ -44,6 +46,11 @@ function rowToExcursion(r: ExcursionRow): Excursion {
     included: r.included ?? undefined,
     bookingLead: r.booking_lead ?? undefined,
     imageUrl: r.image_url ?? undefined,
+    images:
+      (r.excursion_images?.length
+        ? r.excursion_images.sort((a, b) => a.sort_order - b.sort_order).map((i) => i.url)
+        : GALLERIES[r.slug]) ??
+      (r.image_url ? [r.image_url] : []),
     faqs: r.excursion_faqs
       ?.sort((a, b) => a.sort_order - b.sort_order)
       .map(({ question, answer }) => ({ question, answer })),
@@ -54,16 +61,19 @@ function rowToExcursion(r: ExcursionRow): Excursion {
  * Trae las excursiones desde Supabase.
  * Si no hay credenciales o falla la query → datos de respaldo locales.
  */
+const withGallery = (list: Excursion[]): Excursion[] =>
+  list.map((e) => (e.images?.length ? e : { ...e, images: GALLERIES[e.slug] ?? (e.imageUrl ? [e.imageUrl] : []) }));
+
 export async function getExcursions(): Promise<Excursion[]> {
-  if (!supabase) return FALLBACK_EXCURSIONS;
+  if (!supabase) return withGallery(FALLBACK_EXCURSIONS);
   const { data, error } = await supabase
     .from('excursions')
-    .select('*, categories(slug), excursion_faqs(question, answer, sort_order)')
+    .select('*, categories(slug), excursion_faqs(question, answer, sort_order), excursion_images(url, sort_order)')
     .eq('is_active', true)
     .order('display_order');
   if (error || !data?.length) {
     console.warn('[supabase] fallback a datos locales:', error?.message);
-    return FALLBACK_EXCURSIONS;
+    return withGallery(FALLBACK_EXCURSIONS);
   }
   return (data as ExcursionRow[]).map(rowToExcursion);
 }

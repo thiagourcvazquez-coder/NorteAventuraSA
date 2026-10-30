@@ -26,6 +26,7 @@ export interface Excursion {
   included?: string;
   bookingLead?: string;
   imageUrl?: string;
+  images?: string[];
   faqs?: Faq[];
 }
 
