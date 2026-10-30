@@ -6,7 +6,11 @@ import { buildWhatsAppUrl, type ReservationPayload } from './whatsapp.js';
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') ?? true }));
+const allowedOrigins = process.env.CORS_ORIGIN
+  ?.split(',')
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+app.use(cors({ origin: allowedOrigins?.length ? allowedOrigins : true }));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
