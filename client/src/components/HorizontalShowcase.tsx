@@ -29,6 +29,50 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
     };
   }, []);
 
+  // Swipe horizontal (touch) y trackpad horizontal: se traduce a scroll
+  // vertical, que es lo que mueve la galería mientras la sección está pinned.
+  useEffect(() => {
+    const sec = section.current;
+    if (!sec) return;
+    let startX = 0;
+    let startY = 0;
+    let horizontal = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      horizontal = false;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (!horizontal && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) horizontal = true;
+      if (horizontal) {
+        e.preventDefault();
+        window.scrollBy(0, -dx * 1.5);
+        startX = t.clientX;
+        startY = t.clientY;
+      }
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+        window.scrollBy(0, e.deltaX * 1.5);
+      }
+    };
+
+    sec.addEventListener('touchstart', onTouchStart, { passive: true });
+    sec.addEventListener('touchmove', onTouchMove, { passive: false });
+    sec.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      sec.removeEventListener('touchstart', onTouchStart);
+      sec.removeEventListener('touchmove', onTouchMove);
+      sec.removeEventListener('wheel', onWheel);
+    };
+  }, []);
+
   return (
     <section ref={section} style={{ height: `calc(100vh + ${dist}px)` }} className="relative bg-norte-cream">
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
