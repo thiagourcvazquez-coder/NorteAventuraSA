@@ -9,103 +9,37 @@ import ExcursionCard from '../components/ExcursionCard';
 import { ChartIcon, CheckIcon, ClockIcon, MapPinIcon } from '../components/Icons';
 
 function Gallery({ images, name }: { images: string[]; name: string }) {
-  const track = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(0);
-  const paused = useRef(false);
-  const resumeTimer = useRef<number>(0);
-
-  const updateIdx = () => {
-    const el = track.current;
-    const card = el?.querySelector<HTMLElement>('[data-card]');
-    if (!el || !card) return;
-    const step = card.offsetWidth + 16;
-    setIdx(Math.min(images.length - 1, Math.round(el.scrollLeft / step)));
-  };
-  const go = (dir: 1 | -1) => {
-    pause();
-    const el = track.current;
-    const card = el?.querySelector<HTMLElement>('[data-card]');
-    if (!el || !card) return;
-    el.scrollBy({ left: dir * (card.offsetWidth + 16), behavior: 'smooth' });
-    resume();
-  };
-
-  const pause = () => {
-    paused.current = true;
-    window.clearTimeout(resumeTimer.current);
-  };
-  const resume = () => {
-    window.clearTimeout(resumeTimer.current);
-    resumeTimer.current = window.setTimeout(() => {
-      paused.current = false;
-    }, 4000);
-  };
-
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const id = window.setInterval(() => {
-      const el = track.current;
-      const card = el?.querySelector<HTMLElement>('[data-card]');
-      if (!el || !card || paused.current) return;
-      const step = card.offsetWidth + 16;
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: step, behavior: 'smooth' });
-      }
-    }, 3500);
-    return () => window.clearInterval(id);
-  }, [images.length]);
+  const doubled = [...images, ...images];
 
   return (
-    <section className="mx-auto max-w-7xl px-5 pt-12 sm:px-8">
-      <div className="mb-5 flex items-end justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">Galería</p>
-          <h2 className="display mt-1 text-3xl text-norte-green sm:text-4xl">La experiencia en fotos</h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold tabular-nums text-norte-gray">
-            {idx + 1} / {images.length}
-          </span>
-          <div className="hidden gap-2 sm:flex">
-            <button
-              onClick={() => go(-1)}
-              aria-label="Foto anterior"
-              className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-norte-green/20 transition hover:bg-norte-green hover:text-white"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => go(1)}
-              aria-label="Foto siguiente"
-              className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-norte-green/20 transition hover:bg-norte-green hover:text-white"
-            >
-              →
-            </button>
-          </div>
-        </div>
+    <section className="pt-12">
+      <div className="mx-auto mb-5 max-w-7xl px-5 sm:px-8">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">Galería</p>
+        <h2 className="display mt-1 text-3xl text-norte-green sm:text-4xl">La experiencia en fotos</h2>
       </div>
       <div
-        ref={track}
-        onScroll={updateIdx}
-        onPointerEnter={pause}
-        onPointerLeave={resume}
-        onTouchStart={pause}
-        onTouchEnd={resume}
-        onWheel={resume}
-        className="scrollbar-none -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8"
+        className="overflow-hidden pb-2"
+        style={{
+          maskImage:
+            'linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)',
+          WebkitMaskImage:
+            'linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)',
+        }}
       >
-        {images.map((src, i) => (
-          <img
-            key={src + i}
-            data-card
-            src={src}
-            alt={`${name} — foto ${i + 1}`}
-            loading={i > 1 ? 'lazy' : undefined}
-            className="h-[300px] w-[78vw] shrink-0 snap-center rounded-[28px] object-cover sm:h-[400px] sm:w-[520px]"
-          />
-        ))}
+        <div
+          className="animate-marquee flex w-max gap-4 hover:[animation-play-state:paused] motion-reduce:animate-none"
+          style={{ animationDuration: `${images.length * 5}s` }}
+        >
+          {doubled.map((src, i) => (
+            <img
+              key={src + i}
+              src={src}
+              alt={`${name} — foto ${(i % images.length) + 1}`}
+              loading={i >= images.length ? 'lazy' : undefined}
+              className="h-[260px] w-[72vw] shrink-0 rounded-[28px] object-cover sm:h-[340px] sm:w-[440px]"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
