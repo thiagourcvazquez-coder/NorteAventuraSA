@@ -187,7 +187,7 @@ export default function Home() {
               key={d.name}
               to={d.to}
               data-cursor="Explorar"
-              className="group relative h-64 flex-1 overflow-hidden rounded-[28px] transition-[flex] duration-700 ease-[cubic-bezier(.22,1,.36,1)] md:h-auto md:hover:flex-[2.6]"
+              className="group relative h-64 overflow-hidden rounded-[28px] transition-[flex] duration-700 ease-[cubic-bezier(.22,1,.36,1)] md:h-auto md:flex-1 md:hover:flex-[2.6]"
             >
               <img src={d.img} alt={d.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/20 to-transparent" />
