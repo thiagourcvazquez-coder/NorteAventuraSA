@@ -59,6 +59,29 @@ guarda el lead en `reservations` (service role) y devuelve un `wa.me` con el
 mensaje pre-armado → el front abre WhatsApp al **+54 9 387 403 9502**.
 Si la API o Supabase no responden, el front genera el `wa.me` localmente.
 
+## Deploy en Vercel
+
+Son **2 proyectos** desde el mismo repo:
+
+### 1. Client (frontend)
+- Root Directory: `client` · Framework: Vite (detectado solo)
+- Env vars:
+  - `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` → catálogo desde Supabase
+  - `VITE_API_URL` → URL del proyecto server (paso 2), sin barra final. Opcional:
+    sin ella las reservas igual abren WhatsApp (no se persisten en DB).
+- `vercel.json` ya incluye el rewrite SPA para react-router.
+
+### 2. Server (API Express → serverless)
+- Root Directory: `server` · Framework: Express/Otro
+- Entry: `api/index.ts` exporta la app; `vercel.json` rutea todo a `/api/*`.
+- Env vars:
+  - `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` → persiste `reservations`
+  - `CORS_ORIGIN` → URL del client (ej. `https://norte-aventura.vercel.app`)
+  - `BUSINESS_WHATSAPP` → `5493874039502`
+
+Orden: deployar **server** primero, copiar su URL a `VITE_API_URL` del client y
+redeployar el client (o agregar la env y tocar "Redeploy").
+
 ## Propuesta técnica (PDF)
 
 ```bash

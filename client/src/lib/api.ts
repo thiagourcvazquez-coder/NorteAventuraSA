@@ -1,6 +1,7 @@
 import type { ReservationRequest, ReservationResponse } from '../types';
 
 const BUSINESS_WHATSAPP = '5493874039502';
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 /** Fallback local si la API no responde: arma el wa.me igual que el server. */
 export function localWhatsAppUrl(r: ReservationRequest): string {
@@ -33,7 +34,7 @@ export async function createReservation(
   payload: ReservationRequest,
 ): Promise<ReservationResponse> {
   try {
-    const res = await fetch('/api/reservations', {
+    const res = await fetch(`${API_URL}/api/reservations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
