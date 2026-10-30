@@ -11,6 +11,8 @@ import { ChartIcon, CheckIcon, ClockIcon, MapPinIcon } from '../components/Icons
 function Gallery({ images, name }: { images: string[]; name: string }) {
   const track = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
+  const paused = useRef(false);
+  const resumeTimer = useRef<number>(0);
 
   const updateIdx = () => {
     const el = track.current;
@@ -20,11 +22,40 @@ function Gallery({ images, name }: { images: string[]; name: string }) {
     setIdx(Math.min(images.length - 1, Math.round(el.scrollLeft / step)));
   };
   const go = (dir: 1 | -1) => {
+    pause();
     const el = track.current;
     const card = el?.querySelector<HTMLElement>('[data-card]');
     if (!el || !card) return;
     el.scrollBy({ left: dir * (card.offsetWidth + 16), behavior: 'smooth' });
+    resume();
   };
+
+  const pause = () => {
+    paused.current = true;
+    window.clearTimeout(resumeTimer.current);
+  };
+  const resume = () => {
+    window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => {
+      paused.current = false;
+    }, 4000);
+  };
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = window.setInterval(() => {
+      const el = track.current;
+      const card = el?.querySelector<HTMLElement>('[data-card]');
+      if (!el || !card || paused.current) return;
+      const step = card.offsetWidth + 16;
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }, 3500);
+    return () => window.clearInterval(id);
+  }, [images.length]);
 
   return (
     <section className="mx-auto max-w-7xl px-5 pt-12 sm:px-8">
@@ -58,6 +89,11 @@ function Gallery({ images, name }: { images: string[]; name: string }) {
       <div
         ref={track}
         onScroll={updateIdx}
+        onPointerEnter={pause}
+        onPointerLeave={resume}
+        onTouchStart={pause}
+        onTouchEnd={resume}
+        onWheel={resume}
         className="scrollbar-none -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8"
       >
         {images.map((src, i) => (
