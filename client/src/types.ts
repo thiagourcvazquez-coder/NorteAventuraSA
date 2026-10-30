@@ -28,6 +28,8 @@ export interface Excursion {
   imageUrl?: string;
   images?: string[];
   faqs?: Faq[];
+  /** Texto de búsqueda para Google Maps (link + embed). */
+  mapsQuery?: string;
 }
 
 export interface ReservationRequest {

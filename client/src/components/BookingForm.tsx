@@ -171,7 +171,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
       </button>
       <p className="mt-3 text-center text-xs text-norte-gray">
         {t('bk.foot')}
-        {excursion.bookingLead ? ` ${excursion.bookingLead}` : ''}
+        {excursion.bookingLead ? ` ${tok(excursion.bookingLead)}` : ''}
       </p>
     </form>
   );

@@ -5,6 +5,7 @@ import type { Excursion } from '../types';
 import { SplitWords } from '../components/Motion';
 import { getExcursion, getExcursions } from '../lib/supabase';
 import { useLang } from '../i18n';
+import { localizeExcursion } from '../data/i18n-en';
 import BookingForm from '../components/BookingForm';
 import ExcursionCard from '../components/ExcursionCard';
 import { ChartIcon, CheckIcon, ClockIcon, MapPinIcon } from '../components/Icons';
@@ -80,7 +81,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
 }
 
 export default function ExcursionDetail() {
-  const { t, tok } = useLang();
+  const { t, tok, lang } = useLang();
   const { slug } = useParams<{ slug: string }>();
   const [data, setData] = useState<{
     slug: string;
@@ -123,6 +124,11 @@ export default function ExcursionDetail() {
     );
   }
 
+  const ex = localizeExcursion(excursion, lang);
+  const mapsQ = excursion.mapsQuery ?? `${excursion.location}, Argentina`;
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQ)}`;
+  const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(mapsQ)}&output=embed`;
+
   return (
     <>
       {/* Hero de la excursión */}
@@ -151,7 +157,7 @@ export default function ExcursionDetail() {
 
           <div className="mt-10">
             <h2 className="text-xl font-extrabold text-norte-green">{t('det.enjoy')}</h2>
-            <p className="mt-4 leading-relaxed text-norte-gray">{excursion.description}</p>
+            <p className="mt-4 leading-relaxed text-norte-gray">{ex.description}</p>
           </div>
 
           {excursion.included && (
@@ -159,14 +165,14 @@ export default function ExcursionDetail() {
               <h3 className="text-sm font-bold uppercase tracking-wider text-norte-green">{t('det.included')}</h3>
               <p className="mt-2 flex items-start gap-2 text-sm text-norte-gray">
                 <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-norte-whatsapp" />
-                {excursion.included}
+                {tok(excursion.included)}
               </p>
             </div>
           )}
 
           {excursion.bookingLead && (
             <p className="mt-6 text-sm text-norte-gray">
-              <strong className="text-norte-green">{t('det.when')}</strong> {excursion.bookingLead}{' '}
+              <strong className="text-norte-green">{t('det.when')}</strong> {tok(excursion.bookingLead)}{' '}
               {t('det.when_cta')}
             </p>
           )}
@@ -177,11 +183,11 @@ export default function ExcursionDetail() {
             <strong className="text-norte-green">{t('det.sustain')}</strong> {t('det.sustain_text')}
           </p>
 
-          {!!excursion.faqs?.length && (
+          {!!ex.faqs?.length && (
             <div className="mt-10">
               <h2 className="text-xl font-extrabold text-norte-green">{t('det.faqs')}</h2>
               <div className="mt-4 space-y-3">
-                {excursion.faqs.map((f, i) => (
+                {ex.faqs.map((f, i) => (
                   <div key={i} className="overflow-hidden rounded-xl bg-white ring-1 ring-norte-green/10">
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
@@ -200,6 +206,29 @@ export default function ExcursionDetail() {
               </div>
             </div>
           )}
+
+          {/* Mapa */}
+          <div className="mt-10">
+            <h2 className="text-xl font-extrabold text-norte-green">{t('det.map')}</h2>
+            <div className="mt-4 overflow-hidden rounded-2xl ring-1 ring-norte-green/10">
+              <iframe
+                src={mapsEmbed}
+                title={`Mapa — ${excursion.location}`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-72 w-full border-0"
+                allowFullScreen
+              />
+            </div>
+            <a
+              href={mapsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-norte-yellow-dark underline underline-offset-4 hover:text-norte-green"
+            >
+              <MapPinIcon className="h-4 w-4" /> {t('det.map_open')}
+            </a>
+          </div>
         </div>
 
         {/* Columna reserva */}

@@ -1,6 +1,28 @@
 import type { Excursion } from '../types';
 
 /**
+ * Query de Google Maps por excursión (fallback cuando la DB no tiene maps_query).
+ * Espejo de los UPDATE de supabase/migration-maps.sql.
+ */
+export const MAPS_QUERY: Record<string, string> = {
+  'excursion-a-cachi-desde-salta': 'Cachi, Salta, Argentina',
+  'salinas-grandes-purmamarca-desde-salta': 'Salinas Grandes, Jujuy, Argentina',
+  'cascada-escondida-san-lorenzo-salta': 'Cascada Escondida, San Lorenzo, Salta, Argentina',
+  'humahuaca-hornocal': 'Cerro Hornocal, Humahuaca, Jujuy, Argentina',
+  'tour-a-cafayate-desde-salta': 'Cafayate, Salta, Argentina',
+  'city-tour-salta': 'Plaza 9 de Julio, Salta, Argentina',
+  'trekking-andino-llamas-patapampa-tilcara': 'Patapampa, Tilcara, Jujuy, Argentina',
+  'caravana-de-llamas-centro-de-interpetacion-tilcara': 'Tilcara, Jujuy, Argentina',
+  'excursion-humahuaca-hornocal-quebrada-de-las-senoritas': 'Uquía, Jujuy, Argentina',
+  'salinas-grandes-purmamarca-desde-tilcara': 'Salinas Grandes, Jujuy, Argentina',
+  'excursion-iruya-desde-tilcara': 'Iruya, Salta, Argentina',
+  'termas-de-jordan-un-tesoro-natural': 'Termas del Jordán, San Francisco, Jujuy, Argentina',
+  'cafayate-trekking-y-degustacion': 'Cafayate, Salta, Argentina',
+  'tren-a-las-nubes-san-antonio-de-los-cobres-salta': 'San Antonio de los Cobres, Salta, Argentina',
+  'tren-solar-quebrada-jujuy': 'Volcán, Jujuy, Argentina',
+};
+
+/**
  * Datos de respaldo: réplica del seed de Supabase.
  * Se usan cuando no hay credenciales de Supabase configuradas
  * (desarrollo local / demo sin backend).

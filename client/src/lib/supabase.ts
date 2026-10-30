@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Excursion, CategorySlug } from '../types';
-import { FALLBACK_EXCURSIONS } from '../data/excursions';
+import { FALLBACK_EXCURSIONS, MAPS_QUERY } from '../data/excursions';
 import { GALLERIES } from '../data/galleries';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -23,6 +23,7 @@ interface ExcursionRow {
   included: string | null;
   booking_lead: string | null;
   image_url: string | null;
+  maps_query: string | null;
   display_order: number;
   categories: { slug: string } | { slug: string }[] | null;
   excursion_faqs: { question: string; answer: string; sort_order: number }[];
@@ -54,6 +55,7 @@ function rowToExcursion(r: ExcursionRow): Excursion {
     faqs: r.excursion_faqs
       ?.sort((a, b) => a.sort_order - b.sort_order)
       .map(({ question, answer }) => ({ question, answer })),
+    mapsQuery: r.maps_query ?? MAPS_QUERY[r.slug],
   };
 }
 
@@ -62,7 +64,11 @@ function rowToExcursion(r: ExcursionRow): Excursion {
  * Si no hay credenciales o falla la query → datos de respaldo locales.
  */
 const withGallery = (list: Excursion[]): Excursion[] =>
-  list.map((e) => (e.images?.length ? e : { ...e, images: GALLERIES[e.slug] ?? (e.imageUrl ? [e.imageUrl] : []) }));
+  list.map((e) => ({
+    ...e,
+    images: e.images?.length ? e.images : (GALLERIES[e.slug] ?? (e.imageUrl ? [e.imageUrl] : [])),
+    mapsQuery: e.mapsQuery ?? MAPS_QUERY[e.slug],
+  }));
 
 export async function getExcursions(): Promise<Excursion[]> {
   if (!supabase) return withGallery(FALLBACK_EXCURSIONS);

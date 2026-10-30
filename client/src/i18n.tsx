@@ -77,6 +77,8 @@ const STR = {
     'det.sustain_text':
       'Todos los servicios cumplen con el cuidado del medioambiente y el respeto a las comunidades.',
     'det.faqs': 'Preguntas frecuentes',
+    'det.map': 'Dónde queda',
+    'det.map_open': 'Abrir en Google Maps',
     'det.related': 'Otras aventuras',
     'det.notfound': 'Excursión no encontrada',
     'det.back': '← Volver a todas las aventuras',
@@ -227,6 +229,8 @@ const STR = {
     'det.sustain_text':
       'All our services follow environmental care and respect for local communities.',
     'det.faqs': 'Frequently asked questions',
+    'det.map': 'Where it is',
+    'det.map_open': 'Open in Google Maps',
     'det.related': 'More adventures',
     'det.notfound': 'Excursion not found',
     'det.back': '← Back to all adventures',
@@ -316,6 +320,25 @@ const TOKENS: Record<string, { es: string; en: string }> = {
   'Consultar horarios': { es: 'Consultar horarios', en: 'Ask for schedule' },
   'Precio x2 personas': { es: 'Precio x2 personas', en: 'Price for 2 people' },
   'Consultar precio': { es: 'Consultar precio', en: 'Ask for price' },
+  '7:00 a 19:00hs': { es: '7:00 a 19:00hs', en: '7:00am – 7:00pm' },
+  '7:00 a 20:00hs': { es: '7:00 a 20:00hs', en: '7:00am – 8:00pm' },
+  'Traslado, seguro, guiado.': { es: 'Traslado, seguro, guiado.', en: 'Transport, insurance, guide.' },
+  'Guía, seguro, snack.': { es: 'Guía, seguro, snack.', en: 'Guide, insurance, snack.' },
+  'Guía local, llamas, seguro.': { es: 'Guía local, llamas, seguro.', en: 'Local guide, llamas, insurance.' },
+  'Guía, seguro.': { es: 'Guía, seguro.', en: 'Guide, insurance.' },
+  'Reservá hasta 48hs antes sujeto a disponibilidad.': {
+    es: 'Reservá hasta 48hs antes sujeto a disponibilidad.',
+    en: 'Book up to 48h in advance, subject to availability.',
+  },
+  'Reservá con anticipación, cupos limitados.': {
+    es: 'Reservá con anticipación, cupos limitados.',
+    en: 'Book in advance — limited spots.',
+  },
+  'Consultar disponibilidad.': { es: 'Consultar disponibilidad.', en: 'Ask about availability.' },
+  'Consultar disponibilidad y tarifas del tren.': {
+    es: 'Consultar disponibilidad y tarifas del tren.',
+    en: 'Ask about availability and train fares.',
+  },
 };
 
 const CATEGORIES: Record<string, { es: string; en: string }> = {
