@@ -1,0 +1,17 @@
+{
+  "name": "norte-aventura",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio web Norte Aventura — React + Node + TypeScript + Supabase",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w server & npm run dev -w client",
+    "dev:client": "npm run dev -w client",
+    "dev:server": "npm run dev -w server",
+    "build": "npm run build -w client && npm run build -w server",
+    "propuesta": "node docs/propuesta/generate.mjs"
+  }
+}
