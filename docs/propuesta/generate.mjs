@@ -133,157 +133,77 @@ const doc = {
     },
 
     // ------------------------------------------------------ 1. OBJETIVO
-    h1('1. Objetivo del proyecto'),
+    h1('1. Objetivo'),
     p(
-      'Norte Aventura es una agencia de turismo de Salta que opera excursiones y trekking por Salta y Jujuy ' +
-        '(Purmamarca, Hornocal, Salinas Grandes, Cachi, Cafayate, Tilcara, Iruya, entre otros destinos). ' +
-        'Actualmente su sitio web funciona sobre WordPress + WooCommerce, lo que limita la velocidad, ' +
-        'la identidad visual y la evolución del negocio.',
-    ),
-    p(
-      'El objetivo de esta propuesta es desarrollar un sitio web a medida, moderno y rápido, que respete la ' +
-        'identidad de la marca (verde #093628, amarillo #FFC83B, tipografía Montserrat), simplifique el proceso ' +
-        'de reserva para el cliente final y deje una base técnica sólida para crecer hacia un backoffice ' +
-        'de autogestión y cobros online.',
+      'Norte Aventura hoy opera su sitio sobre WordPress + WooCommerce, lo que limita la velocidad, ' +
+        'la identidad visual y la evolución del negocio. Esta propuesta plantea un sitio a medida, moderno ' +
+        'y rápido, fiel a la marca (verde, amarillo, Montserrat), con reservas simples por WhatsApp y una ' +
+        'base técnica lista para crecer hacia backoffice y cobros online.',
     ),
     table(
       ['Situación actual', 'Propuesta'],
       [
-        ['WordPress + WooCommerce + plugins de terceros', 'Código a medida: rápido, seguro y sin dependencias frágiles'],
-        ['Checkout complejo para vender excursiones', 'Reserva en 2 pasos que deriva a WhatsApp con el mensaje listo'],
-        ['Edición de contenidos técnica y riesgosa', 'Contenidos en base de datos, listos para un backoffice (Fase 2)'],
-        ['Sin registro estructurado de consultas', 'Cada reserva queda registrada como lead en la base de datos'],
+        ['WordPress + plugins de terceros', 'Código a medida: rápido, seguro, sin dependencias frágiles'],
+        ['Checkout complejo', 'Reserva en 2 pasos que deriva a WhatsApp con el mensaje listo'],
+        ['Sin registro de consultas', 'Cada reserva queda guardada como lead en la base de datos'],
       ],
       ['*', '*'],
     ),
 
     // ------------------------------------------------------ 2. ALCANCE
-    h1('2. Alcance funcional — Fase 1 (entregada)'),
-    h2('Público'),
+    h1('2. Qué incluye el sitio (ya desarrollado)'),
     { ul: [
-      'Home con hero, excursiones destacadas por origen (Desde Salta / Desde Jujuy), pasos de reserva, destinos y CTA a WhatsApp.',
-      'Catálogo completo de excursiones con filtros por origen y buscador.',
-      'Ficha de excursión: imagen, galería de fotos, ubicación, duración, horario, dificultad, descripción, servicios incluidos, FAQs y relacionadas.',
-      'Formulario de reserva (fecha, personas, datos de contacto) que registra el lead y abre WhatsApp con el mensaje pre-armado al +54 9 387 403 9502.',
-      'Páginas Nosotros y Contacto. Diseño 100% responsive (mobile-first).',
+      'Home con hero, destacadas, pasos de reserva y CTA a WhatsApp — diseño responsive mobile-first.',
+      'Catálogo de excursiones con filtros por origen (Desde Salta / Desde Jujuy) y buscador.',
+      'Ficha por excursión: galería de fotos, ubicación con mapa, duración, dificultad, incluidos, FAQs y mapa de Google.',
+      'Reserva con fecha, personas y contacto: registra el lead en la base y abre WhatsApp al +54 9 387 403 9502.',
+      'Sitio bilingüe Español/Inglés. Contenido administrable en base de datos.',
     ].map(li) },
-    h2('Datos'),
-    { ul: [
-      'Las 15 excursiones actuales del catálogo ya migradas a la base de datos con precios, duración, dificultad e imágenes.',
-      '117 fotos migradas en galerías por excursión, FAQs y contenidos del sitio administrables desde la base.',
-    ].map(li) },
+    p('Datos ya migrados: 15 excursiones con precios y detalles, 117 fotos en galerías, FAQs y contenidos del sitio.', { fontSize: 8.5, italics: true }),
 
     // ------------------------------------------------------ 3. STACK
     h1('3. Stack tecnológico'),
     table(
-      ['Capa', 'Tecnología', 'Por qué'],
+      ['Capa', 'Tecnología'],
       [
-        ['Frontend', 'React 19 + Vite + TypeScript + Tailwind CSS', 'SPA rápida, tipada, con la identidad visual de la marca'],
-        ['Backend / API', 'Node.js + Express + TypeScript', 'API liviana para reservas, futuros pagos e integraciones'],
-        ['Base de datos', 'Supabase (PostgreSQL gestionado)', 'DB real con Auth, Storage y seguridad por filas (RLS) incluidas'],
-        ['Reservas', 'Deep-link wa.me + registro en DB', 'Conversión directa a WhatsApp sin perder el dato del lead'],
-        ['Hosting (sugerido)', 'Vercel/Netlify (front) + Supabase Cloud', 'Deploy continuo, HTTPS y costo inicial mínimo'],
-        ['Pagos (Fase 2)', 'MercadoPago', 'Estándar en Argentina: tarjetas, débito y transferencia'],
+        ['Frontend', 'React 19 + Vite + TypeScript + Tailwind CSS'],
+        ['Backend / API', 'Node.js + Express + TypeScript'],
+        ['Base de datos', 'Supabase (PostgreSQL, con RLS y Auth)'],
+        ['Reservas', 'Deep-link wa.me + registro del lead en DB'],
+        ['Hosting', 'Vercel (front + API) + Supabase Cloud'],
       ],
-      [70, 165, '*'],
+      [110, '*'],
     ),
 
-    // ------------------------------------------------------ 4. ARQUITECTURA
-    h1('4. Arquitectura de la solución'),
-    {
-      text: [
-        'Navegador (React SPA)\n',
-        '      │\n',
-        '      ├─► Supabase (Postgres) — catálogo, imágenes, FAQs  [lectura pública]\n',
-        '      │\n',
-        '      └─► API Node/Express — POST /api/reservations\n',
-        '              │\n',
-        '              ├─► Supabase: guarda el lead (tabla reservations)\n',
-        '              └─► wa.me/5493874039502 — WhatsApp con mensaje pre-armado',
-      ],
-      font: 'Montserrat',
-      fontSize: 8.5,
-      color: GREEN,
-      fillColor: '#F4F1E8',
-      margin: [0, 4, 0, 10],
-      preserveLeadingSpaces: true,
-    },
-    h2('Modelo de datos (Supabase)'),
-    table(
-      ['Tabla', 'Contenido'],
-      [
-        ['categories', 'Orígenes de las excursiones: Desde Salta / Desde Jujuy'],
-        ['excursions', 'Nombre, ubicación, precio, duración, horario, dificultad, descripción, incluido, imagen'],
-        ['excursion_images', 'Galería de fotos por excursión (117 imágenes ya migradas)'],
-        ['excursion_faqs', 'Preguntas frecuentes por excursión'],
-        ['reservations', 'Leads de reserva: excursión, fecha, personas, contacto, total estimado, estado'],
-        ['site_content', 'Textos editables del sitio (hero, nosotros, contacto, redes) — base del backoffice'],
-      ],
-      [130, '*'],
-    ),
-    p(
-      'Seguridad: la lectura del catálogo es pública mediante políticas RLS; la escritura de reservas solo se ' +
-        'realiza desde la API con service role, nunca desde el navegador.',
-    ),
-
-    // ------------------------------------------------------ 5. ROADMAP
-    h1('5. Roadmap por fases'),
-    table(
-      ['Fase', 'Alcance', 'Estado'],
-      [
-        ['Fase 1', 'Sitio a medida + catálogo con galerías + fichas + motor de reservas por WhatsApp + DB Supabase', 'Desarrollada (esta entrega)'],
-        ['Fase 2', 'Pasarela de pagos online (MercadoPago) con confirmación automática de la reserva', 'Opción 2 — presupuestada'],
-        ['Fase 3', 'Backoffice: login y panel para administrar excursiones, precios, imágenes, textos y ver reservas', 'Opción 3 — presupuestada'],
-        ['Fase 4', 'Sistema completo: sitio + backoffice + pagos + gestión de reservas y disponibilidad', 'Opción 4 — presupuestada'],
-      ],
-      [40, '*', 120],
-    ),
-
-    // ------------------------------------------------------ 6. CRONOGRAMA
-    h1('6. Cronograma estimado'),
-    table(
-      ['Etapa', 'Duración estimada'],
-      [
-        ['Relevamiento, diseño y setup (hecho)', '—'],
-        ['Fase 1 — Sitio + reservas WhatsApp', 'Desarrollada (esta entrega)'],
-        ['Fase 2 — Pagos online', '+1 – 2 semanas adicionales'],
-        ['Fase 3 — Backoffice', '+2 – 3 semanas adicionales'],
-      ],
-      ['*', 250],
-    ),
-    p('Los tiempos son estimados y pueden ajustarse según disponibilidad de contenidos (fotos, textos, precios) y tiempos de revisión del cliente.', { fontSize: 8.5, italics: true }),
-
-    // ------------------------------------------------------ 7. INVERSIÓN
-    h1('7. Opciones de inversión'),
+    // ------------------------------------------------------ 4. INVERSIÓN
+    h1('4. Opciones de inversión'),
     table(
       ['Opción', 'Incluye', 'Inversión (ARS)'],
       [
-        ['Opción 1', 'Sitio web a medida + motor de reservas: catálogo dinámico, fichas con galería de fotos, reservas por WhatsApp registradas en base de datos (ya desarrollada)', '$ 400.000'],
+        ['Opción 1', 'Sitio a medida + motor de reservas por WhatsApp (ya desarrollada)', '$ 400.000'],
         [
           { text: 'Opción 2', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Opción 1 + pasarela de pagos online (MercadoPago) para cobrar reservas desde el sitio', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + pagos online con MercadoPago (+1–2 semanas)', bold: true, fillColor: '#FFEFC2' },
           { text: '$ 600.000', bold: true, fillColor: '#FFEFC2' },
         ],
         [
           { text: 'Opción 3', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Opción 1 + backoffice privado para administrar excursiones, precios, imágenes, textos y reservas sin tocar código', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + backoffice privado para administrar excursiones, precios, imágenes y reservas (+2–3 semanas)', bold: true, fillColor: '#FFEFC2' },
           { text: '$ 800.000', bold: true, fillColor: '#FFEFC2' },
         ],
         ['Opción 4', 'Sistema completo: sitio + backoffice + pagos online', '$ 1.000.000'],
       ],
       [70, '*', 90],
     ),
-    p('Filas resaltadas = opciones que mejor se ajustan al interés manifestado por el cliente. Todas comparten la misma Opción 1 ya desarrollada, por lo que luego pueden ampliarse a la Opción 4 abonando la diferencia.', { fontSize: 8.5 }),
+    p('Cualquier opción puede ampliarse luego a la Opción 4 abonando la diferencia.', { fontSize: 8.5 }),
 
-    // ------------------------------------------------------ 8. CONDICIONES
-    h1('8. Condiciones comerciales'),
+    // ------------------------------------------------------ 5. CONDICIONES
+    h1('5. Condiciones'),
     { ul: [
-      'Forma de pago: 50% al inicio del proyecto y 50% contra entrega funcional.',
-      'Validez de la propuesta: 15 días corridos desde su emisión.',
-      'Contenidos (fotos, textos, precios, logos) provistos por el cliente; el catálogo actual ya fue migrado.',
-      'Hosting, dominio y costos de Supabase/MercadoPago a cargo del cliente (se asesora en la configuración; planes gratuitos suficientes para el arranque).',
-      'Incluye 30 días de soporte por errores funcionales posteriores a la entrega.',
-      'Cambios de alcance fuera de lo descripto se presupuestan por separado.',
+      '50% al inicio del proyecto y 50% contra entrega funcional.',
+      'Validez de la propuesta: 15 días corridos.',
+      'Hosting, dominio y costos de Supabase/MercadoPago a cargo del cliente (planes gratuitos alcanzan para arrancar).',
+      'Incluye 30 días de soporte por errores funcionales. Cambios de alcance se presupuestan aparte.',
     ].map(li) },
 
     // ------------------------------------------------------ CIERRE

@@ -79,7 +79,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <LangSwitch className="hidden sm:flex" />
+            <LangSwitch />
             <a
               href="https://wa.me/5493874039502"
               target="_blank"
@@ -159,9 +159,6 @@ export default function Header() {
               transition={{ delay: 0.65, duration: 0.6 }}
               className="relative z-10 px-7 pb-8"
             >
-              <div className="mb-4 flex items-center gap-3">
-                <LangSwitch />
-              </div>
               <a
                 href="https://wa.me/5493874039502"
                 target="_blank"
