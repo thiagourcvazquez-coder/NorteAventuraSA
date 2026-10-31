@@ -180,18 +180,18 @@ const doc = {
     table(
       ['Opción', 'Incluye', 'Inversión (ARS)'],
       [
-        ['Opción 1', 'Sitio a medida + motor de reservas por WhatsApp (ya desarrollada)', '$ 400.000'],
+        ['Opción 1', 'Sitio a medida + motor de reservas por WhatsApp (ya desarrollada)', '$ 300.000'],
         [
           { text: 'Opción 2', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Opción 1 + pagos online con MercadoPago (+1–2 semanas)', bold: true, fillColor: '#FFEFC2' },
-          { text: '$ 600.000', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + backoffice privado para administrar excursiones, precios, imágenes y reservas (+2–3 semanas)', bold: true, fillColor: '#FFEFC2' },
+          { text: '$ 400.000', bold: true, fillColor: '#FFEFC2' },
         ],
         [
           { text: 'Opción 3', bold: true, fillColor: '#FFEFC2' },
-          { text: 'Opción 1 + backoffice privado para administrar excursiones, precios, imágenes y reservas (+2–3 semanas)', bold: true, fillColor: '#FFEFC2' },
-          { text: '$ 800.000', bold: true, fillColor: '#FFEFC2' },
+          { text: 'Opción 1 + pagos online con MercadoPago (+1–2 semanas)', bold: true, fillColor: '#FFEFC2' },
+          { text: '$ 600.000', bold: true, fillColor: '#FFEFC2' },
         ],
-        ['Opción 4', 'Sistema completo: sitio + backoffice + pagos online', '$ 1.000.000'],
+        ['Opción 4', 'Sistema completo: sitio + backoffice + pagos online', '$ 900.000'],
       ],
       [70, '*', 90],
     ),
