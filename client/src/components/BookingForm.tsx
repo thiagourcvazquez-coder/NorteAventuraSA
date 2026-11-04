@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Excursion } from '../types';
 import { formatPrice } from '../lib/format';
-import { createReservation } from '../lib/api';
+import { createReservation, createPaymentPreference } from '../lib/api';
 import { useLang } from '../i18n';
 import { WhatsAppIcon } from './Icons';
 
@@ -19,9 +19,17 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
   const [email, setEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [sending, setSending] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [error, setError] = useState('');
+  const [result, setResult] = useState<{ id: string | null; whatsappUrl: string } | null>(null);
 
-  const total = excursion.price !== null ? excursion.price * people : null;
+  const isBaseDoble = !!excursion.priceNote?.includes('x2');
+  const total =
+    excursion.price !== null
+      ? isBaseDoble
+        ? excursion.price * Math.ceil(people / 2)
+        : excursion.price * people
+      : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +39,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
       return;
     }
     setSending(true);
-    const { whatsappUrl } = await createReservation({
+    const res = await createReservation({
       excursionSlug: excursion.slug,
       excursionName: excursion.name,
       customerName,
@@ -42,7 +50,54 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
       notes: notes || undefined,
     });
     setSending(false);
-    window.open(whatsappUrl, '_blank', 'noopener');
+    setResult(res);
+  }
+
+  async function handlePay() {
+    if (!result?.id) return;
+    setPaying(true);
+    const initPoint = await createPaymentPreference(result.id);
+    setPaying(false);
+    if (initPoint) window.location.href = initPoint;
+    else setError(t('bk.pay_error'));
+  }
+
+  if (result) {
+    return (
+      <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-norte-green/10">
+        <p className="text-lg font-extrabold text-norte-green">{t('bk.done_t')}</p>
+        <p className="mt-2 text-sm text-norte-gray">{t('bk.done_d')}</p>
+        {total !== null && (
+          <div className="mt-4 flex items-center justify-between rounded-lg bg-norte-cream px-4 py-3">
+            <span className="text-sm font-semibold text-norte-gray">{t('bk.total')}</span>
+            <span className="text-xl font-extrabold text-norte-green">{formatPrice(total, lang)}</span>
+          </div>
+        )}
+        {result.id && total !== null && (
+          <button
+            onClick={handlePay}
+            disabled={paying}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#00b1ea] px-6 py-3.5 text-sm font-bold text-white shadow transition hover:brightness-95 disabled:opacity-60"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1.5 14.5v-9l6 4.5-6 4.5Z" />
+            </svg>
+            {paying ? t('bk.sending') : t('bk.pay_mp')}
+          </button>
+        )}
+        <a
+          href={result.whatsappUrl}
+          target="_blank"
+          rel="noopener"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-norte-whatsapp px-6 py-3.5 text-sm font-bold text-white shadow transition hover:brightness-95"
+        >
+          <WhatsAppIcon className="h-5 w-5" />
+          {t('bk.submit')}
+        </a>
+        <p className="mt-3 text-center text-xs text-norte-gray">{t('bk.pay_note')}</p>
+        {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
+      </div>
+    );
   }
 
   return (
@@ -56,7 +111,9 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
             <p className="text-xs uppercase tracking-wide text-norte-gray">{t('bk.from')}</p>
             <p className="text-3xl font-extrabold text-norte-green">
               {formatPrice(excursion.price, lang)}
-              <span className="ml-1 text-sm font-medium text-norte-gray">{t('bk.per_person')}</span>
+              <span className="ml-1 text-sm font-medium text-norte-gray">
+                {isBaseDoble ? t('bk.per_2people') : t('bk.per_person')}
+              </span>
             </p>
           </>
         ) : (

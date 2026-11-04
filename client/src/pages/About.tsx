@@ -16,6 +16,8 @@ export default function About() {
           <h2 className="text-2xl font-extrabold text-norte-green">{t('ab.h')}</h2>
           <p className="mt-4 leading-relaxed text-norte-gray">{t('ab.p1')}</p>
           <p className="mt-4 leading-relaxed text-norte-gray">{t('ab.p2')}</p>
+          <p className="mt-4 leading-relaxed text-norte-gray">{t('ab.p3')}</p>
+          <p className="mt-4 font-bold leading-relaxed text-norte-green">{t('ab.p4')}</p>
           <ul className="mt-8 space-y-3">
             {VALUE_KEYS.map((k) => (
               <li key={k} className="flex items-start gap-3 text-sm font-semibold text-norte-green">

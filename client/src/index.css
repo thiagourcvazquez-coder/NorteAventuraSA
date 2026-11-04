@@ -2,14 +2,14 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Paleta oficial Norte Aventura (relevada del sitio actual) */
-  --color-norte-green: #093628;
-  --color-norte-green-light: #0d4a36;
-  --color-norte-green-dark: #062419;
-  --color-norte-yellow: #ffc83b;
-  --color-norte-yellow-dark: #f0a500;
-  --color-norte-cream: #fffbf2;
-  --color-norte-gray: #6c6d72;
+  /* Nueva paleta Norte Aventura (aprobada por el cliente — flyer 2026) */
+  --color-norte-green: #0b0d05;
+  --color-norte-green-light: #728316;
+  --color-norte-green-dark: #050603;
+  --color-norte-yellow: #bfdb26;
+  --color-norte-yellow-dark: #fb950e;
+  --color-norte-cream: #f7f8ee;
+  --color-norte-gray: #5d604f;
   --color-norte-whatsapp: #25d366;
 
   --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
@@ -51,13 +51,13 @@ body {
 }
 
 ::selection {
-  background: #ffc83b;
-  color: #093628;
+  background: #bfdb26;
+  color: #0b0d05;
 }
 
 .text-outline {
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--stroke, #ffc83b);
+  -webkit-text-stroke: 1.5px var(--stroke, #bfdb26);
 }
 
 .display {

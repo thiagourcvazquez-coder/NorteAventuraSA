@@ -10,8 +10,8 @@ function Mountain({ radius, height, seed, color }: { radius: number; height: num
     const pos = g.attributes.position;
     const colors = new Float32Array(pos.count * 3);
     const base = new THREE.Color(color);
-    const snow = new THREE.Color('#fffbf2');
-    const sun = new THREE.Color('#ffc83b');
+    const snow = new THREE.Color('#f7f8ee');
+    const sun = new THREE.Color('#bfdb26');
     const c = new THREE.Color();
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
@@ -58,29 +58,29 @@ function Composition({ pointer }: { pointer: React.RefObject<{ x: number; y: num
 
   return (
     <>
-      <ambientLight intensity={0.8} color="#fffbf2" />
-      <directionalLight position={[4, 6, 5]} intensity={1.6} color="#fffbf2" />
-      <directionalLight position={[-5, 3, -4]} intensity={1.4} color="#ffc83b" />
+      <ambientLight intensity={0.8} color="#f7f8ee" />
+      <directionalLight position={[4, 6, 5]} intensity={1.6} color="#f7f8ee" />
+      <directionalLight position={[-5, 3, -4]} intensity={1.4} color="#bfdb26" />
       <mesh ref={sun}>
         <sphereGeometry args={[0.7, 32, 32]} />
-        <meshBasicMaterial color="#ffc83b" />
+        <meshBasicMaterial color="#bfdb26" />
       </mesh>
       <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.6}>
         <group ref={group} position={[0, -0.6, 0]}>
           <mesh position={[0, -2.15, 0.2]}>
             <cylinderGeometry args={[3.7, 2.3, 0.7, 9, 1]} />
-            <meshStandardMaterial color="#0b3d2c" flatShading roughness={1} />
+            <meshStandardMaterial color="#1b2008" flatShading roughness={1} />
           </mesh>
           <mesh position={[0, -1.78, 0.2]}>
             <cylinderGeometry args={[3.5, 3.7, 0.05, 9, 1]} />
-            <meshStandardMaterial color="#ffc83b" flatShading roughness={0.8} />
+            <meshStandardMaterial color="#bfdb26" flatShading roughness={0.8} />
           </mesh>
-          <Mountain radius={2.3} height={3.8} seed={3} color="#0f5a41" />
+          <Mountain radius={2.3} height={3.8} seed={3} color="#8ba31c" />
           <group position={[1.9, -0.55, 0.6]}>
-            <Mountain radius={1.5} height={2.4} seed={8} color="#0d4a36" />
+            <Mountain radius={1.5} height={2.4} seed={8} color="#728316" />
           </group>
           <group position={[-1.8, -0.7, 0.9]}>
-            <Mountain radius={1.2} height={1.9} seed={15} color="#093628" />
+            <Mountain radius={1.2} height={1.9} seed={15} color="#4d580d" />
           </group>
         </group>
       </Float>

@@ -45,3 +45,57 @@ export async function createReservation(
     return { id: null, whatsappUrl: localWhatsAppUrl(payload) };
   }
 }
+
+/**
+ * Crea la preferencia de Mercado Pago para una reserva ya registrada.
+ * Devuelve la URL del Checkout Pro (init_point) o null si falla.
+ */
+export async function createPaymentPreference(reservationId: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/payments/preference`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reservationId }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { initPoint?: string };
+    return data.initPoint ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ------------------------- Admin API -------------------------
+
+const ADMIN_KEY = 'na-admin-token';
+export const getAdminToken = () => sessionStorage.getItem(ADMIN_KEY);
+export const clearAdminToken = () => sessionStorage.removeItem(ADMIN_KEY);
+
+export async function adminLogin(password: string): Promise<boolean> {
+  const res = await fetch(`${API_URL}/api/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+  });
+  if (!res.ok) return false;
+  const { token } = (await res.json()) as { token: string };
+  sessionStorage.setItem(ADMIN_KEY, token);
+  return true;
+}
+
+export async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_URL}/api/admin${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getAdminToken() ?? ''}`,
+      ...init?.headers,
+    },
+  });
+  if (res.status === 401) {
+    clearAdminToken();
+    throw new Error('Sesión expirada — volvé a ingresar');
+  }
+  if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? `API ${res.status}`);
+  return res.json() as Promise<T>;
+}

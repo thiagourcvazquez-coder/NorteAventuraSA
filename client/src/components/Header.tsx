@@ -8,9 +8,9 @@ const LOGO_URL = 'https://norteaventura.com.ar/wp-content/uploads/2026/05/croppe
 
 const links = [
   { to: '/', key: 'nav.home', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0017.jpg' },
-  { to: '/excursiones', key: 'nav.excursions', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg' },
   { to: '/excursiones?origen=salta', key: 'nav.from_salta', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg' },
   { to: '/excursiones?origen=jujuy', key: 'nav.from_jujuy', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg' },
+  { to: '/excursiones?tipo=trekking', key: 'nav.trekking', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
   { to: '/nosotros', key: 'nav.about', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
   { to: '/contacto', key: 'nav.contact', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg' },
 ] as const;
@@ -118,7 +118,7 @@ export default function Header() {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
               className="display text-outline pointer-events-none absolute -bottom-6 left-0 whitespace-nowrap text-[34vw] leading-none"
-              style={{ ['--stroke' as string]: 'rgba(255,200,59,0.18)' }}
+              style={{ ['--stroke' as string]: 'rgba(191,219,38,0.18)' }}
             >
               AVENTURA
             </motion.span>
@@ -172,7 +172,7 @@ export default function Header() {
                 Salta, Argentina
               </p>
               <p className="mt-1 text-xs font-semibold text-norte-cream/45">
-                puraaventuratrekking@gmail.com
+                norteaventuraok@gmail.com
               </p>
             </motion.div>
           </motion.div>

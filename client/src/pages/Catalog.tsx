@@ -5,12 +5,19 @@ import { useLang } from '../i18n';
 import ExcursionCard from '../components/ExcursionCard';
 import PageBanner from '../components/PageBanner';
 import { Reveal } from '../components/Motion';
-import type { CategorySlug } from '../types';
+import type { CategorySlug, TipoSlug } from '../types';
 
-const filters: { value: 'todas' | CategorySlug; key: 'cat.all' | 'nav.from_salta' | 'nav.from_jujuy' }[] = [
+const origenFilters: { value: 'todas' | CategorySlug; key: 'cat.all' | 'nav.from_salta' | 'nav.from_jujuy' }[] = [
   { value: 'todas', key: 'cat.all' },
   { value: 'salta', key: 'nav.from_salta' },
   { value: 'jujuy', key: 'nav.from_jujuy' },
+];
+
+const tipoFilters: { value: 'todas' | TipoSlug; key: 'cat.all' | 'cat.clasicas' | 'nav.trekking' | 'dest.c3_t' }[] = [
+  { value: 'todas', key: 'cat.all' },
+  { value: 'clasica', key: 'cat.clasicas' },
+  { value: 'trekking', key: 'nav.trekking' },
+  { value: 'privada', key: 'dest.c3_t' },
 ];
 
 export default function Catalog() {
@@ -18,9 +25,10 @@ export default function Catalog() {
   const { t } = useLang();
   const [params, setParams] = useSearchParams();
   const origen = (params.get('origen') ?? 'todas') as 'todas' | CategorySlug;
+  const tipo = (params.get('tipo') ?? 'todas') as 'todas' | TipoSlug;
   const query = params.get('q') ?? '';
 
-  function update(next: { origen?: string; q?: string }) {
+  function update(next: { origen?: string; tipo?: string; q?: string }) {
     const p = new URLSearchParams(params);
     for (const [k, v] of Object.entries(next)) {
       if (!v || v === 'todas') p.delete(k);
@@ -34,9 +42,10 @@ export default function Catalog() {
       excursions.filter(
         (e) =>
           (origen === 'todas' || e.category === origen) &&
+          (tipo === 'todas' || (e.tipo ?? 'clasica') === tipo) &&
           (query === '' || `${e.name} ${e.location}`.toLowerCase().includes(query.toLowerCase())),
       ),
-    [excursions, origen, query],
+    [excursions, origen, tipo, query],
   );
 
   return (
@@ -47,7 +56,7 @@ export default function Catalog() {
 
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
         <div className="flex flex-wrap items-center gap-3">
-          {filters.map((f) => (
+          {origenFilters.map((f) => (
             <button
               key={f.value}
               onClick={() => update({ origen: f.value })}
@@ -55,6 +64,20 @@ export default function Catalog() {
                 origen === f.value
                   ? 'bg-norte-green text-norte-cream'
                   : 'bg-white text-norte-green ring-1 ring-norte-green/20 hover:ring-norte-green/50'
+              }`}
+            >
+              {t(f.key)}
+            </button>
+          ))}
+          <span className="hidden h-6 w-px bg-norte-green/15 sm:block" />
+          {tipoFilters.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => update({ tipo: f.value })}
+              className={`rounded-full px-5 py-2.5 text-[13px] font-extrabold transition ${
+                tipo === f.value
+                  ? 'bg-norte-yellow text-norte-green'
+                  : 'bg-white text-norte-green ring-1 ring-norte-green/20 hover:ring-norte-yellow-dark/60'
               }`}
             >
               {t(f.key)}

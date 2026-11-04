@@ -44,7 +44,7 @@ export default function Cursor() {
         animate={{
           width: target?.label ? 84 : big ? 52 : 30,
           height: target?.label ? 84 : big ? 52 : 30,
-          backgroundColor: target?.label ? 'rgba(255,200,59,1)' : big ? 'rgba(255,200,59,0.18)' : 'rgba(255,200,59,0)',
+          backgroundColor: target?.label ? 'rgba(191,219,38,1)' : big ? 'rgba(191,219,38,0.18)' : 'rgba(191,219,38,0)',
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
       >

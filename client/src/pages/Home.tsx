@@ -7,29 +7,36 @@ import HorizontalShowcase from '../components/HorizontalShowcase';
 import { Marquee, Reveal, ScrollWords, SplitWords, SunMark } from '../components/Motion';
 import { WhatsAppIcon } from '../components/Icons';
 
-const Hero3D = lazy(() => import('../three/Hero3D'));
 const Peak3D = lazy(() => import('../three/Peak3D'));
 
-const destinations = [
-  {
-    name: 'Seclantás',
-    sub: 'Valles Calchaquíes',
-    to: '/excursiones?origen=salta',
-    img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg',
-  },
-  {
-    name: 'Jujuy',
-    sub: 'Quebrada de Humahuaca',
-    to: '/excursiones?origen=jujuy',
-    img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg',
-  },
-  {
-    name: 'Cafayate',
-    subKey: 'dest.cafayate',
-    to: '/excursiones?q=cafayate',
-    img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg',
-  },
-] as const;
+const HERO_IMG =
+  'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg';
+
+/** Orden pedido por el cliente (docx) para las listas de salidas diarias. */
+const DAILY_SALTA = [
+  'tour-a-cafayate-desde-salta',
+  'excursion-a-cachi-desde-salta',
+  'salinas-grandes-purmamarca-desde-salta',
+  'humahuaca-hornocal',
+  'cascada-escondida-san-lorenzo-salta',
+  'city-tour-salta',
+  'cerro-elefante-salta',
+  'tren-a-las-nubes-san-antonio-de-los-cobres-salta',
+  'tren-solar-quebrada-jujuy',
+];
+const DAILY_JUJUY = [
+  'salinas-grandes-purmamarca-desde-tilcara',
+  'excursion-humahuaca-hornocal-quebrada-de-las-senoritas',
+  'excursion-iruya-desde-tilcara',
+  'castillos-de-huichaira-tilcara',
+  'traslado-aeropuerto-jujuy-tilcara',
+  'garganta-del-diablo-tilcara',
+  'city-tour-pucara-tilcara',
+  'inca-cueva-humahuaca',
+];
+
+/** Nombre corto de la excursión para las listas (antes de ':' / '–' / '|'). */
+const shortName = (n: string) => n.split(/[:|–—]/)[0].replace(/“|”/g, '').trim();
 
 const marqueeItems = ['Trekking', 'Salinas Grandes', 'Hornocal', 'Quebrada de Humahuaca', 'Cafayate', 'Purmamarca', 'Tilcara', 'Cachi', 'Iruya'];
 
@@ -39,10 +46,6 @@ const STEP_KEYS = [
   ['steps.3.t', 'steps.3.d'],
   ['steps.4.t', 'steps.4.d'],
 ] as const;
-
-function HeroFallback() {
-  return <div className="absolute inset-0 bg-gradient-to-b from-norte-green-dark to-norte-green" />;
-}
 
 export default function Home() {
   const { excursions } = useExcursions();
@@ -54,14 +57,27 @@ export default function Home() {
     return [...salta, ...jujuy];
   }, [excursions]);
 
+  const daily = useMemo(() => {
+    const bySlug = new Map(excursions.map((e) => [e.slug, e]));
+    return {
+      salta: DAILY_SALTA.map((s) => bySlug.get(s)).filter(Boolean) as typeof excursions,
+      jujuy: DAILY_JUJUY.map((s) => bySlug.get(s)).filter(Boolean) as typeof excursions,
+    };
+  }, [excursions]);
+
   return (
     <>
-      {/* HERO 3D */}
+      {/* HERO */}
       <section className="relative isolate flex h-[100svh] min-h-[640px] items-end overflow-hidden bg-norte-green">
-        <Suspense fallback={<HeroFallback />}>
-          <Hero3D />
-        </Suspense>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-norte-green-dark/70 via-transparent to-norte-green-dark/30" />
+        <motion.img
+          src={HERO_IMG}
+          alt="Cerro Hornocal, Quebrada de Humahuaca"
+          initial={{ scale: 1.12 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-norte-green-dark/85 via-norte-green-dark/25 to-norte-green-dark/45" />
         <div className="grain pointer-events-none absolute inset-0" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-16 sm:px-8 sm:pb-20">
@@ -75,17 +91,17 @@ export default function Home() {
             Salta · Tilcara · Jujuy
           </motion.p>
 
-          <h1 className="display text-norte-cream">
-            <span className="block text-[clamp(1rem,2.4vw,1.6rem)] font-semibold normal-case tracking-normal text-norte-cream/80">
-              <SplitWords text={t('hero.line1')} onMount delay={0.6} />
-            </span>
-            <span className="mt-2 block text-[clamp(3.4rem,13vw,11.5rem)]">
-              <SplitWords text={t('hero.line2')} onMount delay={0.8} />
-            </span>
-            <span className="block text-[clamp(3.4rem,13vw,11.5rem)] text-norte-yellow">
-              <SplitWords text={t('hero.line3')} onMount delay={1} />
-            </span>
+          <h1 className="display max-w-5xl text-[clamp(2.5rem,7.5vw,6.5rem)] text-norte-cream">
+            <SplitWords text={t('hero.title')} onMount delay={0.6} />
           </h1>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.8 }}
+            className="mt-5 max-w-xl text-base font-semibold leading-relaxed text-norte-cream/85 sm:text-lg"
+          >
+            {t('hero.sub')}
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -174,29 +190,111 @@ export default function Home() {
         </div>
       </section>
 
-      {/* DESTINOS */}
+      {/* SALIDAS DIARIAS */}
+      <section className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('home.daily_eyebrow')}</p>
+        <h2 className="display mt-3 text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
+          <SplitWords text={t('home.daily_title')} />
+        </h2>
+        <div className="mt-14 grid gap-12 lg:grid-cols-2">
+          {(
+            [
+              [t('home.daily_salta'), daily.salta, '/excursiones?origen=salta'],
+              [t('home.daily_jujuy'), daily.jujuy, '/excursiones?origen=jujuy'],
+            ] as const
+          ).map(([title, list, to]) => (
+            <div key={title}>
+              <h3 className="display border-b-2 border-norte-yellow pb-3 text-2xl text-norte-green">
+                {title}
+              </h3>
+              <ul className="mt-2 divide-y divide-norte-green/10">
+                {list.map((e) => (
+                  <li key={e.slug}>
+                    <Link
+                      to={`/excursion/${e.slug}`}
+                      className="group flex items-center justify-between gap-4 py-3.5"
+                    >
+                      <span className="text-sm font-bold text-norte-green transition group-hover:text-norte-yellow-dark">
+                        {shortName(e.name)}
+                      </span>
+                      <span className="shrink-0 text-xs font-extrabold uppercase tracking-wider text-norte-gray transition group-hover:text-norte-yellow-dark">
+                        →
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to={to}
+                className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-norte-green underline decoration-norte-yellow decoration-[3px] underline-offset-8 hover:text-norte-yellow-dark"
+              >
+                {t('show.all')}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* DESTINOS — 3 tipos de experiencia */}
       <section className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('home.dest_eyebrow')}</p>
-        <h2 className="display mt-3 text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
+        <h2 className="display mt-3 max-w-4xl text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
           <SplitWords text={t('home.dest_title')} />
         </h2>
-        <div className="mt-14 flex flex-col gap-3 md:h-[68vh] md:flex-row">
-          {destinations.map((d) => (
-            <Link
-              key={d.name}
-              to={d.to}
-              data-cursor={t('cur.explore')}
-              className="group relative h-64 overflow-hidden rounded-[28px] transition-[flex] duration-700 ease-[cubic-bezier(.22,1,.36,1)] md:h-auto md:flex-1 md:hover:flex-[2.6]"
-            >
-              <img src={d.img} alt={d.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-7">
-                <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-norte-yellow">
-                  {'subKey' in d ? t(d.subKey) : d.sub}
-                </p>
-                <p className="display mt-1 text-4xl text-white md:text-5xl">{d.name}</p>
-              </div>
-            </Link>
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {(
+            [
+              {
+                t: 'dest.c1_t',
+                b: 'dest.c1_b',
+                to: '/excursiones?tipo=clasica',
+                img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg',
+                featured: false,
+              },
+              {
+                t: 'dest.c2_t',
+                b: 'dest.c2_b',
+                to: '/excursiones?tipo=trekking',
+                img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg',
+                featured: true,
+              },
+              {
+                t: 'dest.c3_t',
+                b: 'dest.c3_b',
+                to: '/contacto',
+                img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20250115-WA0075-e1772563433316.jpg',
+                featured: false,
+              },
+            ] as const
+          ).map((c, i) => (
+            <Reveal key={c.t} delay={i * 0.12} y={40}>
+              <Link
+                to={c.to}
+                data-cursor={t('cur.go')}
+                className={`group relative flex h-[420px] flex-col justify-end overflow-hidden rounded-[28px] transition md:h-[480px] ${
+                  c.featured ? 'md:-mt-6 md:h-[520px] ring-4 ring-norte-yellow' : ''
+                }`}
+              >
+                <img
+                  src={c.img}
+                  alt={t(c.t)}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-[1200ms] group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/30 to-transparent" />
+                {c.featured && (
+                  <span className="absolute left-5 top-5 rounded-full bg-norte-yellow px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-norte-green">
+                    {t('dest.c2_badge')}
+                  </span>
+                )}
+                <div className="relative p-7">
+                  <h3 className="display text-3xl text-norte-cream">{t(c.t)}</h3>
+                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-norte-yellow px-6 py-2.5 text-sm font-extrabold text-norte-green transition group-hover:bg-white">
+                    {t(c.b)} →
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>

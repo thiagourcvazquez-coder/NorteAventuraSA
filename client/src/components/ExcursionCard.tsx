@@ -16,6 +16,7 @@ export default function ExcursionCard({
   aspect?: string;
 }) {
   const { lang, t, tok } = useLang();
+  const isBaseDoble = !!excursion.priceNote?.includes('x2');
   const ref = useRef<HTMLDivElement>(null);
   const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 20 });
   const ry = useSpring(useMotionValue(0), { stiffness: 220, damping: 20 });
@@ -71,10 +72,14 @@ export default function ExcursionCard({
           <div className="mt-5 flex items-end justify-between">
             <div>
               {excursion.price !== null && (
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">{t('card.per_person')}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">
+                  {isBaseDoble ? t('bk.per_2people') : t('card.per_person')}
+                </p>
               )}
               <p className="text-2xl font-extrabold text-norte-yellow">{formatPrice(excursion.price, lang)}</p>
-              {excursion.priceNote && <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>}
+              {excursion.priceNote && !isBaseDoble && (
+                <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>
+              )}
             </div>
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-norte-yellow text-norte-green transition duration-500 group-hover:rotate-45 group-hover:scale-110">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">

@@ -1,5 +1,8 @@
 export type CategorySlug = 'salta' | 'jujuy';
 
+/** Tipo de experiencia para el filtro del catálogo y las cards de destinos. */
+export type TipoSlug = 'clasica' | 'trekking' | 'privada';
+
 export interface Category {
   slug: CategorySlug;
   name: string;
@@ -16,7 +19,8 @@ export interface Excursion {
   name: string;
   location: string;
   category: CategorySlug;
-  price: number | null; // ARS por persona; null = consultar
+  tipo?: TipoSlug; // default 'clasica'
+  price: number | null; // ARS por persona (o por 2 si priceNote = base doble); null = consultar
   priceNote?: string;
   duration: string;
   schedule?: string;

@@ -25,7 +25,8 @@ create table if not exists public.excursions (
   name          text not null,
   location      text not null,               -- 'Cachi, Salta'
   category_id   uuid not null references public.categories(id) on delete restrict,
-  price         integer,                     -- ARS por persona; null = consultar
+  tipo          text not null default 'clasica' check (tipo in ('clasica','trekking','privada')),
+  price         integer,                     -- ARS por persona (o por 2 si base doble); null = consultar
   price_note    text,                        -- 'Precio x2 personas', etc.
   duration      text not null,               -- '1 (un) día' | '1/2 (medio) día'
   schedule      text,                        -- '7:00 a 19:00hs'
@@ -86,6 +87,9 @@ create table if not exists public.reservations (
   total         integer,                     -- ARS estimado (price * people)
   notes         text,
   status        public.reservation_status not null default 'pending',
+  payment_id    text,                        -- id del pago de Mercado Pago
+  payment_status text not null default 'unpaid',
+  paid_at       timestamptz,
   created_at    timestamptz not null default now()
 );
 

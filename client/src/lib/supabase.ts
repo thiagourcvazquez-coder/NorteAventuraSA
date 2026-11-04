@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { Excursion, CategorySlug } from '../types';
+import type { Excursion, CategorySlug, TipoSlug } from '../types';
 import { FALLBACK_EXCURSIONS, MAPS_QUERY } from '../data/excursions';
 import { GALLERIES } from '../data/galleries';
 
@@ -13,6 +13,7 @@ interface ExcursionRow {
   slug: string;
   name: string;
   location: string;
+  tipo: TipoSlug | null;
   price: number | null;
   price_note: string | null;
   duration: string;
@@ -37,6 +38,7 @@ function rowToExcursion(r: ExcursionRow): Excursion {
     name: r.name,
     location: r.location,
     category: (cat?.slug ?? 'salta') as CategorySlug,
+    tipo: r.tipo ?? 'clasica',
     price: r.price,
     priceNote: r.price_note ?? undefined,
     duration: r.duration,
