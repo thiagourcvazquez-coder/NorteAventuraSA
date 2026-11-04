@@ -10,7 +10,7 @@ import { WhatsAppIcon } from '../components/Icons';
 const Peak3D = lazy(() => import('../three/Peak3D'));
 
 const HERO_IMG =
-  'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg';
+  'https://norteaventura.com.ar/wp-content/uploads/2025/04/DJI_0686.jpg';
 
 /** Orden pedido por el cliente (docx) para las listas de salidas diarias. */
 const DAILY_SALTA = [
@@ -71,7 +71,8 @@ export default function Home() {
       <section className="relative isolate flex h-[100svh] min-h-[640px] items-end overflow-hidden bg-norte-green">
         <motion.img
           src={HERO_IMG}
-          alt="Cerro Hornocal, Quebrada de Humahuaca"
+          alt="Quebrada de Humahuaca, Jujuy"
+          fetchPriority="high"
           initial={{ scale: 1.12 }}
           animate={{ scale: 1 }}
           transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
