@@ -40,13 +40,6 @@ const shortName = (n: string) => n.split(/[:|–—]/)[0].replace(/“|”/g, ''
 
 const marqueeItems = ['Trekking', 'Salinas Grandes', 'Hornocal', 'Quebrada de Humahuaca', 'Cafayate', 'Purmamarca', 'Tilcara', 'Cachi', 'Iruya'];
 
-const STEP_KEYS = [
-  ['steps.1.t', 'steps.1.d'],
-  ['steps.2.t', 'steps.2.d'],
-  ['steps.3.t', 'steps.3.d'],
-  ['steps.4.t', 'steps.4.d'],
-] as const;
-
 export default function Home() {
   const { excursions } = useExcursions();
   const { t } = useLang();
@@ -92,7 +85,7 @@ export default function Home() {
             Salta · Tilcara · Jujuy
           </motion.p>
 
-          <h1 className="display max-w-5xl text-[clamp(2.5rem,7.5vw,6.5rem)] text-norte-cream">
+          <h1 className="display max-w-6xl text-[clamp(2.25rem,5.5vw,6rem)] text-norte-cream">
             <SplitWords text={t('hero.title')} onMount delay={0.6} />
           </h1>
           <motion.p
@@ -140,7 +133,7 @@ export default function Home() {
       </section>
 
       {/* MARQUEE */}
-      <section className="relative z-10 -mt-px overflow-hidden bg-norte-yellow py-5 text-norte-green">
+      <section className="relative z-10 -mt-px overflow-hidden bg-norte-yellow-dark py-5 text-norte-green">
         <Marquee
           items={marqueeItems}
           className="display text-[clamp(1.6rem,4vw,3rem)]"
@@ -167,29 +160,6 @@ export default function Home() {
 
       {/* GALERÍA HORIZONTAL */}
       <HorizontalShowcase items={featured} />
-
-      {/* CÓMO RESERVAR */}
-      <section className="relative overflow-hidden bg-norte-green py-28 sm:py-36">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">{t('steps.eyebrow')}</p>
-          <h2 className="display mt-3 max-w-3xl text-[clamp(2.2rem,6vw,5rem)] text-norte-cream">
-            <SplitWords text={t('steps.title')} />
-          </h2>
-          <div className="mt-16 grid gap-px overflow-hidden rounded-[28px] bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-            {STEP_KEYS.map(([tk, dk], i) => (
-              <Reveal key={tk} delay={i * 0.1} y={30}>
-                <div className="group h-full bg-norte-green p-8 transition hover:bg-norte-green-light">
-                  <span className="display text-outline block text-7xl transition group-hover:!text-norte-yellow/25">
-                    0{i + 1}
-                  </span>
-                  <h3 className="mt-8 text-xl font-extrabold text-norte-cream">{t(tk)}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-norte-cream/65">{t(dk)}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* SALIDAS DIARIAS */}
       <section className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">

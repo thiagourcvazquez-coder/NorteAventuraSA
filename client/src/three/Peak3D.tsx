@@ -4,14 +4,36 @@ import { Float } from '@react-three/drei';
 import * as THREE from 'three';
 import { jitter } from './noise';
 
-function Mountain({ radius, height, seed, color }: { radius: number; height: number; seed: number; color: string }) {
+// Estratos tipo Hornocal / Cerro de los 14 Colores (de base a cima)
+const STRATA = ['#4a2418', '#6e3220', '#96432a', '#b85c2b', '#cf7d38', '#dc9d4e', '#e5b876', '#c9a08a', '#f0e6d4'];
+
+function bandColor(t: number, out: THREE.Color, darken: number) {
+  const idx = Math.min(STRATA.length - 1, Math.floor(t * STRATA.length));
+  out.set(STRATA[idx]);
+  // leve mezcla hacia la banda siguiente para suavizar bordes
+  if (idx < STRATA.length - 1) {
+    const f = t * STRATA.length - idx;
+    if (f > 0.75) out.lerp(new THREE.Color(STRATA[idx + 1]), (f - 0.75) / 0.25);
+  }
+  out.offsetHSL(0, 0, -darken);
+  return out;
+}
+
+function Mountain({
+  radius,
+  height,
+  seed,
+  darken = 0,
+}: {
+  radius: number;
+  height: number;
+  seed: number;
+  darken?: number;
+}) {
   const geometry = useMemo(() => {
     const g = new THREE.ConeGeometry(radius, height, 7, 6, true);
     const pos = g.attributes.position;
     const colors = new Float32Array(pos.count * 3);
-    const base = new THREE.Color(color);
-    const snow = new THREE.Color('#f7f8ee');
-    const sun = new THREE.Color('#bfdb26');
     const c = new THREE.Color();
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
@@ -19,10 +41,15 @@ function Mountain({ radius, height, seed, color }: { radius: number; height: num
       const z = pos.getZ(i);
       const t = (y + height / 2) / height;
       const k = (1 - t) * 0.35;
-      pos.setXYZ(i, x + jitter(x, y, z, seed) * k * radius, y + jitter(z, x, y, seed + 1) * k * 0.6, z + jitter(y, z, x, seed + 2) * k * radius);
-      c.copy(base);
-      if (t > 0.72) c.lerp(snow, (t - 0.72) / 0.28);
-      else if (t > 0.45) c.lerp(sun, ((t - 0.45) / 0.27) * 0.18);
+      pos.setXYZ(
+        i,
+        x + jitter(x, y, z, seed) * k * radius,
+        y + jitter(z, x, y, seed + 1) * k * 0.6,
+        z + jitter(y, z, x, seed + 2) * k * radius,
+      );
+      bandColor(t, c, darken);
+      // variación sutil por vértice para realzar las facetas
+      c.offsetHSL(0, 0, jitter(x * 3, y, z * 3, seed + 7) * 0.03);
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -30,7 +57,7 @@ function Mountain({ radius, height, seed, color }: { radius: number; height: num
     g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     g.computeVertexNormals();
     return g;
-  }, [radius, height, seed, color]);
+  }, [radius, height, seed, darken]);
 
   return (
     <mesh geometry={geometry}>
@@ -58,29 +85,29 @@ function Composition({ pointer }: { pointer: React.RefObject<{ x: number; y: num
 
   return (
     <>
-      <ambientLight intensity={0.8} color="#f7f8ee" />
-      <directionalLight position={[4, 6, 5]} intensity={1.6} color="#f7f8ee" />
-      <directionalLight position={[-5, 3, -4]} intensity={1.4} color="#bfdb26" />
+      <ambientLight intensity={0.75} color="#f7f8ee" />
+      <directionalLight position={[4, 6, 5]} intensity={1.5} color="#fff2df" />
+      <directionalLight position={[-5, 3, -4]} intensity={1.3} color="#fb950e" />
       <mesh ref={sun}>
         <sphereGeometry args={[0.7, 32, 32]} />
-        <meshBasicMaterial color="#bfdb26" />
+        <meshBasicMaterial color="#fb950e" />
       </mesh>
       <Float speed={1.4} rotationIntensity={0.15} floatIntensity={0.6}>
         <group ref={group} position={[0, -0.6, 0]}>
           <mesh position={[0, -2.15, 0.2]}>
             <cylinderGeometry args={[3.7, 2.3, 0.7, 9, 1]} />
-            <meshStandardMaterial color="#1b2008" flatShading roughness={1} />
+            <meshStandardMaterial color="#241407" flatShading roughness={1} />
           </mesh>
           <mesh position={[0, -1.78, 0.2]}>
             <cylinderGeometry args={[3.5, 3.7, 0.05, 9, 1]} />
-            <meshStandardMaterial color="#bfdb26" flatShading roughness={0.8} />
+            <meshStandardMaterial color="#e5b876" flatShading roughness={0.8} />
           </mesh>
-          <Mountain radius={2.3} height={3.8} seed={3} color="#8ba31c" />
+          <Mountain radius={2.3} height={3.8} seed={3} />
           <group position={[1.9, -0.55, 0.6]}>
-            <Mountain radius={1.5} height={2.4} seed={8} color="#728316" />
+            <Mountain radius={1.5} height={2.4} seed={8} darken={0.06} />
           </group>
           <group position={[-1.8, -0.7, 0.9]}>
-            <Mountain radius={1.2} height={1.9} seed={15} color="#4d580d" />
+            <Mountain radius={1.2} height={1.9} seed={15} darken={0.12} />
           </group>
         </group>
       </Float>

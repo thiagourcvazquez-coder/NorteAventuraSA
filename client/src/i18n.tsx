@@ -55,18 +55,6 @@ const STR = {
     'show.all': 'Ver todas →',
     'show.catalog': 'Ver todo el catálogo →',
 
-    // ---- pasos
-    'steps.eyebrow': 'Cómo reservar',
-    'steps.title': 'Cuatro pasos hasta el norte',
-    'steps.1.t': 'Buscá',
-    'steps.1.d': 'Explorá salidas desde Salta o Jujuy y encontrá la actividad que mejor se adapte a vos.',
-    'steps.2.t': 'Elegí la fecha',
-    'steps.2.d': 'Verificá disponibilidad y elegí el día que te quede cómodo. ¡Hay salidas diarias!',
-    'steps.3.t': 'Reservá',
-    'steps.3.d': 'Confirmá tu lugar directo con nosotros por WhatsApp, sin registros ni vueltas.',
-    'steps.4.t': 'Disfrutá',
-    'steps.4.d': 'Te esperamos para que pases un día lleno de nuevas aventuras.',
-
     // ---- catálogo
     'cat.title': 'Todas las aventuras',
     'cat.sub':
@@ -243,17 +231,6 @@ const STR = {
     'show.title': 'Choose your adventure',
     'show.all': 'See all →',
     'show.catalog': 'Browse the full catalog →',
-
-    'steps.eyebrow': 'How to book',
-    'steps.title': 'Four steps to the north',
-    'steps.1.t': 'Browse',
-    'steps.1.d': 'Explore departures from Salta or Jujuy and find the activity that suits you best.',
-    'steps.2.t': 'Pick your date',
-    'steps.2.d': 'Check availability and choose the day that works for you. Daily departures!',
-    'steps.3.t': 'Book',
-    'steps.3.d': 'Confirm your spot directly with us on WhatsApp — no sign-ups, no hassle.',
-    'steps.4.t': 'Enjoy',
-    'steps.4.d': 'We will be waiting to give you a day full of new adventures.',
 
     'cat.title': 'All the adventures',
     'cat.sub':
