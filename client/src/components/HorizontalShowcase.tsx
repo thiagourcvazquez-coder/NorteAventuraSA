@@ -81,7 +81,7 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
         <div className="mx-auto mb-8 flex w-full max-w-7xl items-end justify-between gap-4 px-5 sm:px-8">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('show.eyebrow')}</p>
-            <h2 className="display mt-2 text-[clamp(2.2rem,6vw,5rem)] text-norte-green">
+            <h2 className="display mt-2 text-[clamp(2rem,4.5vw,4rem)] text-norte-green">
               <SplitWords text={t('show.title')} />
             </h2>
           </div>
@@ -97,15 +97,15 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
         <motion.div ref={track} style={{ x }} className="flex w-max gap-5 px-5 sm:px-8">
           {items.length === 0
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="aspect-[4/5] w-[78vw] animate-pulse rounded-[28px] bg-norte-green/10 sm:w-[400px]" />
+                <div key={i} className="aspect-[4/5] w-[78vw] animate-pulse rounded-[28px] bg-norte-green/10 sm:w-[min(400px,40vh)]" />
               ))
             : items.map((e) => (
-                <ExcursionCard key={e.slug} excursion={e} className="w-[78vw] shrink-0 sm:w-[400px]" />
+                <ExcursionCard key={e.slug} excursion={e} className="w-[78vw] shrink-0 sm:w-[min(400px,40vh)]" />
               ))}
           <Link
             to="/excursiones"
             data-cursor={t('cur.go')}
-            className="display flex aspect-[4/5] w-[78vw] shrink-0 items-center justify-center rounded-[28px] bg-norte-yellow p-8 text-center text-4xl text-norte-green transition hover:bg-norte-green hover:text-norte-yellow sm:w-[400px]"
+            className="display flex aspect-[4/5] w-[78vw] shrink-0 items-center justify-center rounded-[28px] bg-norte-yellow p-8 text-center text-4xl text-norte-green transition hover:bg-norte-green hover:text-norte-yellow sm:w-[min(400px,40vh)]"
           >
             {t('show.catalog')}
           </Link>
