@@ -58,7 +58,7 @@ export default function DatePicker({
   const cells: { iso: string; n: number; dim: boolean }[] = [];
   for (let i = offset - 1; i >= 0; i--) {
     const d = daysInPrev - i;
-    cells.push({ iso: iso(view.y, view.m - 1 < 0 ? view.y - 1 : view.y, (view.m + 11) % 12, d), n: d, dim: true });
+    cells.push({ iso: iso(view.m - 1 < 0 ? view.y - 1 : view.y, (view.m + 11) % 12, d), n: d, dim: true });
   }
   for (let d = 1; d <= daysInMonth; d++) cells.push({ iso: iso(view.y, view.m, d), n: d, dim: false });
   let next = 1;
