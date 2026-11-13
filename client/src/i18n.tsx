@@ -26,7 +26,7 @@ const STR = {
     // ---- home
     'home.eyebrow': 'Quiénes somos',
     'home.statement':
-      'Somos una agencia de turismo orientada al trekking y al turismo alternativo. Reversionamos cada destino y le damos nuestro toque: ¡a Norte Aventura!',
+      'Somos una agencia de turismo orientada al trekking y al turismo alternativo. Reimaginamos cada destino y le damos nuestro toque: ¡al estilo Norte Aventura!',
     'home.more': 'Conocé más sobre nosotros →',
     'home.daily_eyebrow': 'Salidas diarias',
     'home.daily_title': 'Excursiones todos los días',
@@ -45,6 +45,14 @@ const STR = {
     'rev.title': 'Lo que dicen los que ya viajaron',
     'rev.cta': 'Dejá tu opinión',
     'rev.empty': 'Todavía no hay opiniones publicadas. Si ya viajaste con nosotros, ¡contanos cómo te fue!',
+    'rev.form_t': 'Dejá tu opinión',
+    'rev.name_ph': 'Tu nombre *',
+    'rev.loc_ph': 'De dónde sos (opcional)',
+    'rev.body_ph': 'Contanos cómo fue tu experiencia *',
+    'rev.submit': 'Publicar opinión',
+    'rev.sending': 'Enviando',
+    'rev.thanks_t': '¡Gracias!',
+    'rev.thanks_d': 'Tu opinión se publica después de una revisión rápida.',
 
     // ---- showcase
     'show.eyebrow': 'Excursiones destacadas',
@@ -57,7 +65,7 @@ const STR = {
     'cat.sub':
       'Excursiones diarias, trekking y experiencias por Salta y Jujuy. Elegí la tuya y reservá por WhatsApp.',
     'cat.all': 'Todas',
-    'cat.search': 'Buscar excursión o destino…',
+    'cat.search': 'Buscar excursión o destino',
     'cat.empty': 'No encontramos excursiones para tu búsqueda.',
 
     // ---- detalle
@@ -101,7 +109,7 @@ const STR = {
     'bk.notes_ph': '¿Alguna consulta?',
     'bk.total': 'Total estimado',
     'bk.submit': 'Reservar por WhatsApp',
-    'bk.sending': 'Reservando…',
+    'bk.sending': 'Reservando',
     'bk.foot': 'Te llevamos a WhatsApp con tu reserva lista para enviar.',
     'bk.error': 'Completá tu nombre y teléfono para reservar.',
     'bk.done_t': '¡Reserva registrada!',
@@ -122,7 +130,7 @@ const STR = {
     'ct.name_ph': 'Tu nombre',
     'ct.phone': 'Teléfono',
     'ct.msg': 'Mensaje',
-    'ct.msg_ph': 'Contanos qué excursión te interesa, fechas, cantidad de personas…',
+    'ct.msg_ph': 'Contanos qué excursión te interesa, fechas, cantidad de personas',
     'ct.send': 'Enviar por WhatsApp',
     'ct.note': 'Tu consulta se envía directo a nuestro WhatsApp.',
 
@@ -200,7 +208,7 @@ const STR = {
 
     'home.eyebrow': 'Who we are',
     'home.statement':
-      'We are a tourism agency focused on trekking and alternative tourism. We reimagine every destination and give it our own touch: pure adventure!',
+      'We are a tourism agency focused on trekking and alternative tourism. We reimagine every destination and give it our own touch: the Norte Aventura way!',
     'home.more': 'Learn more about us →',
     'home.daily_eyebrow': 'Daily departures',
     'home.daily_title': 'Excursions every day',
@@ -219,6 +227,14 @@ const STR = {
     'rev.title': 'What travelers say about us',
     'rev.cta': 'Leave your review',
     'rev.empty': 'No reviews published yet. If you already traveled with us, tell us how it went!',
+    'rev.form_t': 'Leave your review',
+    'rev.name_ph': 'Your name *',
+    'rev.loc_ph': 'Where are you from (optional)',
+    'rev.body_ph': 'Tell us how your experience was *',
+    'rev.submit': 'Post your review',
+    'rev.sending': 'Sending',
+    'rev.thanks_t': 'Thank you!',
+    'rev.thanks_d': 'Your review will be published after a quick moderation.',
 
     'show.eyebrow': 'Featured excursions',
     'show.title': 'Choose your adventure',
@@ -229,7 +245,7 @@ const STR = {
     'cat.sub':
       'Daily excursions, trekking and experiences across Salta and Jujuy. Pick yours and book via WhatsApp.',
     'cat.all': 'All',
-    'cat.search': 'Search excursion or destination…',
+    'cat.search': 'Search excursion or destination',
     'cat.empty': 'No excursions match your search.',
 
     'det.duration': 'Duration:',
@@ -254,7 +270,7 @@ const STR = {
 
     'bk.from': 'From',
     'bk.per_person': 'per person',
-    'bk.per_2people': 'for 2 people (double base)',
+    'bk.per_2people': 'for 2 people (double occupancy)',
     'bk.pay_mp': 'Pay with Mercado Pago',
     'bk.pay_note': 'Pay online and we confirm via WhatsApp.',
     'bk.ask': 'Ask for price and availability',
@@ -271,7 +287,7 @@ const STR = {
     'bk.notes_ph': 'Any questions?',
     'bk.total': 'Estimated total',
     'bk.submit': 'Book via WhatsApp',
-    'bk.sending': 'Booking…',
+    'bk.sending': 'Booking',
     'bk.foot': 'We will take you to WhatsApp with your booking ready to send.',
     'bk.error': 'Please fill in your name and phone to book.',
     'bk.done_t': 'Booking registered!',
@@ -290,7 +306,7 @@ const STR = {
     'ct.name_ph': 'Your name',
     'ct.phone': 'Phone',
     'ct.msg': 'Message',
-    'ct.msg_ph': 'Tell us which excursion interests you, dates, group size…',
+    'ct.msg_ph': 'Tell us which excursion interests you, dates, group size',
     'ct.send': 'Send via WhatsApp',
     'ct.note': 'Your message goes straight to our WhatsApp.',
 

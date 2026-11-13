@@ -46,7 +46,7 @@ export default function Reservations() {
   }
 
   if (error) return <p className="p-6 text-sm font-medium text-red-600">{error}</p>;
-  if (!rows) return <p className="p-6 text-sm text-norte-gray">Cargando reservas…</p>;
+  if (!rows) return <p className="p-6 text-sm text-norte-gray">Cargando reservas</p>;
   if (!rows.length) return <p className="p-6 text-sm text-norte-gray">Todavía no hay reservas.</p>;
 
   const visible = filter === 'all' ? rows : rows.filter((r) => r.status === filter);

@@ -172,14 +172,14 @@ export default function CommentsAdmin({ excursions }: { excursions: AdminExcursi
             disabled={saving}
             className="mt-3 rounded-full bg-norte-green px-6 py-2.5 text-sm font-bold text-norte-cream transition hover:bg-norte-green-light disabled:opacity-60"
           >
-            {saving ? 'Guardando…' : 'Publicar testimonio'}
+            {saving ? 'Guardando' : 'Publicar testimonio'}
           </button>
         </form>
       )}
 
       {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
       {!rows ? (
-        <p className="mt-6 text-sm text-norte-gray">Cargando comentarios…</p>
+        <p className="mt-6 text-sm text-norte-gray">Cargando comentarios</p>
       ) : !visible.length ? (
         <p className="mt-6 text-sm text-norte-gray">No hay comentarios en este estado.</p>
       ) : (

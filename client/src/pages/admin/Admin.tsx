@@ -159,7 +159,7 @@ function Login({ onOk }: { onOk: () => void }) {
           disabled={loading}
           className="mt-5 w-full rounded-full bg-norte-green px-6 py-3 text-sm font-bold text-norte-cream transition hover:bg-norte-green-light disabled:opacity-60"
         >
-          {loading ? 'Ingresando…' : 'Ingresar'}
+          {loading ? 'Ingresando' : 'Ingresar'}
         </button>
       </form>
     </div>

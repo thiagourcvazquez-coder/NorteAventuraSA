@@ -44,6 +44,7 @@ function CommentCard({ c, featured }: { c: PublicComment; featured?: boolean }) 
 }
 
 function ReviewForm({ onDone }: { onDone: () => void }) {
+  const { t } = useLang();
   const [form, setForm] = useState({ authorName: '', authorLocation: '', body: '' });
   const [rating, setRating] = useState(5);
   const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
@@ -72,9 +73,9 @@ function ReviewForm({ onDone }: { onDone: () => void }) {
   if (state === 'ok') {
     return (
       <div className="flex h-full flex-col items-center justify-center rounded-3xl bg-norte-yellow p-8 text-center">
-        <p className="display text-2xl text-norte-green">¡Gracias!</p>
+        <p className="display text-2xl text-norte-green">{t('rev.thanks_t')}</p>
         <p className="mt-2 text-sm font-semibold text-norte-green/70">
-          Tu opinión se publica después de una revisión rápida.
+          {t('rev.thanks_d')}
         </p>
       </div>
     );
@@ -82,14 +83,14 @@ function ReviewForm({ onDone }: { onDone: () => void }) {
 
   return (
     <form onSubmit={submit} className="flex h-full flex-col rounded-3xl bg-norte-yellow p-7">
-      <p className="display text-xl text-norte-green">Dejá tu opinión</p>
+      <p className="display text-xl text-norte-green">{t('rev.form_t')}</p>
       <div className="mt-4">
         <Stars value={rating} onPick={setRating} />
       </div>
       <input
         value={form.authorName}
         onChange={(e) => setForm((f) => ({ ...f, authorName: e.target.value }))}
-        placeholder="Tu nombre *"
+        placeholder={t('rev.name_ph')}
         required
         maxLength={80}
         className="mt-4 w-full rounded-2xl border-0 bg-white/80 px-5 py-3 text-sm font-semibold text-norte-green outline-none placeholder:text-norte-green/40 focus:ring-2 focus:ring-norte-green"
@@ -97,14 +98,14 @@ function ReviewForm({ onDone }: { onDone: () => void }) {
       <input
         value={form.authorLocation}
         onChange={(e) => setForm((f) => ({ ...f, authorLocation: e.target.value }))}
-        placeholder="De dónde sos (opcional)"
+        placeholder={t('rev.loc_ph')}
         maxLength={80}
         className="mt-3 w-full rounded-2xl border-0 bg-white/80 px-5 py-3 text-sm font-semibold text-norte-green outline-none placeholder:text-norte-green/40 focus:ring-2 focus:ring-norte-green"
       />
       <textarea
         value={form.body}
         onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-        placeholder="Contanos cómo fue tu experiencia… *"
+        placeholder={t('rev.body_ph')}
         required
         rows={3}
         maxLength={600}
@@ -116,7 +117,7 @@ function ReviewForm({ onDone }: { onDone: () => void }) {
         disabled={state === 'sending'}
         className="mt-4 rounded-full bg-norte-green px-7 py-3 text-sm font-extrabold text-norte-cream transition hover:bg-norte-green-light disabled:opacity-60"
       >
-        {state === 'sending' ? 'Enviando…' : 'Publicar opinión'}
+        {state === 'sending' ? t('rev.sending') : t('rev.submit')}
       </button>
     </form>
   );

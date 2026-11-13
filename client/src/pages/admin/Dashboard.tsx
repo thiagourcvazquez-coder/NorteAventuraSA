@@ -31,7 +31,7 @@ export default function Dashboard({ go }: { go: (tab: string) => void }) {
   }, []);
 
   if (error) return <p className="p-6 text-sm font-medium text-red-600">{error}</p>;
-  if (!stats) return <p className="p-6 text-sm text-norte-gray">Cargando métricas…</p>;
+  if (!stats) return <p className="p-6 text-sm text-norte-gray">Cargando métricas</p>;
 
   const cards = [
     {

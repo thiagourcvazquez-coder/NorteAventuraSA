@@ -199,7 +199,7 @@ function Form({
           disabled={saving}
           className="rounded-full bg-norte-green px-7 py-2.5 text-sm font-extrabold text-norte-cream transition hover:bg-norte-green-light disabled:opacity-60"
         >
-          {saving ? 'Guardando…' : isNew ? 'Crear excursión' : 'Guardar cambios'}
+          {saving ? 'Guardando' : isNew ? 'Crear excursión' : 'Guardar cambios'}
         </button>
         <button
           onClick={onCancel}
@@ -228,7 +228,7 @@ export default function ExcursionEditor({
   const [q, setQ] = useState('');
 
   if (error) return <p className="p-6 text-sm font-medium text-red-600">{error}</p>;
-  if (!list) return <p className="p-6 text-sm text-norte-gray">Cargando excursiones…</p>;
+  if (!list) return <p className="p-6 text-sm text-norte-gray">Cargando excursiones</p>;
 
   const needle = q.trim().toLowerCase();
   const filtered = needle
@@ -282,7 +282,7 @@ export default function ExcursionEditor({
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por nombre, lugar…"
+            placeholder="Buscar por nombre, lugar"
             className="w-full rounded-full border border-norte-green/20 bg-white py-2 pl-9 pr-8 text-sm text-norte-green outline-none placeholder:text-norte-gray/60 focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40"
           />
           {q && (

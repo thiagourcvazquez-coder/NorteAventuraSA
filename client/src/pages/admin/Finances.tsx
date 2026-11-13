@@ -288,7 +288,7 @@ export default function Finances() {
           disabled={saving}
           className="mt-5 rounded-xl bg-[#bfdb26] px-8 py-3 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow disabled:opacity-60"
         >
-          {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Guardar'}
+          {saving ? 'Guardando' : editing ? 'Guardar cambios' : 'Guardar'}
         </button>
       </form>
 
@@ -368,7 +368,7 @@ export default function Finances() {
       <div className={`${card} lg:col-span-2`}>
         <h3 className="display text-lg capitalize text-norte-cream">Movimientos de {monthLabel(month)}</h3>
         {!rows ? (
-          <p className="mt-4 text-sm text-norte-cream/50">Cargando…</p>
+          <p className="mt-4 text-sm text-norte-cream/50">Cargando</p>
         ) : !monthRows.length ? (
           <p className="mt-4 text-sm text-norte-cream/50">Sin movimientos este mes.</p>
         ) : (
