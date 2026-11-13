@@ -185,6 +185,73 @@ app.post('/api/payments/webhook', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/comments
+ * Testimonios aprobados para mostrar en el sitio.
+ */
+app.get('/api/comments', async (_req, res) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.json([]);
+    return;
+  }
+  const { data, error } = await supabase
+    .from('comments')
+    .select('id, author_name, author_location, rating, body, featured, created_at, excursions(name, slug)')
+    .eq('status', 'approved')
+    .order('featured', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(60);
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  res.json(data);
+});
+
+/**
+ * POST /api/comments
+ * El público deja su testimonio → queda 'pending' hasta moderación.
+ */
+app.post('/api/comments', async (req, res) => {
+  const b = (req.body ?? {}) as {
+    authorName?: string;
+    authorLocation?: string;
+    excursionId?: string;
+    rating?: number;
+    body?: string;
+  };
+  const authorName = String(b.authorName ?? '').trim();
+  const body = String(b.body ?? '').trim();
+  if (!authorName || !body) {
+    res.status(400).json({ error: 'Faltan nombre y comentario' });
+    return;
+  }
+  if (authorName.length > 80 || body.length > 600) {
+    res.status(400).json({ error: 'Texto demasiado largo' });
+    return;
+  }
+  const rating = Number(b.rating);
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'No se pueden guardar comentarios ahora' });
+    return;
+  }
+  const { error } = await supabase.from('comments').insert({
+    author_name: authorName,
+    author_location: b.authorLocation ? String(b.authorLocation).trim().slice(0, 80) : null,
+    excursion_id: b.excursionId || null,
+    rating: Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : 5,
+    body,
+    status: 'pending',
+  });
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  res.status(201).json({ ok: true });
+});
+
 app.use('/api/admin', adminRouter);
 
 export default app;

@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { useExcursions } from '../hooks';
 import { useLang } from '../i18n';
 import HorizontalShowcase from '../components/HorizontalShowcase';
+import Reviews from '../components/Reviews';
 import { Marquee, Reveal, ScrollWords, SplitWords, SunMark } from '../components/Motion';
 import { WhatsAppIcon } from '../components/Icons';
 
@@ -269,6 +270,9 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* TESTIMONIOS */}
+      <Reviews />
 
       {/* CTA 3D */}
       <section className="relative isolate overflow-hidden bg-norte-green-dark">

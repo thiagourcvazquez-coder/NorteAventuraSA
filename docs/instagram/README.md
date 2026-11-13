@@ -1,6 +1,6 @@
 # Norte Aventura — Sistema de Instagram
 
-Kit de plantillas + reglas de uso para unificar el feed de **@puraaventurasalta**
+Kit de plantillas + reglas de uso para unificar el feed de **@norteaventura**
 con la identidad del sitio web (norteaventura / norte-aventura-salta.vercel.app).
 
 ## Identidad
@@ -62,6 +62,40 @@ su portada `cover-*` + dos institucionales:
 
 `Hornocal` · `Salinas` · `Cachi` · `Cafayate` · `Llamas` · `Iruya` ·
 `Termas` · `Tren Solar` · `Reservas` · `Opiniones`
+
+## Plantillas nuevas (`render-nuevas.mjs`)
+
+Segunda tanda, misma paleta y tipografía. Se renderizan con Chrome del sistema
+en modo headless (no hace falta Playwright):
+
+```bash
+cd docs/instagram
+node render-nuevas.mjs              # todas
+node render-nuevas.mjs itinerario   # solo una
+```
+
+| Archivo | Formato | Cuándo usarla |
+|---|---|---|
+| `itinerario.png` | 1080×1350 | "Así es el día": timeline horario de la excursión |
+| `combo.png` | 1080×1350 | Pack de 2 excursiones con precio combinado |
+| `incluye.png` | 1080×1350 | "Qué incluye": checklist de la excursión |
+| `galeria.png` | 1080×1350 | Collage editorial de 3 fotos |
+| `tarifario.png` | 1080×1350 | Lista de precios de la temporada |
+| `grupo.png` | 1080×1350 | Grupos, empresas, XV años (B2B) |
+| `lugares.png` | 1080×1080 | Urgencia: "últimos N lugares" para una salida |
+| `pregunta.png` | 1080×1080 | Pregunta frecuente (portada de carrusel FAQ) |
+| `mapa-ruta.png` | 1080×1080 | Ruta del día con paradas, km y tiempos |
+| `giftcard.png` | 1080×1080 | Gift card "Regalá aventura" |
+| `story-encuesta.png` | 1080×1920 | Encuesta A/B entre dos excursiones |
+| `story-cuenta.png` | 1080×1920 | Cuenta regresiva "salimos en N días" |
+| `story-promo.png` | 1080×1920 | Promo vertical con precio para historias |
+| `cover-reservas.png` | 1080×1080 | Portada destacada institucional Reservas |
+| `cover-opiniones.png` | 1080×1080 | Portada destacada institucional Opiniones |
+
+Elemento nuevo de marca: **líneas topográficas** (círculos concéntricos crema
+al ~6 % sobre verde). Se usan como textura de fondo en `incluye`, `mapa-ruta`,
+`grupo`, `story-cuenta`, `story-promo` y `cover-reservas`. Refuerza el tema
+aventura sin sumar colores fuera de la paleta.
 
 ## Regenerar las plantillas
 

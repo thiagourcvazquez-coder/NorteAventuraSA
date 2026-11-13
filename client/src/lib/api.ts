@@ -71,11 +71,11 @@ const ADMIN_KEY = 'na-admin-token';
 export const getAdminToken = () => sessionStorage.getItem(ADMIN_KEY);
 export const clearAdminToken = () => sessionStorage.removeItem(ADMIN_KEY);
 
-export async function adminLogin(password: string): Promise<boolean> {
+export async function adminLogin(username: string, password: string): Promise<boolean> {
   const res = await fetch(`${API_URL}/api/admin/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ username, password }),
   });
   if (!res.ok) return false;
   const { token } = (await res.json()) as { token: string };
@@ -98,4 +98,50 @@ export async function adminFetch<T>(path: string, init?: RequestInit): Promise<T
   }
   if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? `API ${res.status}`);
   return res.json() as Promise<T>;
+}
+
+// ------------------------- Testimonios públicos -------------------------
+
+export interface PublicComment {
+  id: string;
+  author_name: string;
+  author_location: string | null;
+  rating: number | null;
+  body: string;
+  featured: boolean;
+  created_at: string;
+  excursions: { name: string; slug: string } | { name: string; slug: string }[] | null;
+}
+
+export async function getComments(): Promise<PublicComment[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/comments`);
+    if (!res.ok) return [];
+    return (await res.json()) as PublicComment[];
+  } catch {
+    return [];
+  }
+}
+
+export async function submitComment(payload: {
+  authorName: string;
+  authorLocation?: string;
+  excursionId?: string;
+  rating?: number;
+  body: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`${API_URL}/api/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      return { ok: false, error: data?.error ?? `Error ${res.status}` };
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false, error: 'No se pudo conectar con la API' };
+  }
 }

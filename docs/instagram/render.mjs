@@ -1,14 +1,18 @@
 // Genera las plantillas de Instagram de Norte Aventura → docs/instagram/out/*.png
 // Uso: node render.mjs            (todas)
 //      node render.mjs excursion  (una sola)
-import { createRequire } from 'node:module';
+import { execFile } from 'node:child_process';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
 
-const pw = createRequire(import.meta.url)('C:/Users/Usuario/AppData/Local/Temp/na-verify/node_modules/playwright-core');
-const CHROME = 'C:/Users/Usuario/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe';
+const run = promisify(execFile);
+const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const FONTS = path.join(dir, '../propuesta/assets/fonts').replace(/\\/g, '/');
+const TMP = path.join(dir, '.tmp');
+const OUT = path.join(dir, 'out');
 
 const GREEN = '#093628';
 const GREEN_L = '#0d4a36';
@@ -82,8 +86,8 @@ const T = {
       <div class="logo-name" style="color:${CREAM}">Norte<br>Aventura</div>
     </div>
     <div style="position:absolute;left:56px;right:56px;top:280px;color:${CREAM}">
-      <p class="eyebrow" style="color:${YELLOW}">Oferta de temporada</p>
-      <h1 class="display" style="font-size:150px;margin-top:24px">Salinas<br>Grandes</h1>
+      <p class="eyebrow" style="color:${YELLOW}">Destino destacado</p>
+      <h1 class="display" style="font-size:150px;margin-top:24px">Salinas<br>Grandes<br><span style="font-size:64px">desde Salta</span></h1>
       <p style="font-size:30px;font-weight:600;opacity:.75;margin-top:26px;line-height:1.4">El tercer salar más grande de Sudamérica.<br>Cuesta de Lipán · Purmamarca · Cerro 7 Colores</p>
     </div>
     <div style="position:absolute;left:56px;right:56px;bottom:180px">
@@ -133,7 +137,7 @@ const T = {
     </div>
     <div style="position:absolute;left:64px;right:64px;bottom:56px;display:flex;align-items:center;justify-content:space-between">
       <div class="logo">${sun(44)}<p class="logo-name" style="color:${CREAM};font-size:20px">Norte Aventura</p></div>
-      <p style="font-size:22px;font-weight:700;color:${YELLOW}">@puraaventurasalta</p>
+      <p style="font-size:22px;font-weight:700;color:${YELLOW}">@norteaventura</p>
     </div>`),
 
   // 5) Salidas de la semana — 1080x1080
@@ -166,41 +170,42 @@ const T = {
 
   // 6) Story — 1080x1920 (foto arriba + info abajo)
   story: page(1080, 1920, `
-    <img src="https://norteaventura.com.ar/wp-content/uploads/2025/04/20220515_153224.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <img src="https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,54,40,.4) 0%,rgba(9,54,40,0) 30%,rgba(5,42,30,.94) 66%,${GREEN_D} 100%)"></div>
     <div style="position:absolute;top:64px;left:64px" class="logo">
       ${sun(64)}
       <div class="logo-name" style="color:${CREAM}">Norte<br>Aventura</div>
     </div>
     <div style="position:absolute;left:64px;right:64px;bottom:120px;color:${CREAM}">
-      <span class="pill eyebrow" style="background:${YELLOW};color:${GREEN};padding:16px 30px">Nueva salida · Sáb 15</span>
-      <h1 class="display" style="font-size:118px;margin-top:32px">Salinas<br>Grandes<br>+ Purmamarca</h1>
-      <p style="font-size:34px;font-weight:600;opacity:.8;margin-top:30px">Cuesta de Lipán · fotos infinitas · grupos reducidos</p>
+      <span class="pill eyebrow" style="background:${YELLOW};color:${GREEN};padding:16px 30px">Salidas diarias</span>
+      <h1 class="display" style="font-size:118px;margin-top:32px">Salinas<br>Grandes<br><span style="font-size:56px">desde Tilcara</span></h1>
+      <p style="font-size:34px;font-weight:600;opacity:.8;margin-top:30px">Cuesta de Lipán · fotos infinitas · cultura local</p>
       <div class="pill" style="margin-top:44px;background:${YELLOW};color:${GREEN};padding:26px 48px;font-size:32px;font-weight:800">
         Escribinos y reservá →
       </div>
-      <p style="font-size:26px;font-weight:700;margin-top:30px;opacity:.75">${wa} · @puraaventurasalta</p>
+      <p style="font-size:26px;font-weight:700;margin-top:30px;opacity:.75">${wa} · @norteaventura</p>
     </div>`),
 
   // 7) Portadas de destacadas — 1080x1080, una por destino
   ...Object.fromEntries(
     [
-      ['cover-hornocal', 'Hornocal', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg'],
-      ['cover-salinas', 'Salinas', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/20220515_153224.jpg'],
-      ['cover-cachi', 'Cachi', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg'],
-      ['cover-cafayate', 'Cafayate', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg'],
-      ['cover-llamas', 'Llamas', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg'],
-      ['cover-iruya', 'Iruya', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20250115-WA0080.jpg'],
-      ['cover-termas', 'Termas', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/IMG-20240715-WA0028-e1745460883211.jpg'],
-      ['cover-tren', 'Tren Solar', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/DJI_0679-2.jpg'],
-    ].map(([key, name, img]) => [
+      ['cover-hornocal', 'Hornocal', '', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg'],
+      ['cover-salinas', 'Salinas', '', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/20220515_153224.jpg'],
+      ['cover-cachi', 'Cachi', '', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg'],
+      ['cover-cafayate', 'Cafayate', '', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/20250126_174817-e1772563249896.jpg'],
+      ['cover-llamas', 'Caminata<br>con llamas', 'Tilcara', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg'],
+      ['cover-iruya', 'Iruya', 'desde Tilcara', 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20250115-WA0080.jpg'],
+      ['cover-termas', 'Termas', '', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/IMG-20240715-WA0028-e1745460883211.jpg'],
+      ['cover-tren', 'Tren Solar', 'Jujuy', 'https://norteaventura.com.ar/wp-content/uploads/2025/04/DJI_0679-2.jpg'],
+    ].map(([key, name, sub, img]) => [
       key,
       page(1080, 1080, `
         <img src="${img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
         <div style="position:absolute;inset:0;background:${GREEN};opacity:.82"></div>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px">
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px">
           ${sun(200)}
-          <p class="display" style="font-size:88px;color:${CREAM};text-align:center;padding:0 40px">${name}</p>
+          <p class="display" style="font-size:80px;color:${CREAM};text-align:center;padding:0 40px">${name}</p>
+          ${sub ? `<p class="display" style="font-size:36px;color:${YELLOW};letter-spacing:.1em">${sub}</p>` : ''}
         </div>`),
     ]),
   ),
@@ -214,16 +219,20 @@ if (!targets.length) {
   process.exit(1);
 }
 
-const browser = await pw.chromium.launch({ executablePath: CHROME });
+await mkdir(TMP, { recursive: true });
+await mkdir(OUT, { recursive: true });
+
 const sizes = { excursion: [1080, 1350], promo: [1080, 1350], story: [1080, 1920] };
 for (const [name, html] of targets) {
   const [w, h] = sizes[name] ?? [1080, 1080];
-  const p = await browser.newPage({ viewport: { width: w, height: h } });
-  await p.setContent(html, { waitUntil: 'networkidle' });
-  await p.waitForTimeout(400);
-  const out = path.join(dir, 'out', `${name}.png`);
-  await p.screenshot({ path: out });
-  await p.close();
+  const htmlPath = path.join(TMP, `${name}.html`);
+  await writeFile(htmlPath, html);
+  await run(CHROME, [
+    '--headless=new', '--disable-gpu', '--hide-scrollbars',
+    '--force-device-scale-factor=1', `--window-size=${w},${h}`,
+    '--virtual-time-budget=15000',
+    `--screenshot=${path.join(OUT, `${name}.png`)}`,
+    pathToFileURL(htmlPath).href,
+  ], { maxBuffer: 16 * 1024 * 1024 });
   console.log('✓', name, `(${w}x${h})`);
 }
-await browser.close();

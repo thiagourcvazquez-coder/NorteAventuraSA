@@ -27,7 +27,7 @@ const STR = {
     // ---- home
     'home.eyebrow': 'Quiénes somos',
     'home.statement':
-      'Somos una agencia de turismo orientada al trekking y al turismo alternativo. Reversionamos cada destino y le damos nuestro toque: ¡a Pura Aventura!',
+      'Somos una agencia de turismo orientada al trekking y al turismo alternativo. Reversionamos cada destino y le damos nuestro toque: ¡a Norte Aventura!',
     'home.more': 'Conocé más sobre nosotros →',
     'home.daily_eyebrow': 'Salidas diarias',
     'home.daily_title': 'Excursiones todos los días',
@@ -48,6 +48,12 @@ const STR = {
     'home.cta_text':
       'Guías locales, grupos reducidos y turismo sustentable. Escribinos y armamos la excursión perfecta para vos.',
     'home.cta_btn': 'Reservá tu aventura',
+
+    // ---- testimonios
+    'rev.eyebrow': 'Opiniones reales',
+    'rev.title': 'Lo que dicen los que ya viajaron',
+    'rev.cta': 'Dejá tu opinión',
+    'rev.empty': 'Todavía no hay opiniones publicadas. Si ya viajaste con nosotros, ¡contanos cómo te fue!',
 
     // ---- showcase
     'show.eyebrow': 'Excursiones destacadas',
@@ -226,6 +232,12 @@ const STR = {
     'home.cta_text':
       'Local guides, small groups and sustainable tourism. Message us and we will craft the perfect excursion for you.',
     'home.cta_btn': 'Book your adventure',
+
+    // ---- reviews
+    'rev.eyebrow': 'Real reviews',
+    'rev.title': 'What travelers say about us',
+    'rev.cta': 'Leave your review',
+    'rev.empty': 'No reviews published yet. If you already traveled with us, tell us how it went!',
 
     'show.eyebrow': 'Featured excursions',
     'show.title': 'Choose your adventure',
