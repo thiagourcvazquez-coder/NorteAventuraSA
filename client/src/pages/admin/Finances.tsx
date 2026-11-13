@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminFetch } from '../../lib/api';
-import { formatPrice } from '../../lib/format';
 
 interface FinanceRow {
   id: string;
@@ -16,11 +15,6 @@ interface FinanceRow {
   reservations: { customer_name: string } | { customer_name: string }[] | null;
 }
 
-interface Summary {
-  byMonth: { month: string; income: number; expense: number; net: number }[];
-  byCategory: { category: string; total: number }[];
-}
-
 const METHODS = ['efectivo', 'transferencia', 'mercadopago', 'tarjeta', 'otro'] as const;
 const METHOD_LABEL: Record<string, string> = {
   efectivo: 'Efectivo',
@@ -30,67 +24,112 @@ const METHOD_LABEL: Record<string, string> = {
   otro: 'Otro',
 };
 
-const INCOME_CATS = ['reserva', 'seña', 'excursión', 'transfer', 'otro'] as const;
-const EXPENSE_CATS = ['combustible', 'chofer', 'guía', 'publicidad', 'seguro', 'sueldos', 'mantenimiento', 'administración', 'otro'] as const;
+const INCOME_CATS = ['reserva', 'seña', 'excursión', 'transfer', 'varios'] as const;
+const EXPENSE_CATS = ['combustible', 'chofer', 'guía', 'publicidad', 'seguro', 'sueldos', 'mantenimiento', 'administración', 'varios'] as const;
 
-const input =
-  'w-full rounded-lg border border-norte-green/20 bg-white px-3 py-2 text-sm text-norte-green outline-none focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40';
+const CAT_COLORS = ['#8fd0a5', '#e8c95d', '#e58f6f', '#7fb5d9', '#b39ddb', '#f4a7c0', '#90ccb8', '#d9a05b', '#a8b8a0', '#7d8fc4'];
 
-const empty = {
-  type: 'income' as 'income' | 'expense',
-  category: 'reserva',
-  concept: '',
-  amount: '',
-  method: 'efectivo' as string,
-  date: new Date().toISOString().slice(0, 10),
-  notes: '',
-};
+const fmt = (n: number) =>
+  new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 2 }).format(n);
+
+const card = 'rounded-2xl bg-norte-green p-6 sm:p-7';
+const field =
+  'w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-norte-cream placeholder:text-norte-cream/35 outline-none transition focus:bg-white/15 focus:ring-2 focus:ring-norte-yellow/50';
 
 function monthLabel(m: string) {
   const [y, mo] = m.split('-').map(Number);
   return new Date(y, mo - 1, 1).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 }
 
+function Donut({ parts, total }: { parts: { value: number; color: string }[]; total: number }) {
+  const r = 62;
+  const C = 2 * Math.PI * r;
+  let acc = 0;
+  return (
+    <svg viewBox="0 0 160 160" className="h-44 w-44">
+      <circle r={r} cx="80" cy="80" fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="30" />
+      {total > 0 &&
+        parts.map((p, i) => {
+          const frac = p.value / total;
+          const el = (
+            <circle
+              key={i}
+              r={r}
+              cx="80"
+              cy="80"
+              fill="none"
+              stroke={p.color}
+              strokeWidth="30"
+              strokeDasharray={`${Math.max(frac * C - 1.5, 0)} ${C}`}
+              strokeDashoffset={-acc * C}
+              transform="rotate(-90 80 80)"
+            />
+          );
+          acc += frac;
+          return el;
+        })}
+    </svg>
+  );
+}
+
+const empty = {
+  type: 'income' as 'income' | 'expense',
+  concept: '',
+  amount: '',
+  category: 'reserva',
+  method: 'efectivo',
+  date: new Date().toISOString().slice(0, 10),
+  notes: '',
+};
+
 export default function Finances() {
   const [rows, setRows] = useState<FinanceRow[] | null>(null);
-  const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ ...empty });
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
-  const [monthFilter, setMonthFilter] = useState('');
+  const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [catView, setCatView] = useState<'expense' | 'income'>('expense');
 
-  const load = useCallback(() => {
-    adminFetch<FinanceRow[]>('/finances').then(setRows).catch((e) => setError(e.message));
-    adminFetch<Summary>('/finances/summary').then(setSummary).catch(() => setSummary(null));
-  }, []);
+  const load = useCallback(
+    () => adminFetch<FinanceRow[]>('/finances').then(setRows).catch((e) => setError(e.message)),
+    [],
+  );
   useEffect(() => {
     load();
   }, [load]);
 
+  const monthRows = useMemo(() => (rows ?? []).filter((r) => r.date.startsWith(month)), [rows, month]);
+  const income = monthRows.filter((r) => r.type === 'income').reduce((a, r) => a + Number(r.amount), 0);
+  const expense = monthRows.filter((r) => r.type === 'expense').reduce((a, r) => a + Number(r.amount), 0);
+  const balance = income - expense;
+
+  const catParts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const r of monthRows.filter((x) => x.type === catView)) {
+      map.set(r.category, (map.get(r.category) ?? 0) + Number(r.amount));
+    }
+    return [...map.entries()]
+      .map(([category, total], i) => ({ category, total, color: CAT_COLORS[i % CAT_COLORS.length] }))
+      .sort((a, b) => b.total - a.total);
+  }, [monthRows, catView]);
+  const catTotal = catParts.reduce((a, p) => a + p.total, 0);
+
   const cats = form.type === 'income' ? INCOME_CATS : EXPENSE_CATS;
 
-  const visible = useMemo(() => {
-    let list = rows ?? [];
-    if (typeFilter !== 'all') list = list.filter((r) => r.type === typeFilter);
-    if (monthFilter) list = list.filter((r) => r.date.startsWith(monthFilter));
-    return list;
-  }, [rows, typeFilter, monthFilter]);
-
-  const totals = useMemo(() => {
-    const income = visible.filter((r) => r.type === 'income').reduce((a, r) => a + Number(r.amount), 0);
-    const expense = visible.filter((r) => r.type === 'expense').reduce((a, r) => a + Number(r.amount), 0);
-    return { income, expense, net: income - expense };
-  }, [visible]);
+  function shiftMonth(delta: number) {
+    const [y, m] = month.split('-').map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    setMonth(d.toISOString().slice(0, 7));
+  }
 
   function startEdit(r: FinanceRow) {
     setEditing(r.id);
     setForm({
       type: r.type,
-      category: r.category,
       concept: r.concept,
       amount: String(r.amount),
+      category: r.category,
       method: r.method,
       date: r.date,
       notes: r.notes ?? '',
@@ -103,11 +142,7 @@ export default function Finances() {
     setSaving(true);
     setError('');
     try {
-      const payload = {
-        ...form,
-        amount: Number(form.amount),
-        notes: form.notes || undefined,
-      };
+      const payload = { ...form, amount: Number(form.amount), notes: form.notes || undefined };
       if (editing) {
         await adminFetch(`/finances/${editing}`, { method: 'PUT', body: JSON.stringify(payload) });
       } else {
@@ -127,25 +162,17 @@ export default function Finances() {
     try {
       await adminFetch(`/finances/${id}`, { method: 'DELETE' });
       setRows((rs) => rs?.filter((r) => r.id !== id) ?? rs);
-      load();
     } catch (e) {
       setError((e as Error).message);
     }
   }
 
-  const months = useMemo(
-    () => [...new Set((rows ?? []).map((r) => r.date.slice(0, 7)))].sort().reverse(),
-    [rows],
-  );
-
   return (
-    <div className="p-5 sm:p-7">
-      {/* --- Formulario alta/edición --- */}
-      <form onSubmit={save} className="rounded-xl bg-norte-cream/60 p-5 ring-1 ring-norte-green/10">
+    <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-2">
+      {/* ============ NUEVO MOVIMIENTO ============ */}
+      <form onSubmit={save} className={`${card} lg:row-span-2`}>
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-extrabold uppercase tracking-wide text-norte-green">
-            {editing ? 'Editar movimiento' : 'Nuevo movimiento'}
-          </h3>
+          <h3 className="display text-lg uppercase tracking-wide text-norte-cream">Nuevo movimiento</h3>
           {editing && (
             <button
               type="button"
@@ -153,212 +180,238 @@ export default function Finances() {
                 setEditing(null);
                 setForm({ ...empty });
               }}
-              className="text-xs font-bold text-norte-gray hover:text-norte-green"
+              className="text-xs font-bold text-norte-cream/60 hover:text-norte-cream"
             >
-              Cancelar edición
+              Cancelar
             </button>
           )}
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-          <select
-            value={form.type}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                type: e.target.value as 'income' | 'expense',
-                category: (e.target.value === 'income' ? INCOME_CATS : EXPENSE_CATS)[0],
-              }))
-            }
-            className={input}
-          >
-            <option value="income">Ingreso</option>
-            <option value="expense">Egreso</option>
-          </select>
-          <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className={input}>
-            {cats.map((c) => (
-              <option key={c} value={c} className="capitalize">
-                {c.charAt(0).toUpperCase() + c.slice(1)}
-              </option>
-            ))}
-          </select>
-          <input
-            value={form.concept}
-            onChange={(e) => setForm((f) => ({ ...f, concept: e.target.value }))}
-            placeholder="Concepto (ej: seña Humahuaca)"
-            className={`${input} lg:col-span-2`}
-            required
-          />
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.amount}
-            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-            placeholder="Monto $"
-            className={input}
-            required
-          />
-          <input type="date" value={form.date} onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))} className={input} required />
-          <select value={form.method} onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))} className={input}>
-            {METHODS.map((m) => (
-              <option key={m} value={m}>
-                {METHOD_LABEL[m]}
-              </option>
-            ))}
-          </select>
-          <input
-            value={form.notes}
-            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-            placeholder="Notas (opcional)"
-            className={`${input} lg:col-span-4`}
-          />
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-full bg-norte-green px-6 py-2.5 text-sm font-bold text-norte-cream transition hover:bg-norte-green-light disabled:opacity-60"
-          >
-            {saving ? 'Guardando…' : editing ? 'Guardar cambios' : '+ Cargar'}
-          </button>
-        </div>
-        {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
-      </form>
 
-      {/* --- Resumen mensual --- */}
-      {summary && summary.byMonth.length > 0 && (
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl bg-white p-5 ring-1 ring-norte-green/10">
-            <h4 className="text-xs font-extrabold uppercase tracking-wide text-norte-gray">Por mes</h4>
-            <div className="mt-3 space-y-2">
-              {summary.byMonth.slice(0, 6).map((m) => (
-                <div key={m.month} className="flex items-center justify-between text-sm">
-                  <span className="font-semibold capitalize text-norte-green">{monthLabel(m.month)}</span>
-                  <span className="text-emerald-700">+{formatPrice(m.income, 'es')}</span>
-                  <span className="text-red-600">−{formatPrice(m.expense, 'es')}</span>
-                  <span className={`font-extrabold ${m.net >= 0 ? 'text-norte-green' : 'text-red-600'}`}>
-                    {formatPrice(m.net, 'es')}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-xl bg-white p-5 ring-1 ring-norte-green/10">
-            <h4 className="text-xs font-extrabold uppercase tracking-wide text-norte-gray">Egresos por categoría</h4>
-            <div className="mt-3 space-y-2">
-              {summary.byCategory.slice(0, 6).map((c) => (
-                <div key={c.category} className="flex items-center justify-between text-sm">
-                  <span className="font-semibold capitalize text-norte-green">{c.category}</span>
-                  <span className="font-bold text-red-600">{formatPrice(c.total, 'es')}</span>
-                </div>
-              ))}
-              {!summary.byCategory.length && <p className="text-sm text-norte-gray">Sin egresos cargados.</p>}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --- Filtros + totales --- */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="flex gap-1 rounded-full bg-norte-green/5 p-1">
-          {(
-            [
-              ['all', 'Todos'],
-              ['income', 'Ingresos'],
-              ['expense', 'Egresos'],
-            ] as const
-          ).map(([v, label]) => (
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          {(['income', 'expense'] as const).map((t) => (
             <button
-              key={v}
-              onClick={() => setTypeFilter(v)}
-              className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
-                typeFilter === v ? 'bg-norte-green text-norte-cream' : 'text-norte-gray hover:text-norte-green'
+              key={t}
+              type="button"
+              onClick={() =>
+                setForm((f) => ({
+                  ...f,
+                  type: t,
+                  category: (t === 'income' ? INCOME_CATS : EXPENSE_CATS)[0],
+                }))
+              }
+              className={`rounded-xl py-3 text-sm font-bold transition ${
+                form.type === t
+                  ? 'bg-[#9fd8ae] text-norte-green'
+                  : 'bg-white/10 text-norte-cream/70 hover:bg-white/15'
               }`}
             >
-              {label}
+              {t === 'income' ? 'Ingreso' : 'Gasto'}
             </button>
           ))}
         </div>
-        <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} className={`${input} w-auto`}>
-          <option value="">Todos los meses</option>
-          {months.map((m) => (
-            <option key={m} value={m} className="capitalize">
-              {monthLabel(m)}
-            </option>
-          ))}
-        </select>
-        <div className="ml-auto flex items-center gap-4 text-sm font-bold">
-          <span className="text-emerald-700">+{formatPrice(totals.income, 'es')}</span>
-          <span className="text-red-600">−{formatPrice(totals.expense, 'es')}</span>
-          <span className={totals.net >= 0 ? 'text-norte-green' : 'text-red-600'}>
-            Neto: {formatPrice(totals.net, 'es')}
-          </span>
+
+        <input
+          value={form.concept}
+          onChange={(e) => setForm((f) => ({ ...f, concept: e.target.value }))}
+          placeholder="Descripción (ej: Seña Humahuaca, Nafta combi)"
+          required
+          className={`${field} mt-4`}
+        />
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-norte-cream/50">Monto $</label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.amount}
+              onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+              required
+              className={field}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-norte-cream/50">Categoría</label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+              className={`${field} capitalize [&>option]:text-norte-green`}
+            >
+              {cats.map((c) => (
+                <option key={c} value={c}>
+                  {c.charAt(0).toUpperCase() + c.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-norte-cream/50">Fecha</label>
+            <input
+              type="date"
+              value={form.date}
+              onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+              required
+              className={`${field} [color-scheme:dark]`}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-norte-cream/50">Método</label>
+            <select
+              value={form.method}
+              onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))}
+              className={`${field} [&>option]:text-norte-green`}
+            >
+              {METHODS.map((m) => (
+                <option key={m} value={m}>
+                  {METHOD_LABEL[m]}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <input
+          value={form.notes}
+          onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+          placeholder="Notas (opcional)"
+          className={`${field} mt-3`}
+        />
+
+        {error && <p className="mt-3 text-sm font-medium text-red-400">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="mt-5 rounded-xl bg-[#9fd8ae] px-8 py-3 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow disabled:opacity-60"
+        >
+          {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Guardar'}
+        </button>
+      </form>
+
+      {/* ============ BALANCE DEL MES ============ */}
+      <div className={card}>
+        <div className="flex items-center justify-between">
+          <h3 className="display text-lg capitalize text-norte-cream">Balance de {monthLabel(month)}</h3>
+          <div className="flex gap-2">
+            <button onClick={() => shiftMonth(-1)} className="rounded-lg bg-white/10 px-3 py-1.5 text-norte-cream transition hover:bg-white/20" aria-label="Mes anterior">‹</button>
+            <button onClick={() => shiftMonth(1)} className="rounded-lg bg-white/10 px-3 py-1.5 text-norte-cream transition hover:bg-white/20" aria-label="Mes siguiente">›</button>
+          </div>
+        </div>
+        <p className="display mt-4 text-4xl sm:text-5xl text-norte-cream">{fmt(balance)}</p>
+        <p className="mt-1 text-xs font-semibold text-norte-cream/50">Ingresos menos egresos</p>
+        <div className="mt-5 space-y-2.5 border-t border-white/10 pt-4 text-sm">
+          <div className="flex justify-between">
+            <span className="text-norte-cream/70">Ingresos</span>
+            <span className="font-extrabold text-[#9fd8ae]">{fmt(income)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-norte-cream/70">Egresos</span>
+            <span className="font-extrabold text-[#f28b82]">{fmt(expense)}</span>
+          </div>
         </div>
       </div>
 
-      {/* --- Tabla --- */}
-      {!rows ? (
-        <p className="mt-6 text-sm text-norte-gray">Cargando movimientos…</p>
-      ) : !visible.length ? (
-        <p className="mt-6 text-sm text-norte-gray">No hay movimientos cargados.</p>
-      ) : (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-norte-green/15 text-xs uppercase tracking-wide text-norte-gray">
-                <th className="px-3 py-2">Fecha</th>
-                <th className="px-3 py-2">Tipo</th>
-                <th className="px-3 py-2">Categoría</th>
-                <th className="px-3 py-2">Concepto</th>
-                <th className="px-3 py-2">Método</th>
-                <th className="px-3 py-2 text-right">Monto</th>
-                <th className="px-3 py-2" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-norte-green/10">
-              {visible.map((r) => (
-                <tr key={r.id} className="align-top">
-                  <td className="px-3 py-2.5 font-semibold text-norte-green">{r.date}</td>
-                  <td className="px-3 py-2.5">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                        r.type === 'income' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      {r.type === 'income' ? 'Ingreso' : 'Egreso'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2.5 capitalize text-norte-green">{r.category}</td>
-                  <td className="max-w-64 px-3 py-2.5">
-                    <p className="font-semibold text-norte-green">{r.concept}</p>
-                    {r.notes && <p className="text-xs text-norte-gray">{r.notes}</p>}
-                    {r.reservations && (
-                      <p className="text-xs text-norte-gray">
-                        Reserva: {(Array.isArray(r.reservations) ? r.reservations[0] : r.reservations)?.customer_name}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-3 py-2.5 text-norte-gray">{METHOD_LABEL[r.method] ?? r.method}</td>
-                  <td
-                    className={`px-3 py-2.5 text-right font-extrabold ${
-                      r.type === 'income' ? 'text-emerald-700' : 'text-red-600'
-                    }`}
-                  >
-                    {r.type === 'income' ? '+' : '−'}
-                    {formatPrice(r.amount, 'es')}
-                  </td>
-                  <td className="px-3 py-2.5 text-right">
-                    <button onClick={() => startEdit(r)} className="mr-3 text-xs font-bold text-norte-green hover:underline">
-                      Editar
-                    </button>
-                    <button onClick={() => remove(r.id)} className="text-xs font-bold text-red-600 hover:underline">
-                      Borrar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* ============ POR CATEGORÍA ============ */}
+      <div className={card}>
+        <div className="flex items-center justify-between">
+          <h3 className="display text-lg uppercase tracking-wide text-norte-cream">Por categoría</h3>
+          <div className="flex gap-1 rounded-full bg-white/10 p-1">
+            {(['expense', 'income'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setCatView(t)}
+                className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                  catView === t ? 'bg-[#9fd8ae] text-norte-green' : 'text-norte-cream/60 hover:text-norte-cream'
+                }`}
+              >
+                {t === 'expense' ? 'Egresos' : 'Ingresos'}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+
+        <div className="mt-5 flex items-center gap-6">
+          <Donut parts={catParts.map((p) => ({ value: p.total, color: p.color }))} total={catTotal} />
+          <p className="text-xs font-semibold text-norte-cream/50">
+            Total de {catView === 'expense' ? 'egresos' : 'ingresos'}:<br />
+            <span className="text-lg font-extrabold text-norte-cream">{fmt(catTotal)}</span>
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-2">
+          {catParts.map((p) => (
+            <div key={p.category} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-3">
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-extrabold uppercase text-norte-green"
+                  style={{ background: p.color }}
+                >
+                  {p.category.charAt(0)}
+                </span>
+                <div>
+                  <p className="font-bold capitalize text-norte-cream">{p.category}</p>
+                  <p className="text-[11px] text-norte-cream/50">{catTotal ? Math.round((p.total / catTotal) * 100) : 0}% del total</p>
+                </div>
+              </div>
+              <p className="font-extrabold text-norte-cream">{fmt(p.total)}</p>
+            </div>
+          ))}
+          {!catParts.length && <p className="text-sm text-norte-cream/50">Sin movimientos este mes.</p>}
+        </div>
+      </div>
+
+      {/* ============ MOVIMIENTOS DEL MES ============ */}
+      <div className={`${card} lg:col-span-2`}>
+        <h3 className="display text-lg capitalize text-norte-cream">Movimientos de {monthLabel(month)}</h3>
+        {!rows ? (
+          <p className="mt-4 text-sm text-norte-cream/50">Cargando…</p>
+        ) : !monthRows.length ? (
+          <p className="mt-4 text-sm text-norte-cream/50">Sin movimientos este mes.</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-[11px] uppercase tracking-wider text-norte-cream/40">
+                  <th className="py-2 pr-4">Fecha</th>
+                  <th className="py-2 pr-4">Concepto</th>
+                  <th className="py-2 pr-4">Categoría</th>
+                  <th className="py-2 pr-4">Método</th>
+                  <th className="py-2 pr-4 text-right">Monto</th>
+                  <th className="py-2" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {monthRows.map((r) => (
+                  <tr key={r.id} className="align-top">
+                    <td className="py-3 pr-4 font-semibold text-norte-cream/80">{r.date}</td>
+                    <td className="max-w-64 py-3 pr-4">
+                      <p className="font-bold text-norte-cream">{r.concept}</p>
+                      {r.notes && <p className="text-xs text-norte-cream/45">{r.notes}</p>}
+                    </td>
+                    <td className="py-3 pr-4 capitalize text-norte-cream/70">{r.category}</td>
+                    <td className="py-3 pr-4 text-norte-cream/60">{METHOD_LABEL[r.method] ?? r.method}</td>
+                    <td className={`py-3 pr-4 text-right font-extrabold ${r.type === 'income' ? 'text-[#9fd8ae]' : 'text-[#f28b82]'}`}>
+                      {r.type === 'income' ? '+' : '−'}{fmt(r.amount)}
+                    </td>
+                    <td className="py-3 text-right">
+                      <button onClick={() => startEdit(r)} className="mr-3 text-xs font-bold text-norte-yellow hover:underline">
+                        Editar
+                      </button>
+                      <button onClick={() => remove(r.id)} className="text-xs font-bold text-[#f28b82] hover:underline">
+                        Borrar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
