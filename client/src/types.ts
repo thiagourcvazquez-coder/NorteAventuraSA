@@ -40,11 +40,20 @@ export interface ReservationRequest {
   excursionSlug: string;
   excursionName: string;
   customerName: string;
+  lastName?: string;
   phone: string;
   email?: string;
   startDate: string;
   people: number;
   notes?: string;
+  country?: string;
+  hotel?: string;
+  nationality?: string;
+  province?: string;
+  documentId?: string;
+  birthDate?: string;
+  /** mercadopago | transferencia | whatsapp */
+  paymentMethod?: string;
 }
 
 export interface ReservationResponse {

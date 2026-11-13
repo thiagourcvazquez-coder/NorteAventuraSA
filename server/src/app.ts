@@ -43,12 +43,32 @@ app.post('/api/reservations', async (req, res) => {
     excursionSlug: String(b.excursionSlug),
     excursionName: String(b.excursionName),
     customerName: String(b.customerName).trim(),
+    lastName: b.lastName ? String(b.lastName).trim() : undefined,
     phone: String(b.phone).trim(),
     email: b.email ? String(b.email).trim() : undefined,
     startDate: String(b.startDate),
     people,
     notes: b.notes ? String(b.notes).trim() : undefined,
+    country: b.country ? String(b.country).trim() : undefined,
+    hotel: b.hotel ? String(b.hotel).trim() : undefined,
+    nationality: b.nationality ? String(b.nationality).trim() : undefined,
+    province: b.province ? String(b.province).trim() : undefined,
+    documentId: b.documentId ? String(b.documentId).trim() : undefined,
+    birthDate: b.birthDate ? String(b.birthDate).trim() : undefined,
+    paymentMethod: b.paymentMethod ? String(b.paymentMethod).trim() : undefined,
   };
+
+  const fullName = [payload.customerName, payload.lastName].filter(Boolean).join(' ');
+  const detailLines = [
+    payload.country && `País: ${payload.country}`,
+    payload.hotel && `Hotel/Dirección: ${payload.hotel}`,
+    payload.nationality && `Nacionalidad: ${payload.nationality}`,
+    payload.province && `Provincia: ${payload.province}`,
+    payload.documentId && `DNI/Pasaporte: ${payload.documentId}`,
+    payload.birthDate && `Fecha de nacimiento: ${payload.birthDate}`,
+    payload.paymentMethod && `Pago elegido: ${payload.paymentMethod}`,
+  ].filter(Boolean);
+  const notes = [payload.notes, detailLines.join(' · ')].filter(Boolean).join('\n') || null;
 
   let reservationId: string | null = null;
   const supabase = getSupabase();
@@ -63,13 +83,13 @@ app.post('/api/reservations', async (req, res) => {
       .from('reservations')
       .insert({
         excursion_id: excursion?.id ?? null,
-        customer_name: payload.customerName,
+        customer_name: fullName,
         phone: payload.phone,
         email: payload.email ?? null,
         start_date: payload.startDate,
         people: payload.people,
         total: excursion?.price ? excursion.price * payload.people : null,
-        notes: payload.notes ?? null,
+        notes,
       })
       .select('id')
       .single();

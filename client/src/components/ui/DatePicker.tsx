@@ -22,10 +22,12 @@ export default function DatePicker({
   value,
   onChange,
   min,
+  light = false,
 }: {
   value: string; // 'YYYY-MM-DD'
   onChange: (v: string) => void;
   min?: string;
+  light?: boolean;
 }) {
   const today = new Date();
   const todayIso = iso(today.getFullYear(), today.getMonth(), today.getDate());
@@ -80,10 +82,14 @@ export default function DatePicker({
           setView({ y: sel.y, m: sel.m });
           setOpen((o) => !o);
         }}
-        className="flex w-full items-center justify-between rounded-lg bg-white/10 px-3 py-2 text-sm text-norte-cream outline-none transition hover:bg-white/15 focus:ring-2 focus:ring-norte-yellow/50"
+        className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm outline-none transition ${
+          light
+            ? 'border border-norte-green/20 bg-white text-norte-green hover:border-norte-green/40 focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40'
+            : 'bg-white/10 text-norte-cream hover:bg-white/15 focus:ring-2 focus:ring-norte-yellow/50'
+        }`}
       >
         <span>{fmt(value || todayIso)}</span>
-        <svg viewBox="0 0 24 24" className="h-4 w-4 text-norte-cream/60" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg viewBox="0 0 24 24" className={`h-4 w-4 ${light ? 'text-norte-gray' : 'text-norte-cream/60'}`} fill="none" stroke="currentColor" strokeWidth="2">
           <rect x="3" y="5" width="18" height="16" rx="3" />
           <path d="M8 3v4M16 3v4M3 10h18" strokeLinecap="round" />
         </svg>

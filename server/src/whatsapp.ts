@@ -4,11 +4,21 @@ export interface ReservationPayload {
   excursionSlug: string;
   excursionName: string;
   customerName: string;
+  lastName?: string;
   phone: string;
   email?: string;
   startDate: string; // YYYY-MM-DD
   people: number;
   notes?: string;
+  // datos del pasajero (checkout online)
+  country?: string;
+  hotel?: string;
+  nationality?: string;
+  province?: string;
+  documentId?: string;
+  birthDate?: string;
+  /** mercadopago | transferencia | whatsapp */
+  paymentMethod?: string;
 }
 
 /** Arma el deep-link wa.me con el mensaje de reserva pre-cargado. */
@@ -23,10 +33,11 @@ export function buildWhatsAppUrl(r: ReservationPayload): string {
     `Fecha: ${fecha}`,
     `Personas: ${r.people}`,
     '',
-    `Nombre: ${r.customerName}`,
+    `Nombre: ${[r.customerName, r.lastName].filter(Boolean).join(' ')}`,
     `Tel: ${r.phone}`,
   ];
   if (r.email) lines.push(`Email: ${r.email}`);
+  if (r.paymentMethod === 'transferencia') lines.push('Pago elegido: transferencia bancaria');
   if (r.notes) lines.push(`Notas: ${r.notes}`);
   return `https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(lines.join('\n'))}`;
 }
