@@ -10,7 +10,6 @@ const links = [
   { to: '/', key: 'nav.home', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0017.jpg' },
   { to: '/excursiones?origen=salta', key: 'nav.from_salta', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/04/Salta-Cachi-Iglesia-de-San-Jose-de-Cachi-1.jpg' },
   { to: '/excursiones?origen=jujuy', key: 'nav.from_jujuy', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240520-WA0124.jpg' },
-  { to: '/excursiones?tipo=trekking', key: 'nav.trekking', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
   { to: '/nosotros', key: 'nav.about', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/03/IMG-20240503-WA0026.jpg' },
   { to: '/contacto', key: 'nav.contact', img: 'https://norteaventura.com.ar/wp-content/uploads/2025/02/20220304_172731-scaled.jpg' },
 ] as const;

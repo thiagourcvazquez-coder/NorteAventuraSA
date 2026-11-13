@@ -12,7 +12,6 @@ const EMPTY: Partial<AdminExcursion> & { category: string } = {
   name: '',
   location: '',
   category: 'salta',
-  tipo: 'clasica',
   price: null,
   price_note: '',
   duration: '1 (un) día',
@@ -38,7 +37,6 @@ function toDraft(e: AdminExcursion): Draft {
     name: e.name,
     location: e.location,
     category: cat?.slug ?? 'salta',
-    tipo: e.tipo,
     price: e.price,
     price_note: e.price_note ?? '',
     duration: e.duration,
@@ -60,7 +58,6 @@ const FIELD_TO_API: Record<string, string> = {
   slug: 'slug',
   location: 'location',
   category: 'category',
-  tipo: 'tipo',
   price: 'price',
   price_note: 'priceNote',
   duration: 'duration',
@@ -114,14 +111,6 @@ function Form({
           <select className={input} value={String(draft.category)} onChange={set('category')}>
             <option value="salta">Desde Salta</option>
             <option value="jujuy">Desde Jujuy</option>
-          </select>
-        </div>
-        <div>
-          <label className={label}>Tipo</label>
-          <select className={input} value={String(draft.tipo)} onChange={set('tipo')}>
-            <option value="clasica">Clásica</option>
-            <option value="trekking">Trekking y experiencias</option>
-            <option value="privada">Privada / a medida</option>
           </select>
         </div>
         <div>
@@ -244,7 +233,7 @@ export default function ExcursionEditor({
   const needle = q.trim().toLowerCase();
   const filtered = needle
     ? list.filter((e) =>
-        [e.name, e.location, e.tipo, e.difficulty, e.slug].some((f) => f?.toLowerCase().includes(needle)),
+        [e.name, e.location, e.difficulty, e.slug].some((f) => f?.toLowerCase().includes(needle)),
       )
     : list;
 
@@ -293,7 +282,7 @@ export default function ExcursionEditor({
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por nombre, lugar, tipo…"
+            placeholder="Buscar por nombre, lugar…"
             className="w-full rounded-full border border-norte-green/20 bg-white py-2 pl-9 pr-8 text-sm text-norte-green outline-none placeholder:text-norte-gray/60 focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40"
           />
           {q && (
@@ -346,7 +335,7 @@ export default function ExcursionEditor({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-norte-green">{e.name}</p>
                 <p className="text-xs text-norte-gray">
-                  {e.location} · {e.tipo} · {e.difficulty}
+                  {e.location} · {e.difficulty}
                 </p>
               </div>
               <span className="text-sm font-extrabold text-norte-green">

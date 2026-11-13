@@ -11,7 +11,6 @@ export interface AdminExcursion {
   slug: string;
   name: string;
   location: string;
-  tipo: 'clasica' | 'trekking' | 'privada';
   price: number | null;
   price_note: string | null;
   duration: string;

@@ -45,7 +45,6 @@ export default function Footer() {
               ['/', 'nav.home'],
               ['/excursiones?origen=salta', 'nav.from_salta'],
               ['/excursiones?origen=jujuy', 'nav.from_jujuy'],
-              ['/excursiones?tipo=trekking', 'nav.trekking'],
               ['/nosotros', 'nav.about'],
               ['/contacto', 'nav.contact'],
             ].map(([to, key]) => (
