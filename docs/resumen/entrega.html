@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Norte Aventura — Documento de entrega</title>
+<style>
+  :root { --green:#093628; --green-l:#0d4a36; --yellow:#FFC83B; --gray:#6C6D72; --line:#e4e2d8; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  @page { size: A4; margin: 18mm 16mm; }
+  body { font-family:'Segoe UI', Arial, sans-serif; color:#222; font-size:11pt; line-height:1.55; }
+  .cover { padding: 60px 0 30px; }
+  .brand { font-size:34pt; font-weight:800; color:var(--green); letter-spacing:.02em; }
+  .brand span { color:var(--yellow); }
+  .sub { font-size:13pt; color:var(--gray); margin-top:6px; }
+  .rule { width:120px; height:4px; background:var(--yellow); margin:18px 0; }
+  .date { color:var(--gray); font-size:10pt; }
+  h1 { font-size:15pt; color:var(--green); margin:26px 0 8px; border-bottom:2px solid var(--line); padding-bottom:5px; }
+  h2 { font-size:11pt; color:var(--green-l); margin:14px 0 4px; }
+  p { margin:6px 0; }
+  ul { margin:6px 0 6px 4px; list-style:none; }
+  li { padding-left:16px; position:relative; margin:3px 0; }
+  li::before { content:'•'; color:var(--yellow); font-weight:bold; position:absolute; left:0; }
+  code, .env { font-family:'Consolas','Courier New',monospace; }
+  .env { display:block; background:#f4f3ec; border-left:3px solid var(--yellow); padding:8px 12px; margin:8px 0; font-size:9.5pt; white-space:pre; }
+  .warn { background:#fdf3d7; border:1px solid #ecd28a; border-radius:6px; padding:10px 14px; margin:10px 0; font-size:10pt; }
+  .cred { background:#eef4ef; border:1px solid #c5d8ca; border-radius:6px; padding:10px 14px; margin:8px 0; font-size:10.5pt; }
+  .cred b { color:var(--green); }
+  a { color:var(--green-l); }
+  .footer { margin-top:30px; padding-top:10px; border-top:2px solid var(--line); font-size:9pt; color:var(--gray); }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">NORTE <span>AVENTURA</span></div>
+  <div class="sub">Documento de entrega — Sitio web, backoffice y cambios realizados</div>
+  <div class="rule"></div>
+  <div class="date">13 de noviembre de 2026</div>
+</div>
+
+<h1>1. Direcciones del proyecto</h1>
+<ul>
+  <li>Sitio público: <b>norte-aventura-salta.vercel.app</b></li>
+  <li>Backoffice (administración): <b>norte-aventura-salta.vercel.app/admin</b></li>
+  <li>API (servidor): <b>norte-aventura-sa.vercel.app</b></li>
+  <li>Repositorio: <b>github.com/thiagourcvazquez-coder/NorteAventuraSA</b></li>
+</ul>
+<p>Cada cambio que se sube a GitHub (rama <code>main</code>) dispara un deploy automático en Vercel en unos minutos.</p>
+
+<h1>2. Acceso al backoffice</h1>
+<div class="cred">
+  <p><b>URL:</b> norte-aventura-salta.vercel.app/admin</p>
+  <p><b>Usuario:</b> norteaventura@agencia.com</p>
+  <p><b>Contraseña:</b> NorteAventura123_</p>
+</div>
+<p>Estas credenciales deben estar cargadas como variables de entorno en Vercel, en el proyecto <b>norte-aventura-sa</b> (el server) → Settings → Environment Variables:</p>
+<span class="env">ADMIN_USERNAME = norteaventura@agencia.com
+ADMIN_PASSWORD = NorteAventura123_
+ADMIN_SECRET   = (cualquier texto largo aleatorio)</span>
+<p>Después de cargarlas: Deployments → último → Redeploy para que tomen efecto.</p>
+
+<h1>3. Qué incluye el backoffice</h1>
+<h2>Dashboard</h2>
+<ul>
+  <li>Reservas del mes, pendientes de confirmar, ingresos y egresos del mes, comentarios por moderar, excursiones activas.</li>
+</ul>
+<h2>Reservas</h2>
+<ul>
+  <li>Listado completo con filtro por estado; se puede cambiar cada reserva a pendiente / confirmada / cancelada.</li>
+  <li>Se ve quién pagó por Mercado Pago y quién todavía no.</li>
+</ul>
+<h2>Finanzas (caja)</h2>
+<ul>
+  <li>Carga de movimientos: Ingreso o Gasto, con descripción, monto, categoría, fecha, método de pago y notas.</li>
+  <li>Balance del mes (ingresos menos egresos) con navegación entre meses.</li>
+  <li>Gráfico por categoría con selector ingresos/egresos y tabla de movimientos del mes con edición y borrado.</li>
+</ul>
+<h2>Comentarios / testimonios</h2>
+<ul>
+  <li>Los visitantes pueden dejar su opinión desde la página principal (sección de testimonios).</li>
+  <li>Entran como "pendientes": desde el panel se aprueban, rechazan, destacan o borran.</li>
+  <li>También se pueden cargar testimonios a mano con nombre, origen, estrellas y excursión.</li>
+</ul>
+<h2>Excursiones</h2>
+<ul>
+  <li>Crear, editar y desactivar excursiones: precio, duración, dificultad, tipo (clásica / trekking / privada), imágenes, mapa, orden de aparición.</li>
+</ul>
+
+<h1>4. Base de datos (Supabase)</h1>
+<p>Se agregaron dos tablas nuevas. El SQL está en <code>supabase/migration-backoffice.sql</code> y hay que ejecutarlo una sola vez en Supabase → SQL Editor:</p>
+<ul>
+  <li><code>finances</code> — movimientos de ingresos y egresos; solo accesible desde el panel.</li>
+  <li><code>comments</code> — testimonios; el público solo lee los aprobados y solo puede enviar nuevos (quedan pendientes).</li>
+</ul>
+
+<h1>5. Plantillas de Instagram</h1>
+<p>Quedaron en <code>docs/instagram/out/</code> del repositorio — 30 imágenes PNG listas para publicar. Cambios aplicados según el documento del cliente:</p>
+<ul>
+  <li>Marca unificada <b>Norte Aventura</b>: se eliminaron todas las referencias a "Pura Aventura"; handle @puraaventurasalta → <b>@norteaventura</b>.</li>
+  <li>"Oferta de temporada" → "Destino destacado"; títulos corregidos: "Salinas Grandes desde Salta" / "desde Tilcara".</li>
+  <li>"Nueva salida" → "Salidas diarias"; "grupos reducidos" → "cultura local".</li>
+  <li>Itinerario sin horarios (salvo "largada · 6:50" en el mapa de ruta) y nueva parada "Paleta del Pintor · Maimará" después de Salta.</li>
+  <li>Lista "Qué incluye" corregida según el texto del cliente.</li>
+  <li>Grupos: "Hasta 36 personas" y "Destino a medida".</li>
+  <li>Portadas renombradas: "Iruya desde Tilcara", "Tren Solar (Jujuy)", "Caminata con llamas (Tilcara)".</li>
+  <li>Gift card con el logo de Norte Aventura; story de Salinas con foto nueva.</li>
+</ul>
+<p style="color:var(--gray);font-size:9.5pt">Para regenerar cualquier pieza: en docs/instagram ejecutar <code>node render.mjs</code> o <code>node render-nuevas.mjs</code> (usa el Chrome instalado).</p>
+
+<h1>6. Mercado Pago — qué falta para activarlo</h1>
+<p>El código ya está completo: cuando alguien reserva, el sitio genera un link de pago de Mercado Pago (Checkout Pro) y, cuando MP confirma el cobro, la reserva se marca como pagada sola. <b>Lo único que falta son las credenciales de la cuenta de Mercado Pago de la agencia.</b></p>
+<h2>Pasos para activarlo</h2>
+<ul>
+  <li>Entrar a <b>mercadopago.com.ar/developers/panel</b> con la cuenta de Mercado Pago de la agencia.</li>
+  <li>En "Tus integraciones" → crear una aplicación (nombre: Norte Aventura) o abrir la que ya exista.</li>
+  <li>Ir a <b>Credenciales</b> y copiar el <b>Access Token de PRODUCCIÓN</b> (empieza con <code>APP_USR-</code>).<br>
+    <span style="color:var(--gray)">El token de prueba (<code>TEST-</code>) es opcional: sirve para probar el flujo sin cobrar plata real.</span></li>
+  <li>En Vercel → proyecto <b>norte-aventura-sa</b> → Settings → Environment Variables, cargar:</li>
+</ul>
+<span class="env">MP_ACCESS_TOKEN = APP_USR-... (el token de producción)
+PUBLIC_URL      = https://norte-aventura-sa.vercel.app
+CLIENT_URL      = https://norte-aventura-salta.vercel.app</span>
+<ul>
+  <li>Hacer Redeploy del proyecto server.</li>
+</ul>
+<h2>Recomendado: webhook</h2>
+<ul>
+  <li>En el panel de MP → Webhooks → suscribir el evento "Pagos" a <code>https://norte-aventura-sa.vercel.app/api/payments/webhook</code>.</li>
+  <li>Copiar la firma secreta que genera MP y cargarla como <code>MP_WEBHOOK_SECRET</code> en Vercel.</li>
+</ul>
+<div class="warn">
+  <b>Importante:</b> sin <code>MP_ACCESS_TOKEN</code> el botón de pago ni siquiera aparece — el formulario sigue funcionando solo por WhatsApp. Sin webhook el cobro se realiza igual, pero la reserva no se marca como pagada automáticamente.
+</div>
+
+<h1>7. Estado actual</h1>
+<ul>
+  <li>Todo el código está en GitHub (rama main); Vercel despliega automáticamente cada push.</li>
+  <li>Base de datos en Supabase (proyecto jffodfofuikrnvuudmfu).</li>
+  <li>Pendiente en producción: ejecutar el SQL de la migración y cargar las variables de entorno de los puntos 2 y 6.</li>
+</ul>
+
+<div class="footer">Norte Aventura — Documento de entrega · generado con Devin</div>
+</body>
+</html>
