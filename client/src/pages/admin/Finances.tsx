@@ -27,7 +27,7 @@ const METHOD_LABEL: Record<string, string> = {
 const INCOME_CATS = ['reserva', 'seña', 'excursión', 'transfer', 'varios'] as const;
 const EXPENSE_CATS = ['combustible', 'chofer', 'guía', 'publicidad', 'seguro', 'sueldos', 'mantenimiento', 'administración', 'varios'] as const;
 
-const CAT_COLORS = ['#8fd0a5', '#e8c95d', '#e58f6f', '#7fb5d9', '#b39ddb', '#f4a7c0', '#90ccb8', '#d9a05b', '#a8b8a0', '#7d8fc4'];
+const CAT_COLORS = ['#bfdb26', '#fb950e', '#728316', '#e8d9b0', '#c96f3f', '#8ab6d6', '#d9a05b', '#9aa65a', '#b39ddb', '#f4a7c0'];
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 2 }).format(n);
@@ -201,7 +201,7 @@ export default function Finances() {
               }
               className={`rounded-xl py-3 text-sm font-bold transition ${
                 form.type === t
-                  ? 'bg-[#9fd8ae] text-norte-green'
+                  ? 'bg-[#bfdb26] text-norte-green'
                   : 'bg-white/10 text-norte-cream/70 hover:bg-white/15'
               }`}
             >
@@ -286,7 +286,7 @@ export default function Finances() {
         <button
           type="submit"
           disabled={saving}
-          className="mt-5 rounded-xl bg-[#9fd8ae] px-8 py-3 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow disabled:opacity-60"
+          className="mt-5 rounded-xl bg-[#bfdb26] px-8 py-3 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow disabled:opacity-60"
         >
           {saving ? 'Guardando…' : editing ? 'Guardar cambios' : 'Guardar'}
         </button>
@@ -306,11 +306,11 @@ export default function Finances() {
         <div className="mt-5 space-y-2.5 border-t border-white/10 pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-norte-cream/70">Ingresos</span>
-            <span className="font-extrabold text-[#9fd8ae]">{fmt(income)}</span>
+            <span className="font-extrabold text-[#bfdb26]">{fmt(income)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-norte-cream/70">Egresos</span>
-            <span className="font-extrabold text-[#f28b82]">{fmt(expense)}</span>
+            <span className="font-extrabold text-[#fb950e]">{fmt(expense)}</span>
           </div>
         </div>
       </div>
@@ -325,7 +325,7 @@ export default function Finances() {
                 key={t}
                 onClick={() => setCatView(t)}
                 className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
-                  catView === t ? 'bg-[#9fd8ae] text-norte-green' : 'text-norte-cream/60 hover:text-norte-cream'
+                  catView === t ? 'bg-[#bfdb26] text-norte-green' : 'text-norte-cream/60 hover:text-norte-cream'
                 }`}
               >
                 {t === 'expense' ? 'Egresos' : 'Ingresos'}
@@ -394,14 +394,14 @@ export default function Finances() {
                     </td>
                     <td className="py-3 pr-4 capitalize text-norte-cream/70">{r.category}</td>
                     <td className="py-3 pr-4 text-norte-cream/60">{METHOD_LABEL[r.method] ?? r.method}</td>
-                    <td className={`py-3 pr-4 text-right font-extrabold ${r.type === 'income' ? 'text-[#9fd8ae]' : 'text-[#f28b82]'}`}>
+                    <td className={`py-3 pr-4 text-right font-extrabold ${r.type === 'income' ? 'text-[#bfdb26]' : 'text-[#fb950e]'}`}>
                       {r.type === 'income' ? '+' : '−'}{fmt(r.amount)}
                     </td>
                     <td className="py-3 text-right">
                       <button onClick={() => startEdit(r)} className="mr-3 text-xs font-bold text-norte-yellow hover:underline">
                         Editar
                       </button>
-                      <button onClick={() => remove(r.id)} className="text-xs font-bold text-[#f28b82] hover:underline">
+                      <button onClick={() => remove(r.id)} className="text-xs font-bold text-[#fb950e] hover:underline">
                         Borrar
                       </button>
                     </td>
