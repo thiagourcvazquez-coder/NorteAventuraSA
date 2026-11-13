@@ -236,9 +236,17 @@ export default function ExcursionEditor({
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [q, setQ] = useState('');
 
   if (error) return <p className="p-6 text-sm font-medium text-red-600">{error}</p>;
   if (!list) return <p className="p-6 text-sm text-norte-gray">Cargando excursiones…</p>;
+
+  const needle = q.trim().toLowerCase();
+  const filtered = needle
+    ? list.filter((e) =>
+        [e.name, e.location, e.tipo, e.difficulty, e.slug].some((f) => f?.toLowerCase().includes(needle)),
+      )
+    : list;
 
   async function save() {
     const d = editing;
@@ -270,14 +278,40 @@ export default function ExcursionEditor({
 
   return (
     <div>
-      <div className="flex items-center justify-between px-5 py-4">
-        <p className="text-sm font-semibold text-norte-gray">{list.length} excursiones en la base</p>
+      <div className="flex flex-wrap items-center gap-3 px-5 py-4">
+        <p className="text-sm font-semibold text-norte-gray">
+          {filtered.length} de {list.length} excursiones
+        </p>
+        <div className="relative min-w-52 flex-1 sm:max-w-xs">
+          <svg
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-norte-gray"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+          </svg>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por nombre, lugar, tipo…"
+            className="w-full rounded-full border border-norte-green/20 bg-white py-2 pl-9 pr-8 text-sm text-norte-green outline-none placeholder:text-norte-gray/60 focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40"
+          />
+          {q && (
+            <button
+              onClick={() => setQ('')}
+              aria-label="Limpiar búsqueda"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-norte-gray hover:text-norte-green"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         <button
           onClick={() => {
             setEditing({ ...EMPTY });
             setCreating(true);
           }}
-          className="rounded-full bg-norte-yellow px-5 py-2 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow-dark"
+          className="ml-auto rounded-full bg-norte-yellow px-5 py-2 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow-dark"
         >
           + Nueva excursión
         </button>
@@ -297,7 +331,12 @@ export default function ExcursionEditor({
             isNew
           />
         )}
-        {list.map((e) => (
+        {filtered.length === 0 && (
+          <li className="px-5 py-8 text-center text-sm font-semibold text-norte-gray">
+            No hay excursiones que coincidan con “{q}”.
+          </li>
+        )}
+        {filtered.map((e) => (
           <li key={e.id}>
             <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
               <span
