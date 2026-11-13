@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminFetch } from '../../lib/api';
+import DatePicker from '../../components/ui/DatePicker';
 
 interface FinanceRow {
   id: string;
@@ -250,12 +251,9 @@ export default function Finances() {
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
             <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-norte-cream/50">Fecha</label>
-            <input
-              type="date"
+            <DatePicker
               value={form.date}
-              onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-              required
-              className={`${field} [color-scheme:dark]`}
+              onChange={(v) => setForm((f) => ({ ...f, date: v }))}
             />
           </div>
           <div>

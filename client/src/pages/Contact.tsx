@@ -58,10 +58,10 @@ export default function Contact() {
         </ul>
 
         <div className="mt-8 flex gap-4">
-          <a href="https://web.facebook.com/norteaventura.ok/" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] text-white transition hover:scale-110">
+          <a href="https://web.facebook.com/norteaventuraok/" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] text-white transition hover:scale-110">
             <FacebookIcon />
           </a>
-          <a href="https://www.instagram.com/norteaventura.ok/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E4405F] text-white transition hover:scale-110">
+          <a href="https://www.instagram.com/norteaventuraok/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E4405F] text-white transition hover:scale-110">
             <InstagramIcon />
           </a>
           <a href="https://www.tiktok.com/@norteaventura.ok" target="_blank" rel="noreferrer" aria-label="TikTok" className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white transition hover:scale-110">
