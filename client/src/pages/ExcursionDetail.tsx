@@ -55,14 +55,22 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.25]);
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  // Portada con mapa (public/portadas, generada con docs/portadas). Si no existe, foto original.
+  const [useCover, setUseCover] = useState(true);
+  const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
+
   return (
     <section ref={ref} className="relative isolate h-[78svh] min-h-[460px] overflow-hidden bg-norte-green">
-      {excursion.imageUrl && (
+      {src && (
         <motion.img
-          src={excursion.imageUrl}
+          src={src}
           alt={excursion.name}
+          onError={() => setUseCover(false)}
           style={{ y, scale }}
-          className="absolute inset-0 h-full w-full object-cover"
+          // La portada es foto (izq.) + mapa (der.): en pantallas angostas se encuadra sobre la foto.
+          className={`absolute inset-0 h-full w-full object-cover ${
+            useCover ? 'object-[30%_50%] lg:object-center' : ''
+          }`}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/40 to-norte-green-dark/30" />
@@ -132,7 +140,7 @@ export default function ExcursionDetail() {
   return (
     <>
       {/* Hero de la excursión */}
-      <DetailHero excursion={excursion} />
+      <DetailHero key={excursion.slug} excursion={excursion} />
 
       {!!excursion.images?.length && excursion.images.length > 1 && (
         <Gallery images={excursion.images} name={excursion.name} />
