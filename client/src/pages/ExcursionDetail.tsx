@@ -52,7 +52,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.25]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   // Portada con mapa (public/portadas, generada con docs/portadas). Si no existe, foto original.
@@ -60,20 +60,30 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
 
   return (
-    <section ref={ref} className="relative isolate h-[78svh] min-h-[460px] overflow-hidden bg-norte-green">
+    <section
+      ref={ref}
+      className="relative isolate h-[78svh] min-h-[460px] overflow-hidden bg-norte-green lg:h-[88svh]"
+    >
       {src && (
         <motion.img
           src={src}
           alt={excursion.name}
           onError={() => setUseCover(false)}
           style={{ y, scale }}
-          // La portada es foto (izq.) + mapa (der.): en pantallas angostas se encuadra sobre la foto.
+          // La portada es foto (izq.) + mapa (der.), 2.4:1: en pantallas angostas se encuadra sobre la foto.
           className={`absolute inset-0 h-full w-full object-cover ${
-            useCover ? 'object-[30%_50%] lg:object-center' : ''
+            useCover ? 'object-[27%_50%] lg:object-center' : ''
           }`}
         />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-norte-green-dark via-norte-green-dark/40 to-norte-green-dark/30" />
+      {/* Con portada, el oscurecido es más liviano para que se lea el mapa; abajo sigue fuerte por el título. */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-t from-norte-green-dark ${
+          useCover
+            ? 'via-norte-green-dark/15 via-45% to-norte-green-dark/25'
+            : 'via-norte-green-dark/40 to-norte-green-dark/30'
+        }`}
+      />
       <motion.div style={{ opacity: fade }} className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 sm:pb-16">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-norte-cream ring-1 ring-white/20 backdrop-blur">

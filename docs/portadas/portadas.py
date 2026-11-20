@@ -11,7 +11,7 @@ Uso:
     python portadas.py --todas         # además genera las variantes verde y crema
     python portadas.py tour-a-cafayate-desde-salta caravana-de-llamas-centro-de-interpetacion-tilcara
 
-Salida: out/integrada/<slug>.jpg (2000x1000)
+Salida: out/integrada/<slug>.jpg (2400x1000)
 Excursiones: excursiones.json (export de la tabla excursions de Supabase).
 Para cambiar el recorrido o la salida de una excursión, editar RUTAS.
 Para mover el encuadre de una foto, editar FOCO (x, y entre 0 y 1).
@@ -35,15 +35,21 @@ CACHE = os.path.join(BASE, 'cache')
 FONTS = os.path.join(BASE, '..', 'propuesta', 'assets', 'fonts')
 UA = 'NorteAventura-portadas/1.0'
 
-W, H = 2000, 1000
+W, H = 2400, 1000  # ~2.4:1, cerca del hero en escritorio (menos recorte)
 SS = 2  # supersampling para líneas y textos
 
 # Zona donde se dibuja el recorrido (lejos del menú de arriba y del título de abajo)
-SAFE = (1420, 400, 1800, 750)
+SAFE = (int(0.67 * W), int(0.27 * H), int(0.85 * W), int(0.63 * H))
 # Degradado foto -> mapa (en px del lienzo)
-FADE_FROM, FADE_TO = 0.48 * W, 0.72 * W
-PHOTO_W = int(0.76 * W)
-MAP_X0 = int(0.44 * W)
+FADE_FROM, FADE_TO = 0.45 * W, 0.67 * W
+PHOTO_W = int(0.71 * W)
+MAP_X0 = int(0.41 * W)
+# Zonas (fracciones del lienzo x0, y0, x1, y1). El hero recorta arriba/abajo en
+# pantallas anchas y a los costados en notebooks; arriba está el menú y abajo
+# el título con un degradado oscuro, así que todo el texto va en la franja media.
+LBL = (0.64, 0.20, 0.90, 0.72)      # donde preferimos las etiquetas
+LBL_MAX = (0.60, 0.16, 0.92, 0.76)  # fuera de esto, nunca
+CTX_BOX = (0.66, 0.16, 0.91, 0.78)  # pueblos de referencia
 
 # ---------------------------------------------------------------- lugares
 P = {
@@ -135,9 +141,9 @@ VARIANTES = {
     # Predeterminada: el mapa toma los colores de la foto (sin choque visual)
     'integrada': dict(
         adaptive=True,
-        route=(255, 200, 59), glow=(255, 200, 59), casing=(0, 0, 0, 120),
-        text=(255, 251, 242), kicker=(255, 200, 59), ctx=(255, 251, 242, 140),
-        marker_fill=(255, 200, 59), marker_stroke=(255, 251, 242), shadow=(0, 0, 0, 190),
+        route=(251, 149, 14), glow=(251, 149, 14), casing=(0, 0, 0, 130),
+        text=(247, 248, 238), kicker=(251, 149, 14), ctx=(247, 248, 238, 150),
+        marker_fill=(251, 149, 14), marker_stroke=(247, 248, 238), shadow=(0, 0, 0, 200),
     ),
     'verde': dict(
         shade_dark=(4, 26, 19), shade_light=(52, 98, 74),
@@ -307,14 +313,14 @@ def tenir_adaptado(gray, foto_arr):
     deep = deep * 0.8 + BRAND_GREEN * 0.2
 
     xs = np.arange(MAP_X0, W, dtype=np.float32)[None, :]
-    d = np.clip((xs - FADE_FROM) / (0.80 * W - FADE_FROM), 0, 1)
+    d = np.clip((xs - FADE_FROM) / (0.76 * W - FADE_FROM), 0, 1)
     d = (d * d * (3 - 2 * d) * 0.95)[..., None]
     base = edge[:, None, :] * (1 - d) + deep[None, None, :] * d
 
     gg = np.asarray(gray, np.float32) / 255.0
     gg = np.clip((gg - 0.22) / (0.92 - 0.22), 0, 1)[..., None]
     # el relieve aparece de a poco: casi plano junto a la foto, marcado hacia la derecha
-    k = np.clip((xs - FADE_FROM) / (0.76 * W - FADE_FROM), 0, 1)[..., None]
+    k = np.clip((xs - FADE_FROM) / (0.72 * W - FADE_FROM), 0, 1)[..., None]
     k = 0.25 + 0.75 * k * k * (3 - 2 * k)
     out = base * (1 + ((0.50 + 0.90 * gg) - 1) * k)
     out += (255 - out) * 0.10 * np.clip((gg - 0.75) / 0.25, 0, 1)  # brillo en las crestas
@@ -380,7 +386,7 @@ def portada(exc, variante):
         # la foto se suaviza de a poco justo antes de fundirse (menos choque de detalles)
         soft = np.asarray(foto.filter(ImageFilter.GaussianBlur(9)), np.float32)
         xp = np.arange(PHOTO_W, dtype=np.float32)[None, :]
-        b = np.clip((xp - 0.50 * W) / (0.22 * W), 0, 1)
+        b = np.clip((xp - 0.47 * W) / (0.22 * W), 0, 1)
         b = (b * b * (3 - 2 * b) * 0.85)[..., None]
         foto_arr = foto_arr * (1 - b) + soft * b
     photo_rgb[:, :PHOTO_W] = foto_arr
@@ -470,9 +476,9 @@ def portada(exc, variante):
 
         def coste(rect):
             c = 0
-            if not (rect[0] > 0.69 * W * S and rect[2] < (W - 26) * S and rect[1] > 0.30 * H * S and rect[3] < 0.88 * H * S):
+            if not (rect[0] > LBL[0] * W * S and rect[2] < LBL[2] * W * S and rect[1] > LBL[1] * H * S and rect[3] < LBL[3] * H * S):
                 c += 1
-            if rect[0] < 0.62 * W * S or rect[2] > (W - 24) * S or rect[1] < 0.12 * H * S or rect[3] > 0.92 * H * S:
+            if rect[0] < LBL_MAX[0] * W * S or rect[2] > LBL_MAX[2] * W * S or rect[1] < LBL_MAX[1] * H * S or rect[3] > LBL_MAX[3] * H * S:
                 c += 100
             c += 10 * sum(rect_overlap(rect, t_, 8 * S) for t_ in others)
             c += 3 * hits_route(rect)
@@ -514,7 +520,7 @@ def portada(exc, variante):
         name = P[k][0]
         tw = text_w(d, name, f_ctx)
         rect = (x - 5 * S, y - f_ctx.size / 2, x + 12 * S + tw, y + f_ctx.size / 2)
-        if not (0.72 * W * S < rect[0] and rect[2] < (W - 30) * S and 0.10 * H * S < rect[1] and rect[3] < 0.92 * H * S):
+        if not (CTX_BOX[0] * W * S < rect[0] and rect[2] < CTX_BOX[2] * W * S and CTX_BOX[1] * H * S < rect[1] and rect[3] < CTX_BOX[3] * H * S):
             continue
         if any(rect_overlap(rect, t_, 14 * S) for t_ in taken):
             continue
