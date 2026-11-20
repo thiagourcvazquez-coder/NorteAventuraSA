@@ -31,12 +31,24 @@ interface ExcursionRow {
   excursion_images: { url: string; sort_order: number }[];
 }
 
+/**
+ * El sitio siempre muestra los nombres completos, aunque en la base estén
+ * abreviados (ej. "Q. de las Señoritas" → "Quebrada de las Señoritas").
+ */
+const ABREVIATURAS: [RegExp, string][] = [
+  [/\bQ\.\s*(?=de\b)/g, 'Quebrada '],
+  [/\bP\.\s*N\.\s*/g, 'Parque Nacional '],
+  [/\bGral\.\s*/g, 'General '],
+  [/\bS\.\s*S\.\s*de\b/g, 'San Salvador de'],
+];
+export const fullName = (s: string) => ABREVIATURAS.reduce((t, [re, full]) => t.replace(re, full), s);
+
 function rowToExcursion(r: ExcursionRow): Excursion {
   const cat = Array.isArray(r.categories) ? r.categories[0] : r.categories;
   return {
     slug: r.slug,
-    name: r.name,
-    location: r.location,
+    name: fullName(r.name),
+    location: fullName(r.location),
     category: (cat?.slug ?? 'salta') as CategorySlug,
     tipo: r.tipo ?? 'clasica',
     price: r.price,

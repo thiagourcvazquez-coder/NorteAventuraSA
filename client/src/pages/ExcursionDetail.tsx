@@ -67,9 +67,11 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
           alt={excursion.name}
           onError={() => setUseCover(false)}
           style={{ y, scale }}
-          // La portada es foto (izq.) + mapa (der.), 2.1:1: en pantallas angostas se encuadra sobre la foto.
+          // La portada es foto (izq.) + mapa (der.), 2.1:1. Pantalla vertical (celular): se encuadra
+          // sobre la foto. Pantalla horizontal: se corre a la derecha lo justo para que el mapa entre
+          // entero (en 2.1:1 o más ancha no hay recorte lateral y se ve todo).
           className={`absolute inset-0 h-full w-full object-cover ${
-            useCover ? 'object-[30%_50%] lg:object-center' : ''
+            useCover ? 'object-[30%_50%] [@media(min-aspect-ratio:6/5)]:object-[85%_50%]' : ''
           }`}
         />
       )}
