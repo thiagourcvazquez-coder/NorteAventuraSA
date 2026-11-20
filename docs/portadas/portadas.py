@@ -11,7 +11,7 @@ Uso:
     python portadas.py --todas         # además genera las variantes verde y crema
     python portadas.py tour-a-cafayate-desde-salta caravana-de-llamas-centro-de-interpetacion-tilcara
 
-Salida: out/integrada/<slug>.jpg (2400x1000)
+Salida: out/integrada/<slug>.jpg (2100x1000)
 Excursiones: excursiones.json (export de la tabla excursions de Supabase).
 Para cambiar el recorrido o la salida de una excursión, editar RUTAS.
 Para mover el encuadre de una foto, editar FOCO (x, y entre 0 y 1).
@@ -35,7 +35,7 @@ CACHE = os.path.join(BASE, 'cache')
 FONTS = os.path.join(BASE, '..', 'propuesta', 'assets', 'fonts')
 UA = 'NorteAventura-portadas/1.0'
 
-W, H = 2400, 1000  # ~2.4:1, cerca del hero en escritorio (menos recorte)
+W, H = 2100, 1000  # ~2.1:1, como el hero a pantalla completa en escritorio
 SS = 2  # supersampling para líneas y textos
 
 # Zona donde se dibuja el recorrido (lejos del menú de arriba y del título de abajo)

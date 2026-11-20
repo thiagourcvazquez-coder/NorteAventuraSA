@@ -60,36 +60,39 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
 
   return (
-    <section
-      ref={ref}
-      className="relative isolate h-[78svh] min-h-[460px] overflow-hidden bg-norte-green lg:h-[88svh]"
-    >
+    <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-norte-green">
       {src && (
         <motion.img
           src={src}
           alt={excursion.name}
           onError={() => setUseCover(false)}
           style={{ y, scale }}
-          // La portada es foto (izq.) + mapa (der.), 2.4:1: en pantallas angostas se encuadra sobre la foto.
+          // La portada es foto (izq.) + mapa (der.), 2.1:1: en pantallas angostas se encuadra sobre la foto.
           className={`absolute inset-0 h-full w-full object-cover ${
-            useCover ? 'object-[27%_50%] lg:object-center' : ''
+            useCover ? 'object-[30%_50%] lg:object-center' : ''
           }`}
         />
       )}
-      {/* Con portada, el oscurecido es más liviano para que se lea el mapa; abajo sigue fuerte por el título. */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-t from-norte-green-dark ${
-          useCover
-            ? 'via-norte-green-dark/15 via-45% to-norte-green-dark/25'
-            : 'via-norte-green-dark/40 to-norte-green-dark/30'
-        }`}
-      />
+      {useCover ? (
+        <>
+          {/* Arriba, apenas para el menú. Abajo, solo del lado del título: el mapa queda limpio. */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-norte-green-dark/45 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-norte-green-dark/85 via-norte-green-dark/25 via-35% to-transparent lg:[mask-image:linear-gradient(to_right,black_35%,transparent_62%)]" />
+        </>
+      ) : (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-norte-green-dark/85 via-norte-green-dark/25 to-norte-green-dark/45" />
+      )}
       <motion.div style={{ opacity: fade }} className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 sm:pb-16">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-norte-cream ring-1 ring-white/20 backdrop-blur">
             <MapPinIcon className="h-3.5 w-3.5 text-norte-yellow" /> {excursion.location}
           </p>
-          <h1 className="display max-w-5xl text-[clamp(2rem,5.6vw,4.8rem)] text-norte-cream">
+          {/* Con portada, el título no pasa de la mitad para no pisar el mapa. */}
+          <h1
+            className={`display max-w-5xl text-[clamp(2rem,5.6vw,4.8rem)] text-norte-cream ${
+              useCover ? 'lg:max-w-[50vw]' : ''
+            }`}
+          >
             <SplitWords text={excursion.name} onMount delay={0.15} />
           </h1>
         </div>
