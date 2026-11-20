@@ -61,7 +61,7 @@ export default function ExcursionCard({
         </span>
 
         <div className="absolute inset-x-0 bottom-0 p-6">
-          <h3 className="line-clamp-3 text-xl font-extrabold leading-tight text-white">{excursion.name}</h3>
+          <h3 className="text-xl font-extrabold leading-tight text-white">{excursion.name}</h3>
           <div className="mt-3 flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-norte-cream/70">
             <span className="inline-flex items-center gap-1.5">
               <ClockIcon className="h-3.5 w-3.5 text-norte-yellow" />

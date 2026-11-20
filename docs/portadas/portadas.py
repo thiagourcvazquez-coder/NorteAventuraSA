@@ -50,12 +50,15 @@ MAP_X0 = int(0.41 * W)
 LBL = (0.64, 0.20, 0.90, 0.72)      # donde preferimos las etiquetas
 LBL_MAX = (0.60, 0.16, 0.92, 0.76)  # fuera de esto, nunca
 CTX_BOX = (0.66, 0.16, 0.91, 0.78)  # pueblos de referencia
+MAX_LBL_W = 0.16  # más ancho que esto (fracción del lienzo) -> dos líneas
+NL = chr(10)
+LINE_GAP = 4
 
 # ---------------------------------------------------------------- lugares
 P = {
     'SALTA': ('Salta', -24.7883, -65.4106),
     'TILCARA': ('Tilcara', -23.5770, -65.3953),
-    'JUJUY': ('S. S. de Jujuy', -24.1858, -65.2995),
+    'JUJUY': ('San Salvador de Jujuy', -24.1858, -65.2995),
     'PURMAMARCA': ('Purmamarca', -23.7456, -65.4986),
     'HUMAHUACA': ('Humahuaca', -23.2050, -65.3500),
     'CAFAYATE': ('Cafayate', -26.0730, -65.9759),
@@ -65,6 +68,7 @@ P = {
     'SALINAS': ('Salinas Grandes', -23.6300, -65.8700),
     'HORNOCAL': ('Hornocal', -23.2140, -65.2400),
     'UQUIA': ('Uquía', -23.3030, -65.3570),
+    'SENORITAS': ('Quebrada de las Señoritas', -23.3030, -65.3570),
     'IRUYA': ('Iruya', -22.7900, -65.2150),
     'TERMAS_JORDAN': ('Termas del Jordán', -23.6400, -64.9400),
     'SAN_ANTONIO': ('San Antonio de los Cobres', -24.2250, -66.3190),
@@ -79,7 +83,7 @@ P = {
     'INCA_CUEVA': ('Inca Cueva', -23.0500, -65.4400),
     'POZUELOS': ('Laguna de los Pozuelos', -22.3800, -65.9800),
     'ABRA_PAMPA': ('Abra Pampa', -22.7220, -65.6970),
-    'CALILEGUA': ('P. N. Calilegua', -23.7600, -64.8500),
+    'CALILEGUA': ('Parque Nacional Calilegua', -23.7600, -64.8500),
     'ACSIBI': ('Cuevas de Acsibi', -25.3100, -66.3000),
     'LA_POMA': ('La Poma', -24.7160, -66.2000),
     'CONCHAS': ('Quebrada de las Conchas', -25.8000, -65.6600),
@@ -88,7 +92,7 @@ P = {
     'SEPTIMO': ('Molinos', -25.4440, -66.3080),
     'ROSARIO_LERMA': ('Rosario de Lerma', -24.9790, -65.5800),
     'SAN_PEDRO': ('San Pedro', -24.2310, -64.8660),
-    'LIBERTADOR': ('Libertador Gral. San Martín', -23.8100, -64.7900),
+    'LIBERTADOR': ('Libertador General San Martín', -23.8100, -64.7900),
 }
 
 # Recorrido por excursión: el primero es desde donde sale.
@@ -104,7 +108,7 @@ RUTAS = {
     'cuevas-de-acisibi': ['SALTA', 'CACHI', 'ACSIBI'],
     'cuevas-del-wayra': ['TILCARA'],
     'excursion-a-cachi-desde-salta': ['SALTA', 'CACHI'],
-    'excursion-humahuaca-hornocal-quebrada-de-las-senoritas': ['TILCARA', 'UQUIA', 'HUMAHUACA', 'HORNOCAL'],
+    'excursion-humahuaca-hornocal-quebrada-de-las-senoritas': ['TILCARA', 'SENORITAS', 'HUMAHUACA', 'HORNOCAL'],
     'excursion-iruya-desde-tilcara': ['TILCARA', 'HUMAHUACA', 'IRUYA'],
     'garganta-del-diablo-tilcara': ['TILCARA', 'GARGANTA_TILCARA'],
     'humahuaca-hornocal': ['SALTA', 'HUMAHUACA', 'HORNOCAL'],
@@ -449,10 +453,17 @@ def portada(exc, variante):
         name = P[k][0].upper() if i in (0, len(marks) - 1) else P[k][0]
         fnt = f_main if i in (0, len(marks) - 1) else f_stop
         kicker = 'SALIDA' if i == 0 else None
-        tw = text_w(d, name, fnt)
+        # nombres largos en dos líneas (cortando en el espacio más cercano al medio)
+        if text_w(d, name, fnt) > MAX_LBL_W * W * S and ' ' in name:
+            words = name.split(' ')
+            cuts = [(abs(len(' '.join(words[:k])) - len(' '.join(words[k:]))), k) for k in range(1, len(words))]
+            k = min(cuts)[1]
+            name = ' '.join(words[:k]) + NL + ' '.join(words[k:])
+        lines = name.split(NL)
+        tw = max(text_w(d, ln, fnt) for ln in lines)
         kw = text_w(d, kicker, f_kick, 4 * S) if kicker else 0
         bw = max(tw, kw)
-        th = fnt.size
+        th = fnt.size * len(lines) + LINE_GAP * S * (len(lines) - 1)
         kh = (f_kick.size + 8 * S) if kicker else 0
         bh = th + kh
         gap = (34 if i == 0 else 22) * S
@@ -496,7 +507,8 @@ def portada(exc, variante):
     sd = ImageDraw.Draw(sh)
     for name, fnt, kicker, lx, ly, kh, bw, tw, kw, side in labels:
         ax = lx + (bw - tw if side == 'l' else (bw - tw) / 2 if side in 't b' else 0)
-        sd.text((ax, ly + kh), name, font=fnt, fill=v['shadow'])
+        sd.text((ax, ly + kh), name, font=fnt, fill=v['shadow'], spacing=LINE_GAP * S,
+                align='right' if side == 'l' else 'center' if side in 't b' else 'left')
         if kicker:
             kx = lx + (bw - kw if side == 'l' else (bw - kw) / 2 if side in 't b' else 0)
             draw_text(sd, (kx, ly), kicker, f_kick, v['shadow'], spacing=4 * S)
@@ -505,7 +517,8 @@ def portada(exc, variante):
     d = ImageDraw.Draw(layer)
     for name, fnt, kicker, lx, ly, kh, bw, tw, kw, side in labels:
         ax = lx + (bw - tw if side == 'l' else (bw - tw) / 2 if side in 't b' else 0)
-        d.text((ax, ly + kh), name, font=fnt, fill=v['text'] + (255,))
+        d.text((ax, ly + kh), name, font=fnt, fill=v['text'] + (255,), spacing=LINE_GAP * S,
+               align='right' if side == 'l' else 'center' if side in 't b' else 'left')
         if kicker:
             kx = lx + (bw - kw if side == 'l' else (bw - kw) / 2 if side in 't b' else 0)
             draw_text(d, (kx, ly), kicker, f_kick, v['kicker'] + (255,), spacing=4 * S)

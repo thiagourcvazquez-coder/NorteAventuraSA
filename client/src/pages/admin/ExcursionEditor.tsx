@@ -333,7 +333,7 @@ export default function ExcursionEditor({
                 title={e.is_active ? 'Activa' : 'Oculta'}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-norte-green">{e.name}</p>
+                <p className="text-sm font-bold text-norte-green">{e.name}</p>
                 <p className="text-xs text-norte-gray">
                   {e.location} · {e.difficulty}
                 </p>

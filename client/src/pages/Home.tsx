@@ -36,9 +36,6 @@ const DAILY_JUJUY = [
   'inca-cueva-humahuaca',
 ];
 
-/** Nombre corto de la excursión para las listas (antes de ':' / '–' / '|'). */
-const shortName = (n: string) => n.split(/[:|–—]/)[0].replace(/“|”/g, '').trim();
-
 const marqueeItems = ['Trekking', 'Salinas Grandes', 'Hornocal', 'Quebrada de Humahuaca', 'Cafayate', 'Purmamarca', 'Tilcara', 'Cachi', 'Iruya'];
 
 export default function Home() {
@@ -187,7 +184,7 @@ export default function Home() {
                       className="group flex items-center justify-between gap-4 py-3.5"
                     >
                       <span className="text-sm font-bold text-norte-green transition group-hover:text-norte-yellow-dark">
-                        {shortName(e.name)}
+                        {e.name}
                       </span>
                       <span className="shrink-0 text-xs font-extrabold uppercase tracking-wider text-norte-gray transition group-hover:text-norte-yellow-dark">
                         →
