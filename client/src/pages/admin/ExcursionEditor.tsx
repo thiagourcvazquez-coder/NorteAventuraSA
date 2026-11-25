@@ -14,7 +14,7 @@ const EMPTY: Partial<AdminExcursion> & { category: string } = {
   category: 'salta',
   price: null,
   price_note: '',
-  duration: '1 (un) día',
+  duration: '1 día',
   schedule: 'Consultar horarios',
   difficulty: 'Baja',
   short_desc: '',

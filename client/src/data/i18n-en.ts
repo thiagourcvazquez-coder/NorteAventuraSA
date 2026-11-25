@@ -21,7 +21,7 @@ export const EXCURSION_EN: Record<string, ExcursionEn> = {
   'salinas-grandes-purmamarca-desde-salta': {
     shortDesc: 'The third-largest salt flat in South America.',
     description:
-      'Departure from Salta towards Jujuy crossing the Cuesta de Lipán (4,170 masl) up to the imposing Salinas Grandes. Includes a stop in Purmamarca to see the Hill of Seven Colors. An endless white landscape, perfect for incredible photos.',
+      'Departure from Salta towards Jujuy crossing the Cuesta de Lipán, at 4,170 masl, up to the imposing Salinas Grandes. Includes a stop in Purmamarca to see the Hill of Seven Colors. An endless white landscape, perfect for incredible photos.',
   },
   'cascada-escondida-san-lorenzo-salta': {
     shortDesc: 'Trekking through the yungas jungle just minutes from Salta.',
@@ -31,10 +31,10 @@ export const EXCURSION_EN: Record<string, ExcursionEn> = {
   'humahuaca-hornocal': {
     shortDesc: 'The soul of the Quebrada in a single excursion.',
     description:
-      'Humahuaca lies in the heart of the Quebrada de Humahuaca (Jujuy, Argentina), a UNESCO World Heritage Site. The route includes Purmamarca with its Hill of Seven Colors, Tilcara (cradle of the carnival) and, as the grand finale, the ascent to the imposing Hornocal or Hill of 14 Colors, at over 4,300 masl.',
+      'Humahuaca lies in the heart of the Quebrada de Humahuaca in Jujuy, Argentina, a UNESCO World Heritage Site. The route includes Purmamarca with its Hill of Seven Colors, Tilcara, cradle of the carnival, and as the grand finale, the ascent to the imposing Hornocal or Hill of 14 Colors, at over 4,300 masl.',
     faqs: [
       {
-        question: 'Do we visit the Hill of 14 Colors (Hornocal)?',
+        question: 'Do we visit Hornocal, the Hill of 14 Colors?',
         answer:
           'Yes, the excursion includes the ascent to the Hornocal lookout, located at over 4,300 masl — one of the most impressive views in northern Argentina.',
       },
@@ -46,7 +46,7 @@ export const EXCURSION_EN: Record<string, ExcursionEn> = {
       {
         question: 'What other places do we visit besides Humahuaca?',
         answer:
-          'We also visit Purmamarca (Hill of Seven Colors) and Tilcara, before reaching the Hornocal community.',
+          'We also visit Purmamarca with its Hill of Seven Colors and Tilcara, before reaching the Hornocal community.',
       },
     ],
   },
@@ -73,7 +73,7 @@ export const EXCURSION_EN: Record<string, ExcursionEn> = {
   'excursion-humahuaca-hornocal-quebrada-de-las-senoritas': {
     shortDesc: 'Three gems of the Quebrada in one day.',
     description:
-      'A combo combining Humahuaca, the Hill of 14 Colors (Hornocal) and trekking through the Quebrada de las Señoritas in Uquía, with its reddish rock formations. Departure from Tilcara covering the best of the World Heritage Quebrada.',
+      'A combo combining Humahuaca, Hornocal, the Hill of 14 Colors, and trekking through the Quebrada de las Señoritas in Uquía, with its reddish rock formations. Departure from Tilcara covering the best of the World Heritage Quebrada.',
   },
   'salinas-grandes-purmamarca-desde-tilcara': {
     shortDesc: 'The salt flats and the Hill of Seven Colors from the Quebrada.',
@@ -83,7 +83,7 @@ export const EXCURSION_EN: Record<string, ExcursionEn> = {
   'excursion-iruya-desde-tilcara': {
     shortDesc: 'The village hanging from the mountain.',
     description:
-      'A journey to Iruya, a village in Salta perched at 2,780 masl, reached via a cliff-edge road crossing the Abra del Cóndor (4,000 masl). Cobblestone streets, adobe houses and landscapes that seem frozen in time.',
+      'A journey to Iruya, a village in Salta perched at 2,780 masl, reached via a cliff-edge road crossing the Abra del Cóndor at 4,000 masl. Cobblestone streets, adobe houses and landscapes that seem frozen in time.',
   },
   'termas-de-jordan-un-tesoro-natural': {
     shortDesc: 'Hot springs between mountains and yungas jungle.',
