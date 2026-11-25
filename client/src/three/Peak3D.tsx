@@ -66,6 +66,83 @@ function Mountain({
   );
 }
 
+/** Llama low-poly (cuerpo, cuello, cabeza, orejas, patas) — mira hacia +X. */
+function Llama() {
+  const wool = '#efe3cf';
+  const dark = '#8a5a3b';
+  const m = (c: string) => <meshStandardMaterial color={c} flatShading roughness={0.95} />;
+  return (
+    <group>
+      <mesh position={[0, 0.62, 0]}>
+        <boxGeometry args={[0.95, 0.5, 0.45]} />
+        {m(wool)}
+      </mesh>
+      {[[-0.32, 0.17], [-0.32, -0.17], [0.32, 0.17], [0.32, -0.17]].map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.2, z]}>
+          <cylinderGeometry args={[0.06, 0.05, 0.4, 6]} />
+          {m(dark)}
+        </mesh>
+      ))}
+      <mesh position={[0.5, 1.0, 0]} rotation={[0, 0, -0.25]}>
+        <cylinderGeometry args={[0.13, 0.19, 0.7, 7]} />
+        {m(wool)}
+      </mesh>
+      <mesh position={[0.62, 1.42, 0]}>
+        <boxGeometry args={[0.36, 0.2, 0.2]} />
+        {m(wool)}
+      </mesh>
+      <mesh position={[0.82, 1.4, 0]}>
+        <boxGeometry args={[0.1, 0.12, 0.14]} />
+        {m(dark)}
+      </mesh>
+      {[0.07, -0.07].map((z, i) => (
+        <mesh key={i} position={[0.5, 1.6, z]}>
+          <coneGeometry args={[0.05, 0.2, 5]} />
+          {m(wool)}
+        </mesh>
+      ))}
+      <mesh position={[-0.5, 0.7, 0]} rotation={[0, 0, 0.6]}>
+        <coneGeometry args={[0.1, 0.25, 5]} />
+        {m(wool)}
+      </mesh>
+    </group>
+  );
+}
+
+/** Cactus columnar low-poly con dos brazos. */
+function Cactus() {
+  const green = '#5f8f4a';
+  const m = <meshStandardMaterial color={green} flatShading roughness={0.9} />;
+  return (
+    <group>
+      <mesh position={[0, 0.7, 0]}>
+        <cylinderGeometry args={[0.16, 0.2, 1.4, 7]} />
+        {m}
+      </mesh>
+      <mesh position={[0, 1.4, 0]}>
+        <sphereGeometry args={[0.16, 7, 5]} />
+        {m}
+      </mesh>
+      {[1, -1].map((d, i) => (
+        <group key={i} position={[d * 0.16, 0.55 + i * 0.25, 0]}>
+          <mesh position={[d * 0.2, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.09, 0.09, 0.4, 6]} />
+            {m}
+          </mesh>
+          <mesh position={[d * 0.4, 0.22, 0]}>
+            <cylinderGeometry args={[0.09, 0.09, 0.45, 6]} />
+            {m}
+          </mesh>
+          <mesh position={[d * 0.4, 0.45, 0]}>
+            <sphereGeometry args={[0.09, 6, 5]} />
+            {m}
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function Composition({ pointer }: { pointer: React.RefObject<{ x: number; y: number }> }) {
   const group = useRef<THREE.Group>(null);
   const sun = useRef<THREE.Mesh>(null);
@@ -108,6 +185,12 @@ function Composition({ pointer }: { pointer: React.RefObject<{ x: number; y: num
           </group>
           <group position={[-1.8, -0.7, 0.9]}>
             <Mountain radius={1.2} height={1.9} seed={15} darken={0.12} />
+          </group>
+          <group position={[0.7, -1.75, 2.55]} rotation={[0, -0.5, 0]} scale={0.9}>
+            <Llama />
+          </group>
+          <group position={[-1.3, -1.75, 2.6]} scale={0.85}>
+            <Cactus />
           </group>
         </group>
       </Float>

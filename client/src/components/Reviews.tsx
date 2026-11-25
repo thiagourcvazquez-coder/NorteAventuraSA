@@ -156,7 +156,7 @@ export default function Reviews() {
   return (
     <section className="relative isolate overflow-hidden bg-norte-green">
       <div className="grain pointer-events-none absolute inset-0" />
-      <div className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
+      <div className="mx-auto max-w-7xl px-5 pt-28 sm:px-8 sm:pt-36">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('rev.eyebrow')}</p>
@@ -170,19 +170,38 @@ export default function Reviews() {
           </button>
         </div>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {showForm && (
-            <Reveal>
+        {showForm && (
+          <Reveal>
+            <div className="mt-14 max-w-xl">
               <ReviewForm onDone={() => setShowForm(false)} />
-            </Reveal>
-          )}
-          {[...featured, ...normal].slice(0, showForm ? 5 : 6).map((c, i) => (
-            <Reveal key={c.id} delay={i * 0.08} y={30}>
-              <CommentCard c={c} featured={c.featured} />
-            </Reveal>
-          ))}
+            </div>
+          </Reveal>
+        )}
+      </div>
+
+      {/* Carrusel infinito automático (se pausa al pasar el mouse) */}
+      <div
+        className="group relative pb-28 sm:pb-36 [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
+        style={{ marginTop: showForm ? 0 : '-1rem' }}
+      >
+        <div className="overflow-hidden">
+          <div
+            className="flex w-max motion-safe:animate-marquee-slow group-hover:[animation-play-state:paused] motion-reduce:overflow-x-auto"
+            style={{ animationDuration: `${Math.max(30, [...featured, ...normal].length * 9)}s` }}
+          >
+            {[0, 1].map((k) => (
+              <div key={k} className="flex shrink-0 gap-5 pr-5" aria-hidden={k === 1}>
+                {[...featured, ...normal].map((c) => (
+                  <div key={c.id} className="w-[300px] sm:w-[360px]">
+                    <CommentCard c={c} featured={c.featured} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
     </section>
   );
 }
