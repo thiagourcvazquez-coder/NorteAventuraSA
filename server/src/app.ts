@@ -226,8 +226,56 @@ app.get('/api/comments', async (_req, res) => {
     res.status(500).json({ error: error.message });
     return;
   }
-  res.json(data);
+  // Orden: destacados del sitio, luego Google (el front muestra solo 6), luego el resto.
+  const rows = data ?? [];
+  res.json([...rows.filter((c) => c.featured), ...(await googleReviews()), ...rows.filter((c) => !c.featured)]);
 });
+
+/**
+ * Reseñas de Google (Places API New). Google entrega como máximo 5.
+ * Sin GOOGLE_PLACES_API_KEY / GOOGLE_PLACE_ID devuelve [] y el sitio sigue igual.
+ * Cache en memoria 6 h por instancia para no pagar una consulta por visita.
+ */
+let googleCache: { at: number; items: unknown[] } | null = null;
+async function googleReviews(): Promise<unknown[]> {
+  const key = process.env.GOOGLE_PLACES_API_KEY;
+  const placeId = process.env.GOOGLE_PLACE_ID;
+  if (!key || !placeId) return [];
+  if (googleCache && Date.now() - googleCache.at < 6 * 3600_000) return googleCache.items;
+  try {
+    const r = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=es`, {
+      headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'reviews' },
+    });
+    if (!r.ok) throw new Error(`Places ${r.status}`);
+    const j = (await r.json()) as {
+      reviews?: {
+        name: string;
+        rating?: number;
+        publishTime?: string;
+        text?: { text: string };
+        originalText?: { text: string };
+        authorAttribution?: { displayName?: string };
+      }[];
+    };
+    const items = (j.reviews ?? [])
+      .map((rv) => ({
+        id: rv.name,
+        author_name: rv.authorAttribution?.displayName ?? 'Google',
+        author_location: 'Reseña de Google',
+        rating: rv.rating ?? null,
+        body: (rv.originalText?.text ?? rv.text?.text ?? '').trim(),
+        featured: false,
+        created_at: rv.publishTime ?? '',
+        excursions: null,
+      }))
+      .filter((c) => c.body);
+    googleCache = { at: Date.now(), items };
+    return items;
+  } catch (e) {
+    console.error('google reviews', e);
+    return googleCache?.items ?? [];
+  }
+}
 
 /**
  * POST /api/comments
