@@ -15,7 +15,7 @@ export default function Footer() {
             <br />
             {t('ft.l2')}
             <br />
-            <span className="text-norte-yellow">{t('ft.l3')}</span>
+            <span className="text-norte-yellow-dark">{t('ft.l3')}</span>
           </p>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-norte-cream/60">{t('ft.desc')}</p>
           <div className="mt-8 flex gap-3">
@@ -39,7 +39,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">{t('ft.menu')}</h3>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow-dark">{t('ft.menu')}</h3>
           <ul className="space-y-2.5 text-sm font-semibold">
             {[
               ['/', 'nav.home'],
@@ -49,7 +49,7 @@ export default function Footer() {
               ['/contacto', 'nav.contact'],
             ].map(([to, key]) => (
               <li key={key}>
-                <Link to={to} className="text-norte-cream/75 transition hover:text-norte-yellow">
+                <Link to={to} className="text-norte-cream/75 transition hover:text-norte-yellow-dark">
                   {t(key as Parameters<typeof t>[0])}
                 </Link>
               </li>
@@ -58,21 +58,21 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow">{t('ft.contact')}</h3>
+          <h3 className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-norte-yellow-dark">{t('ft.contact')}</h3>
           <ul className="space-y-3.5 text-sm">
             <li className="flex items-center gap-2.5 text-norte-cream/75">
-              <MapPinIcon className="h-4 w-4 shrink-0 text-norte-yellow" />
+              <MapPinIcon className="h-4 w-4 shrink-0 text-norte-yellow-dark" />
               Salta, Argentina
             </li>
             <li>
-              <a href="https://wa.me/5493874039502" target="_blank" rel="noreferrer" className="flex items-center gap-2.5 text-norte-cream/75 hover:text-norte-yellow">
-                <WhatsAppIcon className="h-4 w-4 shrink-0 text-norte-yellow" />
+              <a href="https://wa.me/5493874039502" target="_blank" rel="noreferrer" className="flex items-center gap-2.5 text-norte-cream/75 hover:text-norte-yellow-dark">
+                <WhatsAppIcon className="h-4 w-4 shrink-0 text-norte-yellow-dark" />
                 +54 9 387 403 9502
               </a>
             </li>
             <li>
-              <a href="mailto:norteaventuraok@gmail.com" className="flex items-center gap-2.5 break-all text-norte-cream/75 hover:text-norte-yellow">
-                <MailIcon className="h-4 w-4 shrink-0 text-norte-yellow" />
+              <a href="mailto:norteaventuraok@gmail.com" className="flex items-center gap-2.5 break-all text-norte-cream/75 hover:text-norte-yellow-dark">
+                <MailIcon className="h-4 w-4 shrink-0 text-norte-yellow-dark" />
                 norteaventuraok@gmail.com
               </a>
             </li>

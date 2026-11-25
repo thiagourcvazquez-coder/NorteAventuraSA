@@ -88,7 +88,7 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
           <Link
             to="/excursiones"
             data-cursor={t('cur.view')}
-            className="hidden shrink-0 rounded-full bg-norte-green px-6 py-3 text-sm font-extrabold text-norte-cream transition hover:bg-norte-yellow hover:text-norte-green sm:block"
+            className="hidden shrink-0 rounded-full bg-norte-green px-6 py-3 text-sm font-extrabold text-norte-cream transition hover:bg-norte-yellow-dark hover:text-norte-green sm:block"
           >
             {t('show.all')}
           </Link>
@@ -105,7 +105,7 @@ export default function HorizontalShowcase({ items }: { items: Excursion[] }) {
           <Link
             to="/excursiones"
             data-cursor={t('cur.go')}
-            className="display flex aspect-[4/5] w-[78vw] shrink-0 items-center justify-center rounded-[28px] bg-norte-yellow p-8 text-center text-4xl text-norte-green transition hover:bg-norte-green hover:text-norte-yellow sm:w-[min(400px,40vh)]"
+            className="display flex aspect-[4/5] w-[78vw] shrink-0 items-center justify-center rounded-[28px] bg-norte-yellow-dark p-8 text-center text-4xl text-norte-green transition hover:bg-norte-green hover:text-norte-yellow-dark sm:w-[min(400px,40vh)]"
           >
             {t('show.catalog')}
           </Link>

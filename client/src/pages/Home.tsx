@@ -79,7 +79,7 @@ export default function Home() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="mb-5 inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-norte-cream ring-1 ring-white/20 backdrop-blur"
           >
-            <SunMark className="h-4 w-4 text-norte-yellow" />
+            <SunMark className="h-4 w-4 text-norte-yellow-dark" />
             Salta · Tilcara · Jujuy
           </motion.p>
 
@@ -103,7 +103,7 @@ export default function Home() {
           >
             <Link
               to="/excursiones"
-              className="rounded-full bg-norte-yellow px-8 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
+              className="rounded-full bg-norte-yellow-dark px-8 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
             >
               {t('hero.cta1')}
             </Link>
@@ -120,7 +120,7 @@ export default function Home() {
               {t('hero.scroll')}
               <span className="relative block h-12 w-px overflow-hidden bg-white/20">
                 <motion.span
-                  className="absolute inset-x-0 top-0 h-5 bg-norte-yellow"
+                  className="absolute inset-x-0 top-0 h-5 bg-norte-yellow-dark"
                   animate={{ y: ['-100%', '260%'] }}
                   transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                 />
@@ -173,7 +173,7 @@ export default function Home() {
             ] as const
           ).map(([title, list, to]) => (
             <div key={title}>
-              <h3 className="display border-b-2 border-norte-yellow pb-3 text-2xl text-norte-green">
+              <h3 className="display border-b-2 border-norte-yellow-dark pb-3 text-2xl text-norte-green">
                 {title}
               </h3>
               <ul className="mt-2 divide-y divide-norte-green/10">
@@ -212,13 +212,13 @@ export default function Home() {
         <div className="grain pointer-events-none absolute inset-0" />
         <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-24 sm:px-8 md:grid-cols-2">
           <div className="relative z-10">
-            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">
+            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">
               <SunMark className="h-4 w-4" /> {t('home.cta_badge')}
             </p>
             <h2 className="display mt-5 text-[clamp(2.6rem,7vw,6rem)] text-norte-cream">
               <SplitWords text={t('home.cta_t1')} />
               <br />
-              <span className="text-norte-yellow">
+              <span className="text-norte-yellow-dark">
                 <SplitWords text={t('home.cta_t2')} delay={0.2} />
               </span>
             </h2>
@@ -229,7 +229,7 @@ export default function Home() {
               href="https://wa.me/5493874039502?text=Hola%20Norte%20Aventura!%20Quiero%20consultar%20por%20una%20excursi%C3%B3n."
               target="_blank"
               rel="noreferrer"
-              className="mt-9 inline-flex items-center gap-3 rounded-full bg-norte-yellow px-9 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
+              className="mt-9 inline-flex items-center gap-3 rounded-full bg-norte-yellow-dark px-9 py-4 text-sm font-extrabold text-norte-green shadow-lg shadow-black/30 transition hover:bg-white"
             >
               <WhatsAppIcon className="h-5 w-5" />
               {t('home.cta_btn')}

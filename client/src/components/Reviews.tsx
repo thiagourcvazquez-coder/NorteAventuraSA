@@ -12,7 +12,7 @@ function Stars({ value, onPick }: { value: number; onPick?: (v: number) => void 
           type="button"
           onClick={() => onPick?.(n)}
           className={`text-2xl transition ${onPick ? 'cursor-pointer hover:scale-125' : 'cursor-default'} ${
-            n <= value ? 'text-norte-yellow' : 'text-norte-cream/25'
+            n <= value ? 'text-norte-yellow-dark' : 'text-norte-cream/25'
           }`}
           aria-label={`${n} estrellas`}
         >
@@ -31,7 +31,7 @@ function CommentCard({ c, featured }: { c: PublicComment; featured?: boolean }) 
         featured ? 'ring-norte-yellow/40' : 'ring-white/10'
       }`}
     >
-      {c.rating && <p className="text-lg text-norte-yellow">{'★'.repeat(c.rating)}</p>}
+      {c.rating && <p className="text-lg text-norte-yellow-dark">{'★'.repeat(c.rating)}</p>}
       <p className="mt-3 flex-1 text-[15px] leading-relaxed text-norte-cream/85">“{c.body}”</p>
       <div className="mt-5 border-t border-white/10 pt-4">
         <p className="font-extrabold text-norte-cream">{c.author_name}</p>
@@ -139,7 +139,7 @@ export default function Reviews() {
       <section className="relative isolate overflow-hidden bg-norte-green">
         <div className="grain pointer-events-none absolute inset-0" />
         <div className="mx-auto max-w-4xl px-5 py-28 sm:px-8">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">{t('rev.eyebrow')}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('rev.eyebrow')}</p>
           <h2 className="display mt-3 text-[clamp(2rem,5vw,4rem)] text-norte-cream">{t('rev.title')}</h2>
           <p className="mt-4 max-w-lg text-norte-cream/65">{t('rev.empty')}</p>
           <div className="mt-10 max-w-xl">
@@ -159,12 +159,12 @@ export default function Reviews() {
       <div className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow">{t('rev.eyebrow')}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('rev.eyebrow')}</p>
             <h2 className="display mt-3 max-w-3xl text-[clamp(2rem,5vw,4rem)] text-norte-cream">{t('rev.title')}</h2>
           </div>
           <button
             onClick={() => setShowForm((s) => !s)}
-            className="rounded-full bg-norte-yellow px-7 py-3 text-sm font-extrabold text-norte-green transition hover:bg-white"
+            className="rounded-full bg-norte-yellow-dark px-7 py-3 text-sm font-extrabold text-norte-green transition hover:bg-white"
           >
             {showForm ? '←' : t('rev.cta')}
           </button>

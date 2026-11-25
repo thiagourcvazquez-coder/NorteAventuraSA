@@ -143,7 +143,7 @@ export default function DatePicker({
 
           <div className="mt-3 flex justify-end border-t border-white/10 pt-3">
             <button type="button" onClick={() => pick(todayIso)}
-              className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-norte-yellow transition hover:bg-white/20">
+              className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-norte-yellow-dark transition hover:bg-white/20">
               Hoy
             </button>
           </div>

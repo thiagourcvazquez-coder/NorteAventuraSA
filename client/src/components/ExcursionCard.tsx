@@ -64,7 +64,7 @@ export default function ExcursionCard({
           <h3 className="text-xl font-extrabold leading-tight text-white">{excursion.name}</h3>
           <div className="mt-3 flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-norte-cream/70">
             <span className="inline-flex items-center gap-1.5">
-              <ClockIcon className="h-3.5 w-3.5 text-norte-yellow" />
+              <ClockIcon className="h-3.5 w-3.5 text-norte-yellow-dark" />
               {tok(excursion.duration)}
             </span>
             <span>{tok(excursion.difficulty)}</span>
@@ -76,12 +76,12 @@ export default function ExcursionCard({
                   {isBaseDoble ? t('bk.per_2people') : t('card.per_person')}
                 </p>
               )}
-              <p className="text-2xl font-extrabold text-norte-yellow">{formatPrice(excursion.price, lang)}</p>
+              <p className="text-2xl font-extrabold text-norte-yellow-dark">{formatPrice(excursion.price, lang)}</p>
               {excursion.priceNote && !isBaseDoble && (
                 <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>
               )}
             </div>
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-norte-yellow text-norte-green transition duration-500 group-hover:rotate-45 group-hover:scale-110">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-norte-yellow-dark text-norte-green transition duration-500 group-hover:rotate-45 group-hover:scale-110">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 17 17 7M8 7h9v9" />
               </svg>

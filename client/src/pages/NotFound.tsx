@@ -5,7 +5,7 @@ export default function NotFound() {
   const { t } = useLang();
   return (
     <div className="mx-auto max-w-7xl px-4 pb-32 pt-48 text-center sm:px-6">
-      <p className="text-6xl font-extrabold text-norte-yellow">404</p>
+      <p className="text-6xl font-extrabold text-norte-yellow-dark">404</p>
       <h1 className="mt-4 text-2xl font-extrabold text-norte-green">
         {t('nf.title')}
       </h1>

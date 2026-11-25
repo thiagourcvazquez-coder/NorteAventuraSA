@@ -88,7 +88,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
       <motion.div style={{ opacity: fade }} className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 sm:pb-16">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-norte-cream ring-1 ring-white/20 backdrop-blur">
-            <MapPinIcon className="h-3.5 w-3.5 text-norte-yellow" /> {excursion.location}
+            <MapPinIcon className="h-3.5 w-3.5 text-norte-yellow-dark" /> {excursion.location}
           </p>
           {/* Con portada, el título no pasa de la mitad para no pisar el mapa. */}
           <h1

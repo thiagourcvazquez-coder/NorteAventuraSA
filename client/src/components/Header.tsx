@@ -83,7 +83,7 @@ export default function Header() {
               href="https://wa.me/5493874039502"
               target="_blank"
               rel="noreferrer"
-              className="hidden items-center gap-2 rounded-full bg-norte-yellow px-5 py-2.5 text-[13px] font-extrabold text-norte-green transition hover:bg-white sm:flex"
+              className="hidden items-center gap-2 rounded-full bg-norte-yellow-dark px-5 py-2.5 text-[13px] font-extrabold text-norte-green transition hover:bg-white sm:flex"
             >
               <WhatsAppIcon className="h-4 w-4" />
               {t('nav.book')}
@@ -135,10 +135,10 @@ export default function Header() {
                     onClick={() => setOpen(false)}
                     className="group flex items-center gap-4 border-b border-white/10 py-4"
                   >
-                    <span className="text-[11px] font-extrabold tracking-widest text-norte-yellow">
+                    <span className="text-[11px] font-extrabold tracking-widest text-norte-yellow-dark">
                       0{i + 1}
                     </span>
-                    <span className="display flex-1 text-[clamp(1.75rem,7.5vw,3rem)] text-norte-cream transition group-active:text-norte-yellow">
+                    <span className="display flex-1 text-[clamp(1.75rem,7.5vw,3rem)] text-norte-cream transition group-active:text-norte-yellow-dark">
                       {t(l.key)}
                     </span>
                     <img
@@ -162,7 +162,7 @@ export default function Header() {
                 href="https://wa.me/5493874039502"
                 target="_blank"
                 rel="noreferrer"
-                className="flex w-fit items-center gap-2 rounded-full bg-norte-yellow px-7 py-3.5 text-sm font-extrabold text-norte-green"
+                className="flex w-fit items-center gap-2 rounded-full bg-norte-yellow-dark px-7 py-3.5 text-sm font-extrabold text-norte-green"
               >
                 <WhatsAppIcon className="h-5 w-5" />
                 {t('nav.whatsapp')}
