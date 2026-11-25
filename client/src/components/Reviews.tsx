@@ -27,15 +27,15 @@ function CommentCard({ c, featured }: { c: PublicComment; featured?: boolean }) 
   const ex = Array.isArray(c.excursions) ? c.excursions[0] : c.excursions;
   return (
     <div
-      className={`flex h-full flex-col rounded-3xl bg-white/10 p-7 ring-1 backdrop-blur-sm transition ${
-        featured ? 'ring-norte-yellow/40' : 'ring-white/10'
+      className={`flex h-full flex-col rounded-3xl bg-norte-green/35 p-7 ring-1 transition ${
+        featured ? 'ring-norte-yellow/60' : 'ring-white/15'
       }`}
     >
       {c.rating && <p className="text-lg text-norte-yellow-dark">{'★'.repeat(c.rating)}</p>}
       <p className="mt-3 flex-1 text-[15px] leading-relaxed text-norte-cream/85">“{c.body}”</p>
       <div className="mt-5 border-t border-white/10 pt-4">
         <p className="font-extrabold text-norte-cream">{c.author_name}</p>
-        <p className="mt-0.5 text-xs text-norte-cream/50">
+        <p className="mt-0.5 text-xs text-norte-cream/70">
           {[c.author_location, ex?.name].filter(Boolean).join(' · ')}
         </p>
       </div>
@@ -136,7 +136,7 @@ export default function Reviews() {
   if (comments !== null && !list.length && !showForm) {
     // Sin testimonios todavía: igual mostramos el formulario invitado
     return (
-      <section className="relative isolate overflow-hidden bg-norte-green">
+      <section className="relative isolate overflow-hidden bg-norte-green-light">
         <div className="grain pointer-events-none absolute inset-0" />
         <div className="mx-auto max-w-4xl px-5 py-28 sm:px-8">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('rev.eyebrow')}</p>
@@ -154,7 +154,7 @@ export default function Reviews() {
   const normal = list.filter((c) => !c.featured);
 
   return (
-    <section className="relative isolate overflow-hidden bg-norte-green">
+    <section className="relative isolate overflow-hidden bg-norte-green-light">
       <div className="grain pointer-events-none absolute inset-0" />
       <div className="mx-auto max-w-7xl px-5 pt-28 sm:px-8 sm:pt-36">
         <div className="flex flex-wrap items-end justify-between gap-6">
