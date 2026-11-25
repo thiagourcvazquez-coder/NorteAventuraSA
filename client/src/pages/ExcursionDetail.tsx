@@ -60,6 +60,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
 
   return (
+    <>
     <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden bg-norte-green">
       {src && (
         <motion.img
@@ -100,6 +101,18 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
         </div>
       </motion.div>
     </section>
+    {/* Pantalla vertical: el hero se encuadra sobre la foto, así que el mapa (lado derecho de la portada) va aparte. */}
+    {useCover && (
+      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 [@media(min-aspect-ratio:6/5)]:hidden">
+        <div
+          role="img"
+          aria-label={`Mapa — ${excursion.location}`}
+          className="mx-auto aspect-[7/8] max-w-md rounded-[28px] bg-norte-green bg-[length:auto_100%] bg-right bg-no-repeat shadow-lg"
+          style={{ backgroundImage: `url(/portadas/${excursion.slug}.webp)` }}
+        />
+      </div>
+    )}
+    </>
   );
 }
 
