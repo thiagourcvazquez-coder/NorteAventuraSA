@@ -181,8 +181,7 @@ export default function Reviews() {
 
       {/* Carrusel infinito automático (se pausa al pasar el mouse) */}
       <div
-        className="group relative pb-28 sm:pb-36 [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
-        style={{ marginTop: showForm ? 0 : '-1rem' }}
+        className="group relative mt-14 pb-28 sm:pb-36 [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]"
       >
         <div className="overflow-hidden">
           <div
