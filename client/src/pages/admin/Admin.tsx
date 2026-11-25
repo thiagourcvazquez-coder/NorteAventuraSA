@@ -6,6 +6,9 @@ import Finances from './Finances';
 import CommentsAdmin from './CommentsAdmin';
 import ExcursionEditor from './ExcursionEditor';
 
+const LOGIN_BG = 'https://norteaventura.com.ar/wp-content/uploads/2025/04/DJI_0686.jpg';
+const LOGIN_LOGO = 'https://norteaventura.com.ar/wp-content/uploads/2026/05/cropped-Logo-NA-transp-270x270.png';
+
 export interface AdminExcursion {
   id: string;
   slug: string;
@@ -109,6 +112,7 @@ function Login({ onOk }: { onOk: () => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -124,10 +128,14 @@ function Login({ onOk }: { onOk: () => void }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-norte-green px-5">
-      <form onSubmit={submit} className="w-full max-w-sm rounded-3xl bg-white p-9 shadow-2xl">
+    <div
+      className="relative flex min-h-screen items-center justify-center bg-norte-green bg-cover bg-center px-5"
+      style={{ backgroundImage: `url(${LOGIN_BG})` }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-norte-green/70 via-norte-green/55 to-norte-green/85" />
+      <form onSubmit={submit} className="relative w-full max-w-sm rounded-3xl bg-white/95 p-9 shadow-2xl backdrop-blur">
         <div className="flex items-center gap-3">
-          <SunMark className="h-11 w-11 text-norte-yellow-dark" />
+          <img src={LOGIN_LOGO} alt="Norte Aventura" className="h-12 w-12 rounded-full bg-norte-cream object-contain p-0.5 ring-1 ring-black/10" />
           <div>
             <p className="text-lg font-extrabold uppercase leading-none tracking-[0.14em] text-norte-green">
               Norte<br />Aventura
@@ -144,15 +152,30 @@ function Login({ onOk }: { onOk: () => void }) {
           autoComplete="username"
           required
         />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Contraseña"
-          className={`${input} mt-3`}
-          autoComplete="current-password"
-          required
-        />
+        <div className="relative mt-3">
+          <input
+            type={showPw ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Contraseña"
+            className={`${input} pr-12`}
+            autoComplete="current-password"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw((v) => !v)}
+            aria-label={showPw ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-pressed={showPw}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-norte-gray transition hover:text-norte-green"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+              {showPw && <path d="M3 3l18 18" />}
+            </svg>
+          </button>
+        </div>
         {error && <p className="mt-2 text-sm font-medium text-red-600">{error}</p>}
         <button
           type="submit"
