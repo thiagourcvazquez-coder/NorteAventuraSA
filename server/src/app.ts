@@ -4,6 +4,7 @@ import cors from 'cors';
 import { getSupabase } from './supabase.js';
 import { buildWhatsAppUrl, type ReservationPayload } from './whatsapp.js';
 import { adminRouter } from './admin.js';
+import { getReviews } from './reviews.js';
 import { createPreference, getPayment, mpEnabled, verifyWebhookSignature } from './mercadopago.js';
 
 const app = express();
@@ -226,56 +227,27 @@ app.get('/api/comments', async (_req, res) => {
     res.status(500).json({ error: error.message });
     return;
   }
-  // Orden: destacados del sitio, luego Google (el front muestra solo 6), luego el resto.
-  const rows = data ?? [];
-  res.json([...rows.filter((c) => c.featured), ...(await googleReviews()), ...rows.filter((c) => !c.featured)]);
+  res.json(data);
 });
 
 /**
- * Reseñas de Google (Places API New). Google entrega como máximo 5.
- * Sin GOOGLE_PLACES_API_KEY / GOOGLE_PLACE_ID devuelve [] y el sitio sigue igual.
- * Cache en memoria 6 h por instancia para no pagar una consulta por visita.
+ * GET /api/reviews — reseñas de Google (Places API New): promedio, total y hasta 5 reseñas.
+ * Va aparte de /api/comments para que el sitio distinga las de Google de las propias.
+ * Sin GOOGLE_PLACES_API_KEY / GOOGLE_PLACE_ID devuelve 503 y el front oculta el bloque.
  */
-let googleCache: { at: number; items: unknown[] } | null = null;
-async function googleReviews(): Promise<unknown[]> {
-  const key = process.env.GOOGLE_PLACES_API_KEY;
-  const placeId = process.env.GOOGLE_PLACE_ID;
-  if (!key || !placeId) return [];
-  if (googleCache && Date.now() - googleCache.at < 6 * 3600_000) return googleCache.items;
+app.get('/api/reviews', async (_req, res) => {
   try {
-    const r = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?languageCode=es`, {
-      headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'reviews' },
-    });
-    if (!r.ok) throw new Error(`Places ${r.status}`);
-    const j = (await r.json()) as {
-      reviews?: {
-        name: string;
-        rating?: number;
-        publishTime?: string;
-        text?: { text: string };
-        originalText?: { text: string };
-        authorAttribution?: { displayName?: string };
-      }[];
-    };
-    const items = (j.reviews ?? [])
-      .map((rv) => ({
-        id: rv.name,
-        author_name: rv.authorAttribution?.displayName ?? 'Google',
-        author_location: 'Reseña de Google',
-        rating: rv.rating ?? null,
-        body: (rv.originalText?.text ?? rv.text?.text ?? '').trim(),
-        featured: false,
-        created_at: rv.publishTime ?? '',
-        excursions: null,
-      }))
-      .filter((c) => c.body);
-    googleCache = { at: Date.now(), items };
-    return items;
+    const data = await getReviews(_req.query.lang === 'en' ? 'en' : 'es');
+    if (!data) {
+      res.status(503).json({ error: 'reseñas de Google no configuradas' });
+      return;
+    }
+    res.set('Cache-Control', 'public, s-maxage=3600').json(data);
   } catch (e) {
-    console.error('google reviews', e);
-    return googleCache?.items ?? [];
+    console.error('[reviews]', (e as Error).message);
+    res.status(502).json({ error: 'no se pudo obtener las reseñas' });
   }
-}
+});
 
 /**
  * POST /api/comments

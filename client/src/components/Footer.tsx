@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SOCIALS } from '../data/socials';
 import { FacebookIcon, InstagramIcon, MailIcon, MapPinIcon, TikTokIcon, WhatsAppIcon } from './Icons';
 import { useLang } from '../i18n';
 
@@ -20,9 +21,9 @@ export default function Footer() {
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-norte-cream/60">{t('ft.desc')}</p>
           <div className="mt-8 flex gap-3">
             {[
-              { href: 'https://web.facebook.com/norteaventuraok/', label: 'Facebook', Icon: FacebookIcon, bg: 'bg-[#1877F2]' },
-              { href: 'https://www.instagram.com/norteaventuraok/', label: 'Instagram', Icon: InstagramIcon, bg: 'bg-[#E4405F]' },
-              { href: 'https://www.tiktok.com/@norteaventura.ok', label: 'TikTok', Icon: TikTokIcon, bg: 'bg-white text-black' },
+              { href: SOCIALS.facebook, label: 'Facebook', Icon: FacebookIcon, bg: 'bg-[#1877F2]' },
+              { href: SOCIALS.instagram, label: 'Instagram', Icon: InstagramIcon, bg: 'bg-[#E4405F]' },
+              { href: SOCIALS.tiktok, label: 'TikTok', Icon: TikTokIcon, bg: 'bg-white text-black' },
             ].map(({ href, label, Icon, bg }) => (
               <a
                 key={label}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Excursion } from './types';
 import { getExcursions } from './lib/supabase';
+import { sortExcursions } from './data/catalogMeta';
 
 export function useExcursions() {
   const [excursions, setExcursions] = useState<Excursion[]>([]);
@@ -10,7 +11,7 @@ export function useExcursions() {
     let alive = true;
     getExcursions().then((data) => {
       if (alive) {
-        setExcursions(data);
+        setExcursions(sortExcursions(data));
         setLoading(false);
       }
     });

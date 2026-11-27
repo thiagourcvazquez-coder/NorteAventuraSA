@@ -145,3 +145,20 @@ export async function submitComment(payload: {
     return { ok: false, error: 'No se pudo conectar con la API' };
   }
 }
+
+export interface GoogleReviewsData {
+  rating: number | null;
+  total: number;
+  url: string | null;
+  reviews: { author: string; photo: string | null; rating: number; text: string; when: string }[];
+}
+
+/** Reseñas de Google (promedio, total y hasta 5 reseñas). null si no están configuradas o falla. */
+export async function fetchGoogleReviews(lang: string): Promise<GoogleReviewsData | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/reviews?lang=${lang === 'en' ? 'en' : 'es'}`);
+    return res.ok ? ((await res.json()) as GoogleReviewsData) : null;
+  } catch {
+    return null;
+  }
+}

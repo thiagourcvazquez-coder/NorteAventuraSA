@@ -8,11 +8,12 @@ import { useLang } from '../i18n';
 import { localizeExcursion } from '../data/i18n-en';
 import BookingForm from '../components/BookingForm';
 import ExcursionCard from '../components/ExcursionCard';
+import InfiniteGallery from '../components/InfiniteGallery';
+import { isConsult, originOf } from '../data/catalogMeta';
 import { ChartIcon, CheckIcon, ClockIcon, MapPinIcon } from '../components/Icons';
 
 function Gallery({ images, name }: { images: string[]; name: string }) {
   const { t } = useLang();
-  const doubled = [...images, ...images];
 
   return (
     <section className="pt-12">
@@ -20,30 +21,7 @@ function Gallery({ images, name }: { images: string[]; name: string }) {
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-norte-yellow-dark">{t('gal.eyebrow')}</p>
         <h2 className="display mt-1 text-3xl text-norte-green sm:text-4xl">{t('gal.title')}</h2>
       </div>
-      <div
-        className="overflow-hidden pb-2"
-        style={{
-          maskImage:
-            'linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)',
-          WebkitMaskImage:
-            'linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)',
-        }}
-      >
-        <div
-          className="animate-marquee flex w-max gap-4 hover:[animation-play-state:paused] motion-reduce:animate-none"
-          style={{ animationDuration: `${images.length * 5}s` }}
-        >
-          {doubled.map((src, i) => (
-            <img
-              key={src + i}
-              src={src}
-              alt={`${name} — foto ${(i % images.length) + 1}`}
-              loading={i >= images.length ? 'lazy' : undefined}
-              className="h-[260px] w-[72vw] shrink-0 rounded-[28px] object-cover sm:h-[340px] sm:w-[440px]"
-            />
-          ))}
-        </div>
-      </div>
+      <InfiniteGallery images={images} name={name} />
     </section>
   );
 }
@@ -58,6 +36,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   // Portada con mapa (public/portadas, generada con docs/portadas). Si no existe, foto original.
   const [useCover, setUseCover] = useState(true);
   const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
+  const { t, tok } = useLang();
 
   return (
     <>
@@ -87,9 +66,19 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
       )}
       <motion.div style={{ opacity: fade }} className="absolute inset-x-0 bottom-0">
         <div className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 sm:pb-16">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-norte-cream ring-1 ring-white/20 backdrop-blur">
-            <MapPinIcon className="h-3.5 w-3.5 text-norte-yellow-dark" /> {excursion.location}
-          </p>
+          <div className="mb-4 flex flex-wrap items-center gap-2.5">
+            <p className="inline-flex items-center gap-2 rounded-full bg-norte-cream/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-norte-cream ring-1 ring-white/20 backdrop-blur">
+              <MapPinIcon className="h-3.5 w-3.5 text-norte-yellow-dark" /> {excursion.location}
+            </p>
+            <p className="inline-flex items-center gap-2 rounded-full bg-norte-yellow-dark px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-norte-green">
+              {tok(originOf(excursion))}
+            </p>
+            {isConsult(excursion) && (
+              <p className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-norte-yellow-dark px-4 py-[6px] text-xs font-extrabold uppercase tracking-[0.2em] text-norte-yellow-dark">
+                {t('card.consult_badge')}
+              </p>
+            )}
+          </div>
           {/* Con portada, el título no pasa de la mitad para no pisar el mapa. */}
           <h1
             className={`display max-w-5xl text-[clamp(2rem,5.6vw,4.8rem)] text-norte-cream ${

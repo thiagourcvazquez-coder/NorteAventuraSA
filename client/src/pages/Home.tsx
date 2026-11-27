@@ -5,8 +5,10 @@ import { useExcursions } from '../hooks';
 import { useLang } from '../i18n';
 import HorizontalShowcase from '../components/HorizontalShowcase';
 import Reviews from '../components/Reviews';
+import GoogleReviews from '../components/GoogleReviews';
 import { Marquee, Reveal, ScrollWords, SplitWords, SunMark } from '../components/Motion';
-import { WhatsAppIcon } from '../components/Icons';
+import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon } from '../components/Icons';
+import { SOCIALS } from '../data/socials';
 
 const Peak3D = lazy(() => import('../three/Peak3D'));
 
@@ -72,7 +74,7 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-norte-green-dark/85 via-norte-green-dark/25 to-norte-green-dark/45" />
         <div className="grain pointer-events-none absolute inset-0" />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-16 sm:px-8 sm:pb-20">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-28 sm:px-8 sm:pb-32">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,6 +118,24 @@ export default function Home() {
               <WhatsAppIcon className="h-5 w-5" />
               {t('hero.cta2')}
             </a>
+            <div className="flex items-center gap-2.5">
+              {[
+                { href: SOCIALS.facebook, label: 'Facebook', Icon: FacebookIcon },
+                { href: SOCIALS.instagram, label: 'Instagram', Icon: InstagramIcon },
+                { href: SOCIALS.tiktok, label: 'TikTok', Icon: TikTokIcon },
+              ].map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={label}
+                  className="flex h-12 w-12 items-center justify-center rounded-full text-norte-cream ring-2 ring-white/40 backdrop-blur transition hover:bg-norte-yellow-dark hover:text-norte-green hover:ring-norte-yellow-dark"
+                >
+                  <Icon className="h-5 w-5" />
+                </a>
+              ))}
+            </div>
             <div className="ml-auto hidden items-center gap-3 text-[11px] font-bold uppercase tracking-[0.25em] text-norte-cream/70 md:flex">
               {t('hero.scroll')}
               <span className="relative block h-12 w-px overflow-hidden bg-white/20">
@@ -128,16 +148,19 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+
+        {/* Banda naranja dentro del hero */}
+        <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden bg-norte-yellow-dark py-3 text-norte-green sm:py-4">
+          <Marquee
+            items={marqueeItems}
+            className="display text-[clamp(1.3rem,3vw,2.4rem)]"
+            separator={<SunMark className="h-6 w-6 sm:h-7 sm:w-7" />}
+          />
+        </div>
       </section>
 
-      {/* MARQUEE */}
-      <section className="relative z-10 -mt-px overflow-hidden bg-norte-yellow-dark py-5 text-norte-green">
-        <Marquee
-          items={marqueeItems}
-          className="display text-[clamp(1.6rem,4vw,3rem)]"
-          separator={<SunMark className="h-8 w-8" />}
-        />
-      </section>
+      {/* GALERÍA HORIZONTAL */}
+      <HorizontalShowcase items={featured} />
 
       {/* MANIFIESTO */}
       <section className="mx-auto max-w-6xl px-5 py-28 sm:px-8 sm:py-40">
@@ -155,9 +178,6 @@ export default function Home() {
           </Link>
         </Reveal>
       </section>
-
-      {/* GALERÍA HORIZONTAL */}
-      <HorizontalShowcase items={featured} />
 
       {/* SALIDAS DIARIAS */}
       <section className="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
@@ -204,7 +224,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIOS */}
+      {/* RESEÑAS DE GOOGLE */}
+      <GoogleReviews />
+
+      {/* COMENTARIOS PROPIOS DEL SITIO */}
       <Reviews />
 
       {/* CTA 3D */}

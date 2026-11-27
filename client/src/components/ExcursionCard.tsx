@@ -4,7 +4,8 @@ import { motion, useMotionValue, useSpring } from 'motion/react';
 import type { Excursion } from '../types';
 import { formatPrice } from '../lib/format';
 import { useLang } from '../i18n';
-import { ClockIcon, MapPinIcon } from './Icons';
+import { ClockIcon, MapPinIcon, WhatsAppIcon } from './Icons';
+import { isConsult, originOf } from '../data/catalogMeta';
 
 export default function ExcursionCard({
   excursion,
@@ -16,6 +17,8 @@ export default function ExcursionCard({
   aspect?: string;
 }) {
   const { lang, t, tok } = useLang();
+  const consult = isConsult(excursion);
+  const origin = originOf(excursion);
   const isBaseDoble = !!excursion.priceNote?.includes('x2');
   const ref = useRef<HTMLDivElement>(null);
   const rx = useSpring(useMotionValue(0), { stiffness: 220, damping: 20 });
@@ -60,8 +63,18 @@ export default function ExcursionCard({
           {excursion.location}
         </span>
 
+        {consult && (
+          <span className="absolute right-4 top-4 rounded-full bg-norte-yellow-dark px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-norte-green shadow-lg">
+            {t('card.consult_badge')}
+          </span>
+        )}
+
         <div className="absolute inset-x-0 bottom-0 p-6">
           <h3 className="text-xl font-extrabold leading-tight text-white">{excursion.name}</h3>
+          <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-norte-yellow-dark">
+            <MapPinIcon className="h-3 w-3" />
+            {tok(origin)}
+          </p>
           <div className="mt-3 flex items-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-norte-cream/70">
             <span className="inline-flex items-center gap-1.5">
               <ClockIcon className="h-3.5 w-3.5 text-norte-yellow-dark" />
@@ -71,14 +84,21 @@ export default function ExcursionCard({
           </div>
           <div className="mt-5 flex items-end justify-between">
             <div>
-              {excursion.price !== null && (
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">
-                  {isBaseDoble ? t('bk.per_2people') : t('card.per_person')}
-                </p>
-              )}
-              <p className="text-2xl font-extrabold text-norte-yellow-dark">{formatPrice(excursion.price, lang)}</p>
-              {excursion.priceNote && !isBaseDoble && (
-                <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>
+              {consult ? (
+                <span className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-norte-yellow-dark px-4 py-2 text-sm font-extrabold uppercase tracking-wider text-norte-yellow-dark">
+                  <WhatsAppIcon className="h-4 w-4" />
+                  {t('card.consult')}
+                </span>
+              ) : (
+                <>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-norte-cream/60">
+                    {isBaseDoble ? t('bk.per_2people') : t('card.per_person')}
+                  </p>
+                  <p className="text-2xl font-extrabold text-norte-yellow-dark">{formatPrice(excursion.price, lang)}</p>
+                  {excursion.priceNote && !isBaseDoble && (
+                    <p className="text-[10px] text-norte-cream/60">{tok(excursion.priceNote)}</p>
+                  )}
+                </>
               )}
             </div>
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-norte-yellow-dark text-norte-green transition duration-500 group-hover:rotate-45 group-hover:scale-110">
