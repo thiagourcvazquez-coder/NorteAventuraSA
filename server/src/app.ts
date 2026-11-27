@@ -158,8 +158,10 @@ app.post('/api/payments/preference', async (req, res) => {
     });
     res.json({ initPoint });
   } catch (e) {
-    console.error('[payments] Error creando preferencia:', e);
-    res.status(502).json({ error: 'No se pudo crear el link de pago' });
+    // El SDK de Mercado Pago trae el motivo real en message / cause / status.
+    const err = e as { message?: string; status?: number; cause?: unknown };
+    console.error('[payments] Error creando preferencia:', JSON.stringify({ message: err.message, status: err.status, cause: err.cause }));
+    res.status(502).json({ error: 'No se pudo crear el link de pago', detail: err.message ?? String(e) });
   }
 });
 

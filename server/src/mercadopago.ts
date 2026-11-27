@@ -38,8 +38,13 @@ export async function createPreference(input: PreferenceInput): Promise<string |
   const mp = clients();
   if (!mp) return null;
 
-  const clientUrl = (process.env.CLIENT_URL ?? '').replace(/\/+$/, '');
-  const apiUrl = (process.env.PUBLIC_URL ?? '').replace(/\/+$/, '');
+  // Mercado Pago exige URLs completas (https://…): si en Vercel se cargó sin esquema, se completa.
+  const fullUrl = (v?: string) => {
+    const u = (v ?? '').trim().replace(/\/+$/, '');
+    return u && !/^https?:\/\//i.test(u) ? `https://${u}` : u;
+  };
+  const clientUrl = fullUrl(process.env.CLIENT_URL);
+  const apiUrl = fullUrl(process.env.PUBLIC_URL);
 
   const { init_point: initPoint } = await mp.preference.create({
     body: {
@@ -54,7 +59,7 @@ export async function createPreference(input: PreferenceInput): Promise<string |
       ],
       payer: input.customerEmail ? { email: input.customerEmail } : undefined,
       external_reference: input.reservationId,
-      auto_return: 'approved',
+      ...(clientUrl ? { auto_return: 'approved' as const } : {}),
       back_urls: clientUrl
         ? {
             success: `${clientUrl}/pago`,
