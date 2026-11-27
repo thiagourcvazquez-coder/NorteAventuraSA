@@ -36,6 +36,10 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   // Portada con mapa (public/portadas, generada con docs/portadas). Si no existe, foto original.
   const custom = excursion.coverUrl; // portada cargada desde el panel (reemplaza la del mapa)
   const [useCover, setUseCover] = useState(!custom);
+  // Con foto propia el mapa va igual: capa de solo mapa (public/portadas/mapa) sobre cualquier foto.
+  const [mapOk, setMapOk] = useState(true);
+  const withMap = custom ? mapOk : useCover;
+  const mapSrc = `/portadas/mapa/${excursion.slug}.webp`;
   const src = custom ?? (useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl);
   const { t, tok } = useLang();
 
@@ -52,11 +56,24 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
           // sobre la foto. Pantalla horizontal: se corre a la derecha lo justo para que el mapa entre
           // entero (en 2.1:1 o más ancha no hay recorte lateral y se ve todo).
           className={`absolute inset-0 h-full w-full object-cover ${
-            useCover ? 'object-[30%_50%] [@media(min-aspect-ratio:6/5)]:object-[85%_50%]' : ''
+            custom ? 'object-[35%_50%]' : useCover ? 'object-[30%_50%] [@media(min-aspect-ratio:6/5)]:object-[85%_50%]' : ''
           }`}
         />
       )}
-      {useCover ? (
+      {custom && mapOk && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] [@media(min-aspect-ratio:6/5)]:block [mask-image:linear-gradient(to_right,transparent,black_40%)]"
+        >
+          <img
+            src={mapSrc}
+            alt=""
+            onError={() => setMapOk(false)}
+            className="h-full w-full object-cover object-[40%_50%]"
+          />
+        </div>
+      )}
+      {withMap ? (
         <>
           {/* Arriba, apenas para el menú. Abajo, solo del lado del título: el mapa queda limpio. */}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-norte-green-dark/45 to-transparent" />
@@ -83,7 +100,7 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
           {/* Con portada, el título no pasa de la mitad para no pisar el mapa. */}
           <h1
             className={`display max-w-5xl text-[clamp(2rem,5.6vw,4.8rem)] text-norte-cream ${
-              useCover ? 'lg:max-w-[50vw]' : ''
+              withMap ? 'lg:max-w-[50vw]' : ''
             }`}
           >
             <SplitWords text={excursion.name} onMount delay={0.15} />
@@ -92,13 +109,15 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
       </motion.div>
     </section>
     {/* Pantalla vertical: el hero se encuadra sobre la foto, así que el mapa (lado derecho de la portada) va aparte. */}
-    {useCover && (
+    {withMap && (
       <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 [@media(min-aspect-ratio:6/5)]:hidden">
         <div
           role="img"
           aria-label={`Mapa — ${excursion.location}`}
-          className="mx-auto aspect-[7/8] max-w-md rounded-[28px] bg-norte-green bg-[length:auto_100%] bg-right bg-no-repeat shadow-lg"
-          style={{ backgroundImage: `url(/portadas/${excursion.slug}.webp)` }}
+          className={`mx-auto aspect-[7/8] max-w-md rounded-[28px] bg-norte-green bg-no-repeat shadow-lg ${
+            custom ? 'bg-cover bg-center' : 'bg-[length:auto_100%] bg-right'
+          }`}
+          style={{ backgroundImage: `url(${custom ? mapSrc : `/portadas/${excursion.slug}.webp`})` }}
         />
       </div>
     )}
