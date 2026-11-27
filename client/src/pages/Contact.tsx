@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PhoneField from '../components/PhoneField';
 import PageBanner from '../components/PageBanner';
 import { MailIcon, MapPinIcon, WhatsAppIcon } from '../components/Icons';
 import { FacebookIcon, InstagramIcon, TikTokIcon } from '../components/Icons';
@@ -79,7 +80,7 @@ export default function Contact() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">{t('ct.phone')}</label>
-            <input className={inputCls} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="387 123 4567" required />
+            <PhoneField onChange={setPhone} inputCls={inputCls} />
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-norte-gray">{t('ct.msg')}</label>

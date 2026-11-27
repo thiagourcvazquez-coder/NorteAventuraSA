@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PhoneField from './PhoneField';
 import type { Excursion } from '../types';
 import { formatPrice } from '../lib/format';
 import { createReservation, createPaymentPreference } from '../lib/api';
@@ -21,6 +22,13 @@ const PROVINCES = [
   'Entre Ríos', 'Formosa', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro',
   'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán', 'Otro',
 ];
+
+/** Código telefónico sugerido por país (el resto: el usuario elige). */
+const COUNTRY_DIAL: Record<string, string> = {
+  Argentina: '+54', Bolivia: '+591', Brasil: '+55', Chile: '+56', Colombia: '+57', Ecuador: '+593',
+  'España': '+34', 'Estados Unidos': '+1', Francia: '+33', Alemania: '+49', Italia: '+39',
+  Paraguay: '+595', 'Perú': '+51', 'Reino Unido': '+44', Uruguay: '+598',
+};
 
 function maskBirth(v: string) {
   const d = v.replace(/\D/g, '').slice(0, 8);
@@ -70,7 +78,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
     const birthIso = birth ? birthToIso(birth) : '';
     if (mode === 'online') {
       if (!customerName.trim() || !lastName.trim() || !phone.trim() || !hotel.trim() ||
-          !nationality.trim() || !documentId.trim() || !birthIso) {
+          !nationality.trim() || !documentId.trim() || !province.trim() || !birthIso) {
         setError(t('bk.error_full'));
         return;
       }
@@ -254,8 +262,7 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
         </div>
         <div>
           <label className={labelCls}>{t('bk.phone')} *</label>
-          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-            placeholder="387 123 4567" className={inputCls} required />
+          <PhoneField onChange={setPhone} inputCls={inputCls} followDial={COUNTRY_DIAL[country]} />
         </div>
         <div>
           <label className={labelCls}>
@@ -270,14 +277,24 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>{t('bk.country')} *</label>
-                <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputCls} required>
+                <select
+                  value={country}
+                  onChange={(e) => {
+                    const c = e.target.value;
+                    setCountry(c);
+                    setProvince(c === 'Argentina' ? 'Salta' : '');
+                    setNationality(c === 'Argentina' ? 'Argentina' : '');
+                  }}
+                  className={inputCls}
+                  required
+                >
                   {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <label className={labelCls}>{t('bk.nationality')} *</label>
                 <input type="text" value={nationality} onChange={(e) => setNationality(e.target.value)}
-                  placeholder="Argentina" className={inputCls} required />
+                  placeholder={t('bk.nat_ph')} className={inputCls} required />
               </div>
             </div>
             <div>
@@ -288,14 +305,19 @@ export default function BookingForm({ excursion }: { excursion: Excursion }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>{t('bk.province')} *</label>
-                <select value={province} onChange={(e) => setProvince(e.target.value)} className={inputCls} required>
-                  {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
+                {country === 'Argentina' ? (
+                  <select value={province} onChange={(e) => setProvince(e.target.value)} className={inputCls} required>
+                    {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                ) : (
+                  <input type="text" value={province} onChange={(e) => setProvince(e.target.value)}
+                    placeholder={t('bk.region_ph')} className={inputCls} required />
+                )}
               </div>
               <div>
                 <label className={labelCls}>{t('bk.dni')} *</label>
                 <input type="text" value={documentId} onChange={(e) => setDocumentId(e.target.value)}
-                  placeholder="12.345.678" className={inputCls} required />
+                  placeholder={country === 'Argentina' ? '12.345.678' : t('bk.passport_ph')} className={inputCls} required />
               </div>
             </div>
             <div>
