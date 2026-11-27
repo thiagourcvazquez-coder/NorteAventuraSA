@@ -119,6 +119,28 @@ adminRouter.patch('/reservations/:id', async (req: Request, res: Response) => {
   res.json(data);
 });
 
+/**
+ * DELETE /api/admin/reservations/:id — elimina la reserva (no se puede deshacer).
+ * Los movimientos de finanzas vinculados quedan, sin la referencia a la reserva.
+ */
+adminRouter.delete('/reservations/:id', async (req: Request, res: Response) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'Supabase no configurado' });
+    return;
+  }
+  const { data, error } = await supabase.from('reservations').delete().eq('id', req.params.id).select('id');
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  if (!data?.length) {
+    res.status(404).json({ error: 'Reserva no encontrada' });
+    return;
+  }
+  res.json({ ok: true });
+});
+
 /** GET /api/admin/excursions — todas, incluidas inactivas. */
 adminRouter.get('/excursions', async (_req: Request, res: Response) => {
   const supabase = getSupabase();

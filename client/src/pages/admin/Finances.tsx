@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { adminFetch } from '../../lib/api';
 import DatePicker from '../../components/ui/DatePicker';
+import { downloadCsv, printTable } from '../../lib/exportData';
 
 interface FinanceRow {
   id: string;
@@ -364,7 +365,40 @@ export default function Finances() {
 
       {/* ============ MOVIMIENTOS DEL MES ============ */}
       <div className={`${card} lg:col-span-2`}>
-        <h3 className="display text-lg capitalize text-norte-cream">Movimientos de {monthLabel(month)}</h3>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="display text-lg capitalize text-norte-cream">Movimientos de {monthLabel(month)}</h3>
+          {!!monthRows.length && (
+            <div className="flex gap-2">
+              <button
+                onClick={() =>
+                  downloadCsv(
+                    `movimientos-${month}`,
+                    ['Fecha', 'Tipo', 'Concepto', 'Categoría', 'Método', 'Monto', 'Notas'],
+                    monthRows.map((r) => [r.date, r.type === 'income' ? 'Ingreso' : 'Egreso', r.concept, r.category, METHOD_LABEL[r.method] ?? r.method, Number(r.amount), r.notes ?? '']),
+                  )
+                }
+                className="rounded-full bg-norte-yellow px-4 py-1.5 text-xs font-extrabold text-norte-green transition hover:bg-white"
+              >
+                Descargar Excel
+              </button>
+              <button
+                onClick={() =>
+                  printTable({
+                    title: `Movimientos de ${monthLabel(month)}`,
+                    subtitle: 'Ingresos y egresos del mes',
+                    headers: ['Fecha', 'Concepto', 'Categoría', 'Método', 'Monto'],
+                    rows: monthRows.map((r) => [r.date, r.concept, r.category, METHOD_LABEL[r.method] ?? r.method, `${r.type === 'income' ? '+' : '−'}${fmt(r.amount)}`]),
+                    summary: [`Ingresos: ${fmt(income)}`, `Egresos: ${fmt(expense)}`, `Balance: ${fmt(balance)}`],
+                    rightCols: [4],
+                  })
+                }
+                className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-extrabold text-norte-cream transition hover:bg-white/20"
+              >
+                Imprimir / PDF
+              </button>
+            </div>
+          )}
+        </div>
         {!rows ? (
           <p className="mt-4 text-sm text-norte-cream/50">Cargando</p>
         ) : !monthRows.length ? (
