@@ -14,7 +14,7 @@ const allowedOrigins = process.env.CORS_ORIGIN
   .map((o) => o.trim().replace(/\/+$/, ''))
   .filter(Boolean);
 app.use(cors({ origin: allowedOrigins?.length ? allowedOrigins : true }));
-app.use(express.json());
+app.use(express.json({ limit: '6mb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'norte-aventura-api', db: getSupabase() ? 'supabase' : 'none' });

@@ -34,8 +34,9 @@ function DetailHero({ excursion }: { excursion: Excursion }) {
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   // Portada con mapa (public/portadas, generada con docs/portadas). Si no existe, foto original.
-  const [useCover, setUseCover] = useState(true);
-  const src = useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl;
+  const custom = excursion.coverUrl; // portada cargada desde el panel (reemplaza la del mapa)
+  const [useCover, setUseCover] = useState(!custom);
+  const src = custom ?? (useCover ? `/portadas/${excursion.slug}.webp` : excursion.imageUrl);
   const { t, tok } = useLang();
 
   return (
@@ -180,10 +181,19 @@ export default function ExcursionDetail() {
             </span>
           </div>
 
-          <div className="mt-10">
-            <h2 className="text-xl font-extrabold text-norte-green">{t('det.enjoy')}</h2>
-            <p className="mt-4 leading-relaxed text-norte-gray">{ex.description}</p>
-          </div>
+          {excursion.sections?.length ? (
+            excursion.sections.map((sec, i) => (
+              <div key={i} className="mt-10">
+                <h2 className="text-xl font-extrabold text-norte-green">{sec.title}</h2>
+                <p className="mt-4 whitespace-pre-line leading-relaxed text-norte-gray">{sec.body}</p>
+              </div>
+            ))
+          ) : (
+            <div className="mt-10">
+              <h2 className="text-xl font-extrabold text-norte-green">{t('det.enjoy')}</h2>
+              <p className="mt-4 leading-relaxed text-norte-gray">{ex.description}</p>
+            </div>
+          )}
 
           {excursion.included && (
             <div className="mt-8 rounded-2xl bg-white p-6 ring-1 ring-norte-green/10">

@@ -5,6 +5,7 @@ import Reservations from './Reservations';
 import Finances from './Finances';
 import CommentsAdmin from './CommentsAdmin';
 import ExcursionEditor from './ExcursionEditor';
+import SiteEditor from './SiteEditor';
 
 const LOGIN_BG = 'https://norteaventura.com.ar/wp-content/uploads/2025/04/DJI_0686.jpg';
 const LOGIN_LOGO = 'https://norteaventura.com.ar/wp-content/uploads/2026/05/cropped-Logo-NA-transp-270x270.png';
@@ -24,13 +25,14 @@ export interface AdminExcursion {
   included: string | null;
   booking_lead: string | null;
   image_url: string | null;
+  cover_url?: string | null;
   maps_query: string | null;
   is_active: boolean;
   display_order: number;
   categories: { slug: string } | { slug: string }[] | null;
 }
 
-type Tab = 'dashboard' | 'reservas' | 'finanzas' | 'comentarios' | 'excursiones';
+type Tab = 'dashboard' | 'reservas' | 'finanzas' | 'comentarios' | 'excursiones' | 'sitio';
 
 const TABS: { id: Tab; label: string; icon: ReactNode }[] = [
   {
@@ -79,6 +81,17 @@ const TABS: { id: Tab; label: string; icon: ReactNode }[] = [
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
         <path d="M3 20l6-16 5 10 3-6 4 12z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'sitio',
+    label: 'Sitio',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <circle cx="9" cy="10" r="1.8" />
+        <path d="m21 16-5-5-9 9" />
       </svg>
     ),
   },
@@ -327,6 +340,7 @@ export default function Admin() {
                 <ExcursionEditor list={list} error={error} reload={loadExcursions} />
               </div>
             )}
+            {tab === 'sitio' && <SiteEditor />}
           </div>
         </main>
       </div>

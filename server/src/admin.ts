@@ -58,6 +58,7 @@ const FIELD_MAP: Record<string, string> = {
   included: 'included',
   bookingLead: 'booking_lead',
   imageUrl: 'image_url',
+  coverUrl: 'cover_url',
   mapsQuery: 'maps_query',
   isActive: 'is_active',
   displayOrder: 'display_order',
@@ -206,6 +207,180 @@ adminRouter.put('/excursions/:id', async (req: Request, res: Response) => {
     return;
   }
   res.json(data);
+});
+
+// ============================================================ contenido por excursión
+
+type Row = Record<string, unknown>;
+
+/**
+ * Reemplaza todas las filas de una tabla hija (faqs / images / sections) de una excursión.
+ * Si el insert falla, restaura lo que había para no perder datos.
+ */
+async function replaceChildren(
+  table: 'excursion_faqs' | 'excursion_images' | 'excursion_sections',
+  excursionId: string,
+  rows: Row[],
+): Promise<string | null> {
+  const supabase = getSupabase();
+  if (!supabase) return 'Supabase no configurado';
+  const { data: old, error: readErr } = await supabase.from(table).select('*').eq('excursion_id', excursionId);
+  if (readErr) return readErr.message;
+  const { error: delErr } = await supabase.from(table).delete().eq('excursion_id', excursionId);
+  if (delErr) return delErr.message;
+  if (!rows.length) return null;
+  const { error: insErr } = await supabase
+    .from(table)
+    .insert(rows.map((r, i) => ({ ...r, excursion_id: excursionId, sort_order: i })));
+  if (insErr) {
+    if (old?.length) await supabase.from(table).insert(old);
+    return insErr.message;
+  }
+  return null;
+}
+
+const str = (v: unknown, max = 4000) => String(v ?? '').trim().slice(0, max);
+
+/** GET /api/admin/excursions/:id/content — preguntas frecuentes, fotos y bloques de texto. */
+adminRouter.get('/excursions/:id/content', async (req: Request, res: Response) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'Supabase no configurado' });
+    return;
+  }
+  const id = req.params.id;
+  const [faqs, images, sections] = await Promise.all([
+    supabase.from('excursion_faqs').select('question, answer, sort_order').eq('excursion_id', id).order('sort_order'),
+    supabase.from('excursion_images').select('url, sort_order').eq('excursion_id', id).order('sort_order'),
+    supabase.from('excursion_sections').select('title, body, sort_order').eq('excursion_id', id).order('sort_order'),
+  ]);
+  if (faqs.error || images.error) {
+    res.status(500).json({ error: (faqs.error ?? images.error)!.message });
+    return;
+  }
+  res.json({
+    faqs: faqs.data ?? [],
+    images: (images.data ?? []).map((i) => i.url),
+    sections: sections.data ?? [],
+    // false si todavía no se corrió el SQL de bloques de texto
+    sectionsReady: !sections.error,
+  });
+});
+
+/** PUT /api/admin/excursions/:id/content — { faqs?, images?, sections? } reemplaza lo enviado. */
+adminRouter.put('/excursions/:id/content', async (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  const b = (req.body ?? {}) as { faqs?: Row[]; images?: unknown[]; sections?: Row[] };
+  const jobs: [Parameters<typeof replaceChildren>[0], Row[]][] = [];
+
+  if (Array.isArray(b.faqs)) {
+    jobs.push([
+      'excursion_faqs',
+      b.faqs.map((f) => ({ question: str(f.question, 300), answer: str(f.answer, 2000) })).filter((f) => f.question && f.answer),
+    ]);
+  }
+  if (Array.isArray(b.images)) {
+    jobs.push([
+      'excursion_images',
+      b.images.map((u) => ({ url: str(u, 1000) })).filter((i) => /^https?:\/\//.test(i.url)),
+    ]);
+  }
+  if (Array.isArray(b.sections)) {
+    jobs.push([
+      'excursion_sections',
+      b.sections.map((x) => ({ title: str(x.title, 200), body: str(x.body, 6000) })).filter((x) => x.title),
+    ]);
+  }
+  for (const [table, rows] of jobs) {
+    const err = await replaceChildren(table, id, rows);
+    if (err) {
+      res.status(500).json({ error: `${table}: ${err}` });
+      return;
+    }
+  }
+  res.json({ ok: true });
+});
+
+// ============================================================ fotos y contenido del sitio
+
+const IMAGE_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+};
+
+/**
+ * POST /api/admin/uploads — { data: base64, contentType, folder? } → { url }
+ * Sube la imagen al bucket público "media" de Supabase Storage.
+ */
+adminRouter.post('/uploads', async (req: Request, res: Response) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'Supabase no configurado' });
+    return;
+  }
+  const { data, contentType, folder } = (req.body ?? {}) as { data?: string; contentType?: string; folder?: string };
+  const ext = contentType ? IMAGE_TYPES[contentType] : undefined;
+  if (!data || !ext) {
+    res.status(400).json({ error: 'Imagen inválida (JPG, PNG, WebP, AVIF o GIF)' });
+    return;
+  }
+  const buf = Buffer.from(data, 'base64');
+  if (!buf.length || buf.length > 4 * 1024 * 1024) {
+    res.status(413).json({ error: 'La imagen supera los 4 MB' });
+    return;
+  }
+  const dir = String(folder ?? 'general').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'general';
+  const path = `${dir}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage.from('media').upload(path, buf, { contentType, cacheControl: '31536000' });
+  if (error) {
+    const hint = /bucket/i.test(error.message) ? ' — ¿se corrió el SQL del bucket "media"?' : '';
+    res.status(500).json({ error: error.message + hint });
+    return;
+  }
+  const { data: pub } = supabase.storage.from('media').getPublicUrl(path);
+  res.status(201).json({ url: pub.publicUrl });
+});
+
+/** GET /api/admin/site — claves editables de site_content. */
+adminRouter.get('/site', async (_req: Request, res: Response) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'Supabase no configurado' });
+    return;
+  }
+  const { data, error } = await supabase.from('site_content').select('key, value');
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  res.json(Object.fromEntries((data ?? []).map((r) => [r.key, r.value])));
+});
+
+const SITE_KEYS = ['hero_image'];
+
+/** PUT /api/admin/site — { hero_image?: url } (vacío = volver a la foto por defecto). */
+adminRouter.put('/site', async (req: Request, res: Response) => {
+  const supabase = getSupabase();
+  if (!supabase) {
+    res.status(503).json({ error: 'Supabase no configurado' });
+    return;
+  }
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  for (const key of SITE_KEYS) {
+    if (body[key] === undefined) continue;
+    const value = str(body[key], 1000);
+    const { error } = value
+      ? await supabase.from('site_content').upsert({ key, value, updated_at: new Date().toISOString() })
+      : await supabase.from('site_content').delete().eq('key', key);
+    if (error) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+  }
+  res.json({ ok: true });
 });
 
 // ============================================================ dashboard

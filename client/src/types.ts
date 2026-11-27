@@ -30,7 +30,11 @@ export interface Excursion {
   included?: string;
   bookingLead?: string;
   imageUrl?: string;
+  /** Portada propia (cargada desde el panel). Si no hay, se usa la portada con mapa. */
+  coverUrl?: string;
   images?: string[];
+  /** Bloques de título + descripción editables ("Disfrutá de la aventura"…). */
+  sections?: { title: string; body: string }[];
   faqs?: Faq[];
   /** Texto de búsqueda para Google Maps (link + embed). */
   mapsQuery?: string;

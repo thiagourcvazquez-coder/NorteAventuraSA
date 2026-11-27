@@ -10,6 +10,8 @@ export const supabase: SupabaseClient | null =
   url && anonKey ? createClient(url, anonKey) : null;
 
 interface ExcursionRow {
+  id: string;
+  cover_url?: string | null;
   slug: string;
   name: string;
   location: string;
@@ -43,7 +45,9 @@ const ABREVIATURAS: [RegExp, string][] = [
 ];
 export const fullName = (s: string) => ABREVIATURAS.reduce((t, [re, full]) => t.replace(re, full), s);
 
-function rowToExcursion(r: ExcursionRow): Excursion {
+type SectionMap = Map<string, { title: string; body: string }[]>;
+
+function rowToExcursion(r: ExcursionRow, sections: SectionMap): Excursion {
   const cat = Array.isArray(r.categories) ? r.categories[0] : r.categories;
   return {
     slug: r.slug,
@@ -61,6 +65,8 @@ function rowToExcursion(r: ExcursionRow): Excursion {
     included: r.included ?? undefined,
     bookingLead: r.booking_lead ?? undefined,
     imageUrl: r.image_url ?? undefined,
+    coverUrl: r.cover_url ?? undefined,
+    sections: sections.get(r.id),
     images:
       (r.excursion_images?.length
         ? r.excursion_images.sort((a, b) => a.sort_order - b.sort_order).map((i) => i.url)
@@ -84,6 +90,36 @@ const withGallery = (list: Excursion[]): Excursion[] =>
     mapsQuery: e.mapsQuery ?? MAPS_QUERY[e.slug],
   }));
 
+/** Bloques de texto por excursión. Si la tabla todavía no existe devuelve vacío (el sitio sigue igual). */
+async function loadSections(): Promise<SectionMap> {
+  const map: SectionMap = new Map();
+  if (!supabase) return map;
+  try {
+    const { data, error } = await supabase
+      .from('excursion_sections')
+      .select('excursion_id, title, body, sort_order')
+      .order('sort_order');
+    if (error || !data) return map;
+    for (const r of data as { excursion_id: string; title: string; body: string }[]) {
+      map.set(r.excursion_id, [...(map.get(r.excursion_id) ?? []), { title: r.title, body: r.body }]);
+    }
+  } catch {
+    /* sin bloques */
+  }
+  return map;
+}
+
+/** Foto principal de la home cargada desde el panel (null = usar la original). */
+export async function getHeroImage(): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase.from('site_content').select('value').eq('key', 'hero_image').maybeSingle();
+    return data?.value || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getExcursions(): Promise<Excursion[]> {
   if (!supabase) return withGallery(FALLBACK_EXCURSIONS);
   const { data, error } = await supabase
@@ -95,7 +131,8 @@ export async function getExcursions(): Promise<Excursion[]> {
     console.warn('[supabase] fallback a datos locales:', error?.message);
     return withGallery(FALLBACK_EXCURSIONS);
   }
-  return (data as ExcursionRow[]).map(rowToExcursion);
+  const sections = await loadSections();
+  return (data as ExcursionRow[]).map((r) => rowToExcursion(r, sections));
 }
 
 export async function getExcursion(slug: string): Promise<Excursion | null> {

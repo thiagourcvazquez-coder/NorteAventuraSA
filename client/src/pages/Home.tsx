@@ -1,8 +1,9 @@
-import { lazy, Suspense, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useExcursions } from '../hooks';
 import { useLang } from '../i18n';
+import { getHeroImage } from '../lib/supabase';
 import HorizontalShowcase from '../components/HorizontalShowcase';
 import Reviews from '../components/Reviews';
 import GoogleReviews from '../components/GoogleReviews';
@@ -43,6 +44,10 @@ const marqueeItems = ['Trekking', 'Salinas Grandes', 'Hornocal', 'Quebrada de Hu
 export default function Home() {
   const { excursions } = useExcursions();
   const { t } = useLang();
+  const [heroImg, setHeroImg] = useState(HERO_IMG);
+  useEffect(() => {
+    getHeroImage().then((u) => u && setHeroImg(u));
+  }, []);
 
   const featured = useMemo(() => {
     const salta = excursions.filter((e) => e.category === 'salta' && e.price !== null).slice(0, 4);
@@ -63,7 +68,7 @@ export default function Home() {
       {/* HERO */}
       <section className="relative isolate flex h-[100svh] min-h-[640px] items-end overflow-hidden bg-norte-green">
         <motion.img
-          src={HERO_IMG}
+          src={heroImg}
           alt="Quebrada de Humahuaca, Jujuy"
           fetchPriority="high"
           initial={{ scale: 1.12 }}

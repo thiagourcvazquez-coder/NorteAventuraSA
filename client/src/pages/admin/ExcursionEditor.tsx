@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { GALLERIES } from '../../data/galleries';
 import { adminFetch } from '../../lib/api';
 import { formatPrice } from '../../lib/format';
 import type { AdminExcursion } from './Admin';
+import { FaqEditor, GalleryEditor, ImageUpload, SectionsEditor, type ExcursionContent } from './ContentFields';
 
 const input =
   'w-full rounded-lg border border-norte-green/20 bg-white px-3 py-2 text-sm text-norte-green outline-none focus:border-norte-yellow-dark focus:ring-2 focus:ring-norte-yellow/40';
@@ -22,6 +24,7 @@ const EMPTY: Partial<AdminExcursion> & { category: string } = {
   included: '',
   booking_lead: '',
   image_url: '',
+  cover_url: '',
   maps_query: '',
   is_active: true,
   display_order: 99,
@@ -47,6 +50,7 @@ function toDraft(e: AdminExcursion): Draft {
     included: e.included ?? '',
     booking_lead: e.booking_lead ?? '',
     image_url: e.image_url ?? '',
+    cover_url: e.cover_url ?? '',
     maps_query: e.maps_query ?? '',
     is_active: e.is_active,
     display_order: e.display_order,
@@ -68,6 +72,7 @@ const FIELD_TO_API: Record<string, string> = {
   included: 'included',
   booking_lead: 'bookingLead',
   image_url: 'imageUrl',
+  cover_url: 'coverUrl',
   maps_query: 'mapsQuery',
   is_active: 'isActive',
   display_order: 'displayOrder',
@@ -80,7 +85,11 @@ function Form({
   onCancel,
   saving,
   isNew,
+  content,
+  onContent,
 }: {
+  content: ExcursionContent | null;
+  onContent: (c: ExcursionContent) => void;
   draft: Draft;
   onChange: (k: string, v: unknown) => void;
   onSave: () => void;
@@ -182,16 +191,51 @@ function Form({
             <input className={input} value={String(draft.booking_lead ?? '')} onChange={set('booking_lead')} />
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className={label}>URL imagen principal</label>
-            <input className={input} value={String(draft.image_url ?? '')} onChange={set('image_url')} />
-          </div>
-          <div>
-            <label className={label}>Búsqueda Google Maps</label>
-            <input className={input} value={String(draft.maps_query ?? '')} onChange={set('maps_query')} />
-          </div>
+        <div>
+          <label className={label}>Búsqueda Google Maps</label>
+          <input className={input} value={String(draft.maps_query ?? '')} onChange={set('maps_query')} />
         </div>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div>
+          <label className={label}>Foto de la card (catálogo)</label>
+          <ImageUpload value={String(draft.image_url ?? '')} onChange={(u) => onChange('image_url', u)} folder="cards" />
+        </div>
+        <div>
+          <label className={label}>Portada de la excursión</label>
+          <ImageUpload
+            value={String(draft.cover_url ?? '')}
+            onChange={(u) => onChange('cover_url', u)}
+            folder="portadas"
+            hint="Si la dejás vacía se usa la portada con mapa que ya tiene."
+          />
+        </div>
+      </div>
+
+      <div className="mt-6 space-y-6 border-t border-norte-green/10 pt-5">
+        {!content ? (
+          <p className="text-sm text-norte-gray">Cargando fotos, preguntas y textos…</p>
+        ) : (
+          <>
+            <div>
+              <h4 className="mb-2 text-sm font-extrabold text-norte-green">Textos de la excursión (título + descripción)</h4>
+              <SectionsEditor
+                sections={content.sections}
+                ready={content.sectionsReady}
+                onChange={(sections) => onContent({ ...content, sections })}
+              />
+            </div>
+            <div>
+              <h4 className="mb-2 text-sm font-extrabold text-norte-green">La experiencia en fotos (galería)</h4>
+              <GalleryEditor images={content.images} onChange={(images) => onContent({ ...content, images })} />
+            </div>
+            <div>
+              <h4 className="mb-2 text-sm font-extrabold text-norte-green">Preguntas frecuentes</h4>
+              <FaqEditor faqs={content.faqs} onChange={(faqs) => onContent({ ...content, faqs })} />
+            </div>
+          </>
+        )}
       </div>
       <div className="mt-5 flex gap-3">
         <button
@@ -226,6 +270,27 @@ export default function ExcursionEditor({
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
   const [q, setQ] = useState('');
+  const [content, setContent] = useState<ExcursionContent | null>(null);
+
+  async function openEdit(e: AdminExcursion) {
+    setEditing(toDraft(e));
+    setCreating(false);
+    setContent(null);
+    try {
+      const c = await adminFetch<ExcursionContent>(`/excursions/${e.id}/content`);
+      // Si la excursión todavía usa la galería de respaldo, se muestra para poder editarla.
+      setContent({ ...c, images: c.images.length ? c.images : (GALLERIES[e.slug] ?? []) });
+    } catch (er) {
+      setErr((er as Error).message);
+      setContent({ faqs: [], images: [], sections: [], sectionsReady: false });
+    }
+  }
+
+  function openNew() {
+    setEditing({ ...EMPTY });
+    setCreating(true);
+    setContent({ faqs: [], images: [], sections: [], sectionsReady: true });
+  }
 
   if (error) return <p className="p-6 text-sm font-medium text-red-600">{error}</p>;
   if (!list) return <p className="p-6 text-sm text-norte-gray">Cargando excursiones</p>;
@@ -248,13 +313,25 @@ export default function ExcursionEditor({
         if (d[k] !== undefined) body[api] = d[k];
       }
       // strings vacíos → null en campos opcionales
-      for (const k of ['priceNote', 'schedule', 'included', 'bookingLead', 'imageUrl', 'mapsQuery']) {
+      for (const k of ['priceNote', 'schedule', 'included', 'bookingLead', 'imageUrl', 'coverUrl', 'mapsQuery']) {
         if (body[k] === '') body[k] = null;
       }
+      let id = String(d.id ?? '');
       if (creating) {
-        await adminFetch('/excursions', { method: 'POST', body: JSON.stringify(body) });
+        const created = await adminFetch<{ id: string }>('/excursions', { method: 'POST', body: JSON.stringify(body) });
+        id = created.id;
       } else {
-        await adminFetch(`/excursions/${d.id}`, { method: 'PUT', body: JSON.stringify(body) });
+        await adminFetch(`/excursions/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      }
+      if (content && id) {
+        await adminFetch(`/excursions/${id}/content`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            faqs: content.faqs,
+            images: content.images,
+            ...(content.sectionsReady ? { sections: content.sections } : {}),
+          }),
+        });
       }
       setEditing(null);
       setCreating(false);
@@ -296,10 +373,7 @@ export default function ExcursionEditor({
           )}
         </div>
         <button
-          onClick={() => {
-            setEditing({ ...EMPTY });
-            setCreating(true);
-          }}
+          onClick={openNew}
           className="ml-auto rounded-full bg-norte-yellow px-5 py-2 text-sm font-extrabold text-norte-green transition hover:bg-norte-yellow-dark"
         >
           + Nueva excursión
@@ -318,6 +392,8 @@ export default function ExcursionEditor({
             }}
             saving={saving}
             isNew
+            content={content}
+            onContent={setContent}
           />
         )}
         {filtered.length === 0 && (
@@ -342,10 +418,7 @@ export default function ExcursionEditor({
                 {e.price ? formatPrice(e.price, 'es') : 'Consultar'}
               </span>
               <button
-                onClick={() => {
-                  setEditing(toDraft(e));
-                  setCreating(false);
-                }}
+                onClick={() => openEdit(e)}
                 className="rounded-full px-4 py-1.5 text-xs font-extrabold text-norte-green ring-1 ring-norte-green/25 transition hover:bg-norte-green hover:text-norte-cream"
               >
                 Editar
@@ -359,6 +432,8 @@ export default function ExcursionEditor({
                 onCancel={() => setEditing(null)}
                 saving={saving}
                 isNew={false}
+                content={content}
+                onContent={setContent}
               />
             )}
           </li>
